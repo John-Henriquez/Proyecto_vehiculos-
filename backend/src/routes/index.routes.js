@@ -2,23 +2,19 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import inventoryRoutes from "./inventario.routes.js";
-import saleRoutes from "./ventas.routes.js";
-import orderRoutes from "./orden.routes.js";
-import pagosRoutes from "./pagos.routes.js";
-import facturasRoutes from "./facturas.routes.js";
-import maintenanceRoutes from "./mantenimiento.routes.js";
+import recordRoutes from "./registro.routes.js";
+import applicantRoutes from "./solicitantes.routes.js";
+import applicationRoutes from "./solicitud.routes.js";
+import vehicleRoutes from "./vehiculo.routes.js";
 
 const router = Router();
 
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/inventory", inventoryRoutes)
-    .use("/sale", saleRoutes)
-    .use("/orders", orderRoutes)
-    .use("/pagos", pagosRoutes)
-    .use("/facturas", facturasRoutes)
-    .use("/maintenance", maintenanceRoutes)
+    .use("/record", recordRoutes)
+    .use("/applicant", applicantRoutes)
+    .use("/application", applicationRoutes)
+    .use("/vehicle", vehicleRoutes)
 
 export default router;

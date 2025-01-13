@@ -6,7 +6,7 @@ import {
   getSolicitanteService,
   updateSolicitanteService,
   deleteSolicitanteService,
-} from "../services/SolicitanteService.js";
+} from "../services/solicitante.service.js";
 
 export async function getSolicitante(req, res) {
   try {

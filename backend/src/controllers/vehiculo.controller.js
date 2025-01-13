@@ -6,7 +6,7 @@ import {
   getVehiculoService,
   updateVehiculoService,
   deleteVehiculoService,
-} from "../services/VehiculoService.js";
+} from "../services/vehiculo.service.js";
 
 export async function getVehiculo(req, res) {
   try {

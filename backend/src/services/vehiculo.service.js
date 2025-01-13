@@ -1,7 +1,7 @@
 "use strict";
 
 import { AppDataSource } from "../config/configDb.js";
-import { Vehiculo } from "../entity/Vehiculo.js";
+import  Vehiculo  from "../entity/vehiculo.entity.js";
 
 // Servicio para crear un vehículo
 export async function createVehiculoService(vehiculoData) {

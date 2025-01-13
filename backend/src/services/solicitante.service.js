@@ -1,7 +1,7 @@
 "use strict";
 
 import { AppDataSource } from "../config/configDb.js";
-import { Solicitante } from "../entity/Solicitante.js";
+import  Solicitante  from "../entity/solicitante.entity.js";
 
 // Servicio para crear un solicitante
 export async function createSolicitanteService(solicitanteData) {

@@ -1,7 +1,7 @@
 "use strict";
 
 import { AppDataSource } from "../config/configDb.js";
-import { Registro } from "../entity/Registro.js";
+import Registro from "../entity/registro.entity.js";
 
 // Servicio para crear un registro
 export async function createRegistroService(registroData) {
