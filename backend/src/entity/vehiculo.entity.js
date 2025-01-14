@@ -29,60 +29,17 @@ const VehiculoSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
-    nro_motor: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
-    },
-    transmision: {
-      type: "varchar",
-      length: 20,
-      nullable: false,
-    },
-    tipo_combustible: {
-      type: "varchar",
-      length: 20,
-      nullable: false,
-    },
-    cilindrada: {
-      type: "int",
-      nullable: false,
-    },
     equipamiento: {
       type: "text",
       nullable: true,
-    },
-    puertas: {
-      type: "int",
-      nullable: false,
     },
     color: {
       type: "varchar",
       length: 30,
       nullable: false,
     },
-    anio_permiso: {
+    kilometraje: {
       type: "int",
-      nullable: false,
-    },
-    valor_total: {
-      type: "decimal",
-      precision: 10,
-      scale: 2,
-      nullable: false,
-    },
-    fecha_pago: {
-      type: "date",
-      nullable: false,
-    },
-    codigo_sii: {
-      type: "varchar",
-      length: 20,
-      nullable: false,
-    },
-    folio_interno: {
-      type: "varchar",
-      length: 20,
       nullable: false,
     },
   },

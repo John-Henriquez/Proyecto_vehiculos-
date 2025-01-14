@@ -1,7 +1,5 @@
 "use strict";
 import User from "../entity/user.entity.js";
-// import Inventory from "../entity/inventario.entity.js";
-// import Sale from "../entity/ventas.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
@@ -13,15 +11,6 @@ async function createUsers() {
     if (count > 0) return;
 
     await Promise.all([
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "John Henriquez Hernandez",
-          rut: "21.133.447-9",
-          email: "administrador2024@gmail.cl",
-          password: await encryptPassword("admin1234"),
-          rol: "administrador",
-        }),
-      ),
       userRepository.save(
         userRepository.create({
           nombreCompleto: "Admin Badmin Cadmin Dadmin",
