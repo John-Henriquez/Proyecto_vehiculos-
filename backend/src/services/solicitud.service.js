@@ -3,7 +3,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import  Solicitud  from "../entity/solicitud.entity.js";
 
-// Servicio para crear una solicitud
 export async function createSolicitudService(solicitudData) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
@@ -18,7 +17,6 @@ export async function createSolicitudService(solicitudData) {
   }
 }
 
-// Servicio para obtener todas las solicitudes
 export async function getAllSolicitudesService() {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
@@ -31,11 +29,12 @@ export async function getAllSolicitudesService() {
   }
 }
 
-// Servicio para obtener una solicitud por ID
 export async function getSolicitudService(id_solicitud) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const solicitud = await solicitudRepository.findOneBy({ id_solicitud });
+    const solicitud = await solicitudRepository.findOne({ 
+      where: { id_solicitud } 
+    });
 
     if (!solicitud) {
       return [null, "Solicitud no encontrada"];
@@ -52,7 +51,9 @@ export async function getSolicitudService(id_solicitud) {
 export async function updateSolicitudService(id_solicitud, solicitudData) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const solicitud = await solicitudRepository.findOneBy({ id_solicitud });
+    const solicitud = await solicitudRepository.findOne(
+      {where: { id_solicitud }
+    });
 
     if (!solicitud) {
       return [null, "Solicitud no encontrada"];
@@ -72,7 +73,9 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
 export async function deleteSolicitudService(id_solicitud) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const solicitud = await solicitudRepository.findOneBy({ id_solicitud });
+    const solicitud = await solicitudRepository.findOne({
+      where: { id_solicitud }
+    });
 
     if (!solicitud) {
       return [null, "Solicitud no encontrada"];

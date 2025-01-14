@@ -3,7 +3,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import Registro from "../entity/registro.entity.js";
 
-// Servicio para crear un registro
 export async function createRegistroService(registroData) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
@@ -18,7 +17,6 @@ export async function createRegistroService(registroData) {
   }
 }
 
-// Servicio para obtener todos los registros
 export async function getAllRegistrosService() {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
@@ -31,11 +29,12 @@ export async function getAllRegistrosService() {
   }
 }
 
-// Servicio para obtener un registro por ID
 export async function getRegistroService(id_registro) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
-    const registro = await registroRepository.findOneBy({ id_registro });
+    const registro = await registroRepository.findOne({ 
+      where: { id_registro },
+     });
 
     if (!registro) {
       return [null, "Registro no encontrado"];
@@ -48,11 +47,12 @@ export async function getRegistroService(id_registro) {
   }
 }
 
-// Servicio para actualizar un registro
 export async function updateRegistroService(id_registro, registroData) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
-    const registro = await registroRepository.findOneBy({ id_registro });
+    const registro = await registroRepository.findOne({ 
+      where: { id_registro },
+    });
 
     if (!registro) {
       return [null, "Registro no encontrado"];
@@ -68,11 +68,12 @@ export async function updateRegistroService(id_registro, registroData) {
   }
 }
 
-// Servicio para eliminar un registro
 export async function deleteRegistroService(id_registro) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
-    const registro = await registroRepository.findOneBy({ id_registro });
+    const registro = await registroRepository.findOne({
+    where: {id_registro }
+    });
 
     if (!registro) {
       return [null, "Registro no encontrado"];

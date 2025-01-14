@@ -3,7 +3,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import  Vehiculo  from "../entity/vehiculo.entity.js";
 
-// Servicio para crear un vehículo
 export async function createVehiculoService(vehiculoData) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
@@ -18,7 +17,6 @@ export async function createVehiculoService(vehiculoData) {
   }
 }
 
-// Servicio para obtener todos los vehículos
 export async function getAllVehiculosService() {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
@@ -31,7 +29,6 @@ export async function getAllVehiculosService() {
   }
 }
 
-// Servicio para obtener un vehículo por placa
 export async function getVehiculoService(placa) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
@@ -48,7 +45,6 @@ export async function getVehiculoService(placa) {
   }
 }
 
-// Servicio para actualizar un vehículo
 export async function updateVehiculoService(placa, vehiculoData) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
@@ -68,7 +64,6 @@ export async function updateVehiculoService(placa, vehiculoData) {
   }
 }
 
-// Servicio para eliminar un vehículo
 export async function deleteVehiculoService(placa) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
