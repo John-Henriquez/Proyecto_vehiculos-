@@ -5,8 +5,20 @@ import  Vehiculo  from "../entity/vehiculo.entity.js";
 
 export async function createVehiculoService(vehiculoData) {
   try {
+
+    if(!vehiculoData.placa || !vehiculoData.tipo_vehiculo || !vehiculoData.marca || !vehiculoData.modelo || !vehiculoData.anio_fabricacion || !vehiculoData.color){
+      return [null, "Faltan datos"];
+    }
+    if (typeof vehiculoData.kilometraje !== 'number' || vehiculoData.kilometraje < 0) {
+      return [null, "El kilometraje debe ser un número no negativo"];
+    }
+    const placaRegex = /^[A-Z0-9-]+$/;
+    if (!placaRegex.test(vehiculoData.placa)) {
+      return [null, "La placa debe contener solo letras mayúsculas, números y guiones"];
+    }
+
+
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    
     const vehiculo = vehiculoRepository.create(vehiculoData);
     await vehiculoRepository.save(vehiculo);
 
@@ -22,6 +34,9 @@ export async function getAllVehiculosService() {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
     const vehiculos = await vehiculoRepository.find();
 
+    if (!vehiculos) {
+      return [null, "No hay vehículos registrados"];
+    }
     return [vehiculos, null];
   } catch (error) {
     console.error("Error al obtener los vehículos:", error);
@@ -32,7 +47,7 @@ export async function getAllVehiculosService() {
 export async function getVehiculoService(placa) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    const vehiculo = await vehiculoRepository.findOneBy({ placa });
+    const vehiculo = await vehiculoRepository.findOne({where: {placa}});
 
     if (!vehiculo) {
       return [null, "Vehículo no encontrado"];
@@ -48,7 +63,7 @@ export async function getVehiculoService(placa) {
 export async function updateVehiculoService(placa, vehiculoData) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    const vehiculo = await vehiculoRepository.findOneBy({ placa });
+    const vehiculo = await vehiculoRepository.findOne({where: {placa}});
 
     if (!vehiculo) {
       return [null, "Vehículo no encontrado"];
@@ -67,7 +82,7 @@ export async function updateVehiculoService(placa, vehiculoData) {
 export async function deleteVehiculoService(placa) {
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    const vehiculo = await vehiculoRepository.findOneBy({ placa });
+    const vehiculo = await vehiculoRepository.findOne({where: {placa}});
 
     if (!vehiculo) {
       return [null, "Vehículo no encontrado"];

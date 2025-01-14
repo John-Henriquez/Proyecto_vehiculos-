@@ -2,7 +2,6 @@
 import Joi from "joi";
 
 const domainEmailValidator = (value, helper) => {
-  // Validar que el valor tenga al menos un dominio (por ejemplo, "@dominio.com")
   if (!value.includes("@") || !value.split("@")[1]) {
     return helper.message("El correo electrónico debe tener un dominio válido.");
   }
