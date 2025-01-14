@@ -18,9 +18,9 @@ router
   
 router
   .get("/", getAllSolicitantes)
-  .get("/:id", getSolicitante)
+  .get("/:rut", getSolicitante)
   .post("/add", createSolicitante)
-  .patch("/edit/:id", updateSolicitante)
-  .delete("/delete/:id", deleteSolicitante);
+  .patch("/edit/:rut", updateSolicitante)
+  .delete("/delete/:rut", deleteSolicitante);
 
 export default router;

@@ -18,9 +18,9 @@ router
   
 router
   .get("/", getAllSolicitudes)
-  .get("/:id", getSolicitud)
+  .get("/:id_solicitud", getSolicitud)
   .post("/add", createSolicitud)
-  .patch("/edit/:id", updateSolicitud)
-  .delete("/delete/:id", deleteSolicitud);
+  .patch("/edit/:id_solicitud", updateSolicitud)
+  .delete("/delete/:id_solicitud", deleteSolicitud);
 
 export default router;

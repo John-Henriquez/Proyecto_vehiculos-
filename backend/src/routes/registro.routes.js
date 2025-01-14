@@ -18,9 +18,9 @@ router
 
 router
   .get("/", getAllRegistros)
-  .get("/:id", getRegistroById)
+  .get("/:id_registro", getRegistroById)
   .post("/add", createRegistro)
-  .patch("/edit/:id", updateRegistro)
-  .delete("/delete/:id", deleteRegistro);
+  .patch("/edit/:id_registro", updateRegistro)
+  .delete("/delete/:id_registro", deleteRegistro);
 
 export default router;

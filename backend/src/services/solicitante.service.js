@@ -3,7 +3,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import  Solicitante  from "../entity/solicitante.entity.js";
 
-// Servicio para crear un solicitante
 export async function createSolicitanteService(solicitanteData) {
   try {
     const solicitanteRepository = AppDataSource.getRepository(Solicitante);
@@ -18,7 +17,6 @@ export async function createSolicitanteService(solicitanteData) {
   }
 }
 
-// Servicio para obtener todos los solicitantes
 export async function getAllSolicitantesService() {
   try {
     const solicitanteRepository = AppDataSource.getRepository(Solicitante);
@@ -31,13 +29,19 @@ export async function getAllSolicitantesService() {
   }
 }
 
-// Servicio para obtener un solicitante por RUT
 export async function getSolicitanteService(rut) {
   try {
-    const solicitanteRepository = AppDataSource.getRepository(Solicitante);
-    const solicitante = await solicitanteRepository.findOneBy({ rut });
+
+    if (!rut) {
+      return [null, "RUT no proporcionado"];
+    }
+    const solicitanteRepository = AppDataSource.getRepository(Solicitante); 
+    const solicitante = await solicitanteRepository.findOne({
+      where: { rut }
+    });
 
     if (!solicitante) {
+      console.log("No se encontró solicitante con el RUT:", rut);
       return [null, "Solicitante no encontrado"];
     }
 
@@ -48,11 +52,13 @@ export async function getSolicitanteService(rut) {
   }
 }
 
-// Servicio para actualizar un solicitante
+
 export async function updateSolicitanteService(rut, solicitanteData) {
   try {
     const solicitanteRepository = AppDataSource.getRepository(Solicitante);
-    const solicitante = await solicitanteRepository.findOneBy({ rut });
+    const solicitante = await solicitanteRepository.findOne({ 
+      where: { rut },
+  });
 
     if (!solicitante) {
       return [null, "Solicitante no encontrado"];
@@ -68,11 +74,12 @@ export async function updateSolicitanteService(rut, solicitanteData) {
   }
 }
 
-// Servicio para eliminar un solicitante
 export async function deleteSolicitanteService(rut) {
   try {
     const solicitanteRepository = AppDataSource.getRepository(Solicitante);
-    const solicitante = await solicitanteRepository.findOneBy({ rut });
+    const solicitante = await solicitanteRepository.findOne({ 
+      where: { rut }
+  });
 
     if (!solicitante) {
       return [null, "Solicitante no encontrado"];
