@@ -23,10 +23,6 @@ const RegistroSchema = new EntitySchema({
       type: "date",
       nullable: false,
     },
-    motivo: {
-      type: "text",
-      nullable: false,
-    },
     estado: {
       type: "varchar",
       length: 20,

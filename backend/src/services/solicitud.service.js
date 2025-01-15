@@ -4,11 +4,8 @@ import { AppDataSource } from "../config/configDb.js";
 import  Solicitud  from "../entity/solicitud.entity.js";
 import Registro from "../entity/registro.entity.js";
 import User from "../entity/user.entity.js";
-import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 
-export async function updateSolicitudService(req, res) {
-  const { id_solicitud } = req.params;
-  const solicitudData = req.body;
+export async function updateSolicitudService(id_solicitud, solicitudData) {
 
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
@@ -18,15 +15,19 @@ export async function updateSolicitudService(req, res) {
       where: { id_solicitud }
     });
 
+    if (!solicitud) {
+      throw new Error("Solicitud no encontrada");
+    }
+
     if (!solicitudData.rut_solicitante || !solicitudData.placa_patente || !solicitudData.estado || !solicitudData.prioridad) {
-      return handleErrorClient(res, 400, "Campos necesarios faltan para procesar la solicitud");
+      throw new Error("Campos necesarios faltan para procesar la solicitud");
     }
     
     
     solicitudRepository.merge(solicitud, solicitudData);
     await solicitudRepository.save(solicitud);
 
-    if (solicitudData.estado === "aceptado" || solicitudData.estado === "rechazado") {
+    if (["aprobada", "rechazada"].includes(solicitudData.estado)) {
       const registroData = {
         id_solicitud: solicitud.id_solicitud,
         placa_vehiculo: solicitud.placa_patente,
@@ -42,10 +43,9 @@ export async function updateSolicitudService(req, res) {
       await registroRepository.save(registro);
     }
 
-    return [solicitud, null];
+    return solicitud
   } catch (error) {
-    console.error("Error al actualizar la solicitud:", error);
-    return handleErrorServer(res,500, "Error interno del servidor");
+    throw new Error(error.message || "Error al actualizar la solicitud");
   }
 }
 
@@ -67,27 +67,24 @@ export async function createSolicitudService(solicitudData) {
 
     await solicitudRepository.save(solicitud);
 
-    return [solicitud, null]; 
+    return solicitud; 
   } catch (error) {
-    console.error("Error al crear la solicitud:", error);
-    return [null, error.message]; 
+    throw new Error(error.message || "Error al crear la solicitud");
   }
 }
 
-export async function getAllSolicitudesService(req, res) {
+export async function getAllSolicitudesService() {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitudes = await solicitudRepository.find();
 
-    return handleSuccess(res, 200, "Solicitudes obtenidas correctamente");
+    return solicitudes;
   } catch (error) {
-    console.error("Error al obtener las solicitudes:", error);
-    return handleErrorServer(res, 500, "Error interno del servidor");
+    throw new Error(error.message || "Error al obtener las solicitudes");
   }
 }
 
-export async function getSolicitudService(req, res) {
-  const { id_solicitud } = req.params;
+export async function getSolicitudService(id_solicitud) {
 
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
@@ -96,34 +93,30 @@ export async function getSolicitudService(req, res) {
     });
 
     if (!solicitud) {
-      return handleErrorClient(res, 404, "Solicitud no encontrada");
+      throw new Error("Solicitud no encontrada");
     }
-
-    return handleSuccess(res, 200, "Solicitud obtenida correctamente", solicitud);
+    return solicitud
   } catch (error) {
-    console.error("Error al obtener la solicitud:", error);
-    return handleErrorServer(res, 500, "Error interno del servidor");
+    throw new Error(error.message || "Error al obtener la solicitud");
   }
 }
 
-export async function deleteSolicitudService(req, res) {
-  const { id_solicitud } = req.params;
-
+export async function deleteSolicitudService(id_solicitud) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
+
     const solicitud = await solicitudRepository.findOne({
       where: { id_solicitud }
     });
 
     if (!solicitud) {
-      return handleErrorClient(res, 404, "Solicitud no encontrada");
+      throw new Error("Solicitud no encontrada");
     }
 
     await solicitudRepository.remove(solicitud);
 
-    return handleSuccess(res, 200, "solicitud eliminada correctamente");
+    return "Solicitud eliminada";
   } catch (error) {
-    console.error("Error al eliminar la solicitud:", error);
-    return handleErrorServer(res, 500, "Error interno del servidor");
+    throw new Error(error.message || "Error al eliminar la solicitud");
   }
 }
