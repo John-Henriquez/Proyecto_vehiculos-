@@ -52,6 +52,11 @@ const SolicitudSchema = new EntitySchema({
       type: "text",
       nullable: true,
     },
+    rut_conductor: {
+      type: "varchar",
+      length: 20,
+      nullable: true,
+    },
     prioridad: {
       type: "varchar",
       length: 10,
@@ -69,6 +74,12 @@ const SolicitudSchema = new EntitySchema({
       target: "Vehiculo",
       type: "many-to-one",
       joinColumn: { name: "placa_patente", referencedColumnName: "placa" },
+      onDelete: "CASCADE",
+    },
+    conductor: {
+      target: "Conductor",
+      type: "many-to-one",
+      joinColumn: { name: "rut_conductor", referencedColumnName: "rut_conductor" },
       onDelete: "CASCADE",
     },
   },
