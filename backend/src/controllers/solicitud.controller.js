@@ -11,6 +11,7 @@ import {
 export async function getSolicitud(req, res) {
   try {
     const { id_solicitud } = req.params;
+    console.log("id_solicitud", id_solicitud);
     const [solicitud, error] = await getSolicitudService(id_solicitud);
     if (error) {
       return res.status(404).json({ error: "Solicitud no encontrada" });
@@ -63,7 +64,7 @@ export async function updateSolicitud(req, res) {
 
     const [solicitud, error] = await updateSolicitudService(id_solicitud, req.body);
     if (error) {
-      return res.status(404).json({ error: "Solicitud no encontrada" });
+      return res.status(404).json({ error: `Solicitud no encontrada: ${error}`});
     }
 
     return res.json(solicitud);

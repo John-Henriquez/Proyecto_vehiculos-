@@ -40,9 +40,9 @@ export async function getAllVehiculos(req, res) {
 
 export async function createVehiculo(req, res) {
   try {
-    const { placa, tipo_vehiculo, marca, modelo, anio_fabricacion } = req.body;
+    const { placa, id_tipo_vehiculo, capacidad_maxima, estado } = req.body;
 
-    if (!placa || !tipo_vehiculo || !marca || !modelo || !anio_fabricacion) {
+    if (!placa || !id_tipo_vehiculo || !capacidad_maxima || !estado) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
@@ -62,9 +62,9 @@ export async function createVehiculo(req, res) {
 export async function updateVehiculo(req, res) {
   try {
     const { placa } = req.params;
-    const { tipo_vehiculo, marca, modelo, anio_fabricacion } = req.body;
+    const { id_tipo_vehiculo, capacidad_maxima, estado } = req.body;
 
-    if (!tipo_vehiculo && !marca && !modelo && !anio_fabricacion) {
+    if (!id_tipo_vehiculo && !capacidad_maxima && !estado) {
       return res.status(400).json({ error: "No hay campos para actualizar" });
     }
 

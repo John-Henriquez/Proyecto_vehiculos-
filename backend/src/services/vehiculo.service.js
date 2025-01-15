@@ -7,11 +7,8 @@ import TipoVehiculo from "../entity/tipo_vehiculo.entity.js";
 export async function createVehiculoService(vehiculoData) {
   try {
 
-    if(!vehiculoData.placa || !vehiculoData.tipo_vehiculo || !vehiculoData.marca || !vehiculoData.modelo || !vehiculoData.anio_fabricacion || !vehiculoData.color){
+    if(!vehiculoData.placa || !vehiculoData.id_tipo_vehiculo || !vehiculoData.capacidad_maxima || !vehiculoData.estado){
       return [null, "Faltan datos"];
-    }
-    if (typeof vehiculoData.kilometraje !== 'number' || vehiculoData.kilometraje < 0) {
-      return [null, "El kilometraje debe ser un número no negativo"];
     }
     const placaRegex = /^[A-Z0-9-]+$/;
     if (!placaRegex.test(vehiculoData.placa)) {

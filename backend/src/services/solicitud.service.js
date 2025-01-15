@@ -7,26 +7,29 @@ import Registro from "../entity/registro.entity.js";
 export async function updateSolicitudService(id_solicitud, solicitudData) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const registroRepository = AppDataSource.getRepository(Registro); 
+    const registroRepository = AppDataSource.getRepository(Registro);
 
-    const solicitud = await solicitudRepository.findOne(
-      { where: { id_solicitud }
+    const solicitud = await solicitudRepository.findOne({
+      where: { id_solicitud }
     });
 
-    if (!solicitud) {
+    if (!solicitud) { 
       return [null, "Solicitud no encontrada"];
     }
 
-    const estadoAnterior = solicitud.estado;
+    if (!solicitud.rut_solicitante) {
+      return [null, "El campo rut_usuario es obligatorio para actualizar el registro"];
+    }
+
     const estadoNuevo = solicitudData.estado;
 
     solicitudRepository.merge(solicitud, solicitudData);
     await solicitudRepository.save(solicitud);
 
-    if (estadoAnterior !== estadoNuevo) {
+    if (estadoNuevo === "aceptado" || estadoNuevo === "rechazado") {
       const registroData = {
         id_solicitud: solicitud.id_solicitud,
-        rut_solicitante: solicitud.rut_usuario,
+        rut_solicitante: solicitud.rut_solicitante,
         placa_vehiculo: solicitud.placa_vehiculo,
         fecha_solicitud: solicitud.fecha_solicitud,
         motivo: solicitud.motivo,
@@ -35,6 +38,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
         prioridad: solicitud.prioridad,
         fecha_cambio_estado: new Date(),
       };
+
 
       const registro = registroRepository.create(registroData);
       await registroRepository.save(registro);
@@ -90,8 +94,6 @@ export async function getSolicitudService(id_solicitud) {
   }
 }
 
-
-// Servicio para eliminar una solicitud
 export async function deleteSolicitudService(id_solicitud) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);

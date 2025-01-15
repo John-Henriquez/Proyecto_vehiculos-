@@ -10,34 +10,37 @@ const RegistroSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
+    id_solicitud: {
+      type: "int",
+      primary: true,
+      generated: true,
+    },
     placa_vehiculo: {
       type: "varchar",
       length: 20,
       nullable: false,
     },
-    id_solicitud: {
-      type: "int",
-      nullable: false,
-    },
-    fecha_inicio: {
+    fecha_solicitud: {
       type: "date",
       nullable: false,
     },
-    fecha_fin: {
-      type: "date",
+    motivo: {
+      type: "text",
       nullable: false,
     },
-    kilometraje_inicio: {
-      type: "int",
+    estado: {
+      type: "varchar",
+      length: 20,
       nullable: false,
     },
-    kilometraje_fin: {
-      type: "int",
-      nullable: false,
-    },
-    comentarios: {
+    observaciones: {
       type: "text",
       nullable: true,
+    },
+    prioridad: {
+      type: "varchar",
+      length: 10,
+      nullable: false,
     },
   },
   relations: {
