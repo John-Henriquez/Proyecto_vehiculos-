@@ -45,7 +45,7 @@ const SolicitudSchema = new EntitySchema({
   },
   relations: {
     solicitante: {
-      target: "Solicitante",
+      target: "User",
       type: "many-to-one",
       joinColumn: { name: "rut_solicitante", referencedColumnName: "rut" },
       onDelete: "CASCADE",

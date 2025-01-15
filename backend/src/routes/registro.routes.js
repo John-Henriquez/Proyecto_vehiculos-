@@ -3,10 +3,10 @@ import { Router } from "express";
 import { isAdminOrTechnician } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
-  getAllRegistros,
-  getRegistroById,
   createRegistro,
   deleteRegistro,
+  getAllRegistros,
+  getRegistroById,
   updateRegistro,
 } from "../controllers/registro.controller.js";
 
