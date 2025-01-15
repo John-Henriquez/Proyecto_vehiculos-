@@ -2,6 +2,7 @@
 
 import { AppDataSource } from "../config/configDb.js";
 import  Vehiculo  from "../entity/vehiculo.entity.js";
+import TipoVehiculo from "../entity/tipo_vehiculo.entity.js";
 
 export async function createVehiculoService(vehiculoData) {
   try {
@@ -19,6 +20,7 @@ export async function createVehiculoService(vehiculoData) {
 
 
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
+    
     const vehiculo = vehiculoRepository.create(vehiculoData);
     await vehiculoRepository.save(vehiculo);
 
@@ -28,6 +30,7 @@ export async function createVehiculoService(vehiculoData) {
     return [null, "Error interno del servidor"];
   }
 }
+
 
 export async function getAllVehiculosService() {
   try {
@@ -96,3 +99,16 @@ export async function deleteVehiculoService(placa) {
     return [null, "Error interno del servidor"];
   }
 }
+
+
+export async function getAllTiposVehiculoService() {
+  try {
+    const tipoRepository = AppDataSource.getRepository(TipoVehiculo);
+    const tipos = await tipoRepository.find();
+    return [tipos, null];
+  } catch (error) {
+    console.error("Error al obtener los tipos de vehículo:", error);
+    return [null, "Error interno del servidor"];
+  }
+}
+

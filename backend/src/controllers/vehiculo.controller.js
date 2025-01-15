@@ -2,10 +2,11 @@
 
 import {
   createVehiculoService,
+  deleteVehiculoService,
+  getAllTiposVehiculoService,
   getAllVehiculosService,
   getVehiculoService,
   updateVehiculoService,
-  deleteVehiculoService,
 } from "../services/vehiculo.service.js";
 
 export async function getVehiculo(req, res) {
@@ -91,6 +92,19 @@ export async function deleteVehiculo(req, res) {
     return res.json({ message: "Vehículo eliminado exitosamente", vehiculo });
   } catch (error) {
     console.error("Error al eliminar el vehículo:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+export async function getAllTiposVehiculo(req, res) {
+  try {
+    const [tipos, error] = await getAllTiposVehiculoService();
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    return res.json(tipos);
+  } catch (error) {
+    console.error("Error al obtener los tipos de vehículos:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }

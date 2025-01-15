@@ -1,4 +1,3 @@
-"use strict";
 import { EntitySchema } from "typeorm";
 
 const VehiculoSchema = new EntitySchema({
@@ -10,46 +9,30 @@ const VehiculoSchema = new EntitySchema({
       primary: true,
       length: 20,
     },
-    tipo_vehiculo: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
-    },
-    marca: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
-    },
-    modelo: {
-      type: "varchar",
-      length: 50,
-      nullable: false,
-    },
-    anio_fabricacion: {
+    capacidad_maxima: {
       type: "int",
       nullable: false,
     },
-    equipamiento: {
-      type: "text",
-      nullable: true,
-    },
-    color: {
+    estado: {
       type: "varchar",
-      length: 30,
+      length: 50,
       nullable: false,
     },
-    kilometraje: {
+    id_tipo_vehiculo: {
       type: "int",
       nullable: false,
     },
   },
-  indices: [
-    {
-      name: "IDX_VEHICULO_PLACA",
-      columns: ["placa"],
-      unique: true,
+  relations: {
+    tipoVehiculo: {
+      target: "TipoVehiculo",
+      type: "many-to-one",
+      joinColumn: {
+        name: "id_tipo_vehiculo", 
+        referencedColumnName: "id_tipo_vehiculo", 
+      },
     },
-  ],
+  },
 });
 
 export default VehiculoSchema;
