@@ -38,8 +38,9 @@ export async function getAllSolicitudes(req, res) {
 
 export async function createSolicitud(req, res) {
   try {
-    const { rut_solicitante, placa_vehiculo, fecha_solicitud } = req.body;
-    if (!rut_solicitante || !placa_vehiculo || !fecha_solicitud) {
+    const { rut_solicitante, placa_patente, fecha_solicitud, estado, prioridad } = req.body;
+
+    if (!req.body || !rut_solicitante || !placa_patente || !fecha_solicitud || !estado || !prioridad) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 

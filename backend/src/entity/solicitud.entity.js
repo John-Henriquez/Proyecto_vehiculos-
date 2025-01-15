@@ -15,17 +15,32 @@ const SolicitudSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
-    placa_vehiculo: {
-      type: "varchar",
-      length: 20,
-      nullable: false,
-    },
-    fecha_solicitud: {
+    fecha_salida: {
       type: "date",
       nullable: false,
     },
-    motivo: {
-      type: "text",
+    nombre_agrupacion: {
+      type: "varchar",
+      length: 100,
+      nullable: true,
+    },
+    num_telefono: {
+      type: "varchar",
+      length: 20,
+      nullable: true,
+    },
+    fecha_solicitud: {
+      type: "date",
+      nullable: true,
+    },
+    destino: {
+      type: "varchar",
+      length: 225,
+      nullable: false,
+    },
+    placa_patente: {
+      type: "varchar",
+      length: 20,
       nullable: false,
     },
     estado: {
@@ -53,7 +68,7 @@ const SolicitudSchema = new EntitySchema({
     vehiculo: {
       target: "Vehiculo",
       type: "many-to-one",
-      joinColumn: { name: "placa_vehiculo", referencedColumnName: "placa" },
+      joinColumn: { name: "placa_patente", referencedColumnName: "placa" },
       onDelete: "CASCADE",
     },
   },

@@ -12,7 +12,6 @@ const RegistroSchema = new EntitySchema({
     },
     id_solicitud: {
       type: "int",
-      primary: true,
       generated: true,
     },
     placa_vehiculo: {
@@ -42,7 +41,12 @@ const RegistroSchema = new EntitySchema({
       length: 10,
       nullable: false,
     },
+    fecha_cambio_estado: {
+      type: "date",
+      nullable: false,
+      default: () => "CURRENT_TIMESTAMP",
   },
+},
   relations: {
     vehiculo: {
       target: "Vehiculo",

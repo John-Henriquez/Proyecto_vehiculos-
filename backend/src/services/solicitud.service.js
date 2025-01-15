@@ -3,8 +3,13 @@
 import { AppDataSource } from "../config/configDb.js";
 import  Solicitud  from "../entity/solicitud.entity.js";
 import Registro from "../entity/registro.entity.js";
+import User from "../entity/user.entity.js";
+import { handleSuccess, handleErrorClient, handleErrorServer } from "../handlers/responseHandlers.js";
 
-export async function updateSolicitudService(id_solicitud, solicitudData) {
+export async function updateSolicitudService(req, res) {
+  const { id_solicitud } = req.params;
+  const solicitudData = req.body;
+
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
@@ -13,27 +18,20 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       where: { id_solicitud }
     });
 
-    if (!solicitud) { 
-      return [null, "Solicitud no encontrada"];
+    if (!solicitudData.rut_solicitante || !solicitudData.placa_patente || !solicitudData.estado || !solicitudData.prioridad) {
+      return handleErrorClient(res, 400, "Campos necesarios faltan para procesar la solicitud");
     }
-
-    if (!solicitud.rut_solicitante) {
-      return [null, "El campo rut_usuario es obligatorio para actualizar el registro"];
-    }
-
-    const estadoNuevo = solicitudData.estado;
-
+    
+    
     solicitudRepository.merge(solicitud, solicitudData);
     await solicitudRepository.save(solicitud);
 
-    if (estadoNuevo === "aceptado" || estadoNuevo === "rechazado") {
+    if (solicitudData.estado === "aceptado" || solicitudData.estado === "rechazado") {
       const registroData = {
         id_solicitud: solicitud.id_solicitud,
-        rut_solicitante: solicitud.rut_solicitante,
-        placa_vehiculo: solicitud.placa_vehiculo,
+        placa_vehiculo: solicitud.placa_patente,
         fecha_solicitud: solicitud.fecha_solicitud,
-        motivo: solicitud.motivo,
-        estado: estadoNuevo,
+        estado: solicitudData.estado,
         observaciones: solicitudData.observaciones || solicitud.observaciones,
         prioridad: solicitud.prioridad,
         fecha_cambio_estado: new Date(),
@@ -47,36 +45,50 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
     return [solicitud, null];
   } catch (error) {
     console.error("Error al actualizar la solicitud:", error);
-    return [null, "Error interno del servidor"];
+    return handleErrorServer(res,500, "Error interno del servidor");
   }
 }
+
 export async function createSolicitudService(solicitudData) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    
-    const solicitud = solicitudRepository.create(solicitudData);
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({ where: { rut: solicitudData.rut_solicitante } });
+
+    if (!user) {
+      throw new Error("El usuario con el rut proporcionado no existe");
+    }
+
+    const solicitud = solicitudRepository.create({
+      ...solicitudData,
+      rut_solicitante: user.rut,
+    });
+
     await solicitudRepository.save(solicitud);
 
-    return [solicitud, null];
+    return [solicitud, null]; 
   } catch (error) {
     console.error("Error al crear la solicitud:", error);
-    return [null, "Error interno del servidor"];
+    return [null, error.message]; 
   }
 }
 
-export async function getAllSolicitudesService() {
+export async function getAllSolicitudesService(req, res) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitudes = await solicitudRepository.find();
 
-    return [solicitudes, null];
+    return handleSuccess(res, 200, "Solicitudes obtenidas correctamente");
   } catch (error) {
     console.error("Error al obtener las solicitudes:", error);
-    return [null, "Error interno del servidor"];
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
 
-export async function getSolicitudService(id_solicitud) {
+export async function getSolicitudService(req, res) {
+  const { id_solicitud } = req.params;
+
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitud = await solicitudRepository.findOne({ 
@@ -84,17 +96,19 @@ export async function getSolicitudService(id_solicitud) {
     });
 
     if (!solicitud) {
-      return [null, "Solicitud no encontrada"];
+      return handleErrorClient(res, 404, "Solicitud no encontrada");
     }
 
-    return [solicitud, null];
+    return handleSuccess(res, 200, "Solicitud obtenida correctamente", solicitud);
   } catch (error) {
     console.error("Error al obtener la solicitud:", error);
-    return [null, "Error interno del servidor"];
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
 
-export async function deleteSolicitudService(id_solicitud) {
+export async function deleteSolicitudService(req, res) {
+  const { id_solicitud } = req.params;
+
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitud = await solicitudRepository.findOne({
@@ -102,14 +116,14 @@ export async function deleteSolicitudService(id_solicitud) {
     });
 
     if (!solicitud) {
-      return [null, "Solicitud no encontrada"];
+      return handleErrorClient(res, 404, "Solicitud no encontrada");
     }
 
     await solicitudRepository.remove(solicitud);
 
-    return [solicitud, null];
+    return handleSuccess(res, 200, "solicitud eliminada correctamente");
   } catch (error) {
     console.error("Error al eliminar la solicitud:", error);
-    return [null, "Error interno del servidor"];
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
