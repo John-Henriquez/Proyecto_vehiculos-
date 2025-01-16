@@ -2,13 +2,9 @@ const Home = () => {
   return (
     <><>
       <div className="home-container">
-        <h1>Sistema de Gestión Interna</h1>
-        <p>Bienvenido al sistema de gestión interna de nuestro taller de bicicletas.</p>
+        <h1>Gestion de vehiculos</h1>
+        <p>Bienvenido al sistema de gestión de vehiculos.</p>
         <p>Utiliza la barra de navegación superior para acceder a las diferentes secciones.</p>
-      </div>
-
-      <div className="image-container">
-        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/bicicleta-7845702-6275623.png" alt="Imagen de bicicleta de carretera" />
       </div>
     </>
     
