@@ -22,11 +22,11 @@ async function createUsers() {
       ),
         userRepository.save(
           userRepository.create({
-            nombreCompleto: "Tecnico Atecnico Btecnico Ctecnico",
+            nombreCompleto: "Usuario Ausuario Busuario Cusuario",
             rut: "22.222.222-2",
-            email: "user@tecnico.com",
-            password: await encryptPassword("tecnico123"),
-            rol: "tecnico",
+            email: "user@usuario.com",
+            password: await encryptPassword("usuario123"),
+            rol: "usuario",
           }),
       ),
     ]);

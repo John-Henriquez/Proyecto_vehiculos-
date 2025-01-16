@@ -81,7 +81,7 @@ export async function getAllSolicitudesService(user) {
 
     if (user.rol === "administrador") {
       solicitudes = await solicitudRepository.find();
-    } else if (user.rol === "tecnico") {
+    } else if (user.rol === "usuario") {
       solicitudes = await solicitudRepository.find({ where: { rut_solicitante: user.rut } });
     } else {
       throw new Error("No tienes permiso para acceder a este recurso");
@@ -101,7 +101,7 @@ export async function getSolicitudService(id_solicitud, user) {
     let solicitud;
     if (user.rol === "administrador") {
       solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
-    } else if (user.rol === "tecnico") {
+    } else if (user.rol === "usuario") {
       solicitud = await solicitudRepository.findOne({ where: { id_solicitud, rut_solicitante: user.rut } });
     } else {
       throw new Error("No tienes permiso para acceder a este recurso");
