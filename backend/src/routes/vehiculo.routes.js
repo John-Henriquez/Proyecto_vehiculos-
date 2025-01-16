@@ -15,7 +15,6 @@ const router = Router();
 router
   .use(authenticateJwt)
   .use(isAdmin);  
-
 router
   .get("/", getAllVehiculos)
   .get("/:placa", getVehiculo)
