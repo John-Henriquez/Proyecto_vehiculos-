@@ -72,6 +72,19 @@ const Navbar = () => {
                                     Usuarios
                                 </NavLink>
                             </li>
+
+                            <li>
+                                <NavLink
+                                    to="/applications"
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        addActiveClass();
+                                    }}
+                                    activeClassName="active"
+                                >
+                                    Solicitudes
+                                </NavLink>
+                            </li>
                         </>
                     )}
                     <li>
