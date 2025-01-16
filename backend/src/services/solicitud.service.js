@@ -73,10 +73,19 @@ export async function createSolicitudService(solicitudData) {
   }
 }
 
-export async function getAllSolicitudesService() {
+export async function getAllSolicitudesService(user) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const solicitudes = await solicitudRepository.find();
+
+    let solicitudes;
+
+    if (user.rol === "administrador") {
+      solicitudes = await solicitudRepository.find();
+    } else if (user.rol === "tecnico") {
+      solicitudes = await solicitudRepository.find({ where: { rut_solicitante: user.rut } });
+    } else {
+      throw new Error("No tienes permiso para acceder a este recurso");
+    }
 
     return solicitudes;
   } catch (error) {
@@ -84,24 +93,27 @@ export async function getAllSolicitudesService() {
   }
 }
 
-export async function getSolicitudService(id_solicitud) {
+export async function getSolicitudService(id_solicitud, user) {
 
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const solicitud = await solicitudRepository.findOne({ 
-      where: { id_solicitud } 
-    });
 
-    if (!solicitud) {
-      throw new Error("Solicitud no encontrada");
+    let solicitud;
+    if (user.rol === "administrador") {
+      solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
+    } else if (user.rol === "tecnico") {
+      solicitud = await solicitudRepository.findOne({ where: { id_solicitud, rut_solicitante: user.rut } });
+    } else {
+      throw new Error("No tienes permiso para acceder a este recurso");
     }
+    
     return solicitud
   } catch (error) {
     throw new Error(error.message || "Error al obtener la solicitud");
   }
 }
 
-export async function deleteSolicitudService(id_solicitud) {
+export async function deleteSolicitudService(id_solicitud, user) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
 
@@ -113,8 +125,16 @@ export async function deleteSolicitudService(id_solicitud) {
       throw new Error("Solicitud no encontrada");
     }
 
-    await solicitudRepository.remove(solicitud);
+    if(user.rol === "administrador") {
+      await solicitudRepository.remove(solicitud);
+      return "Solicitud eliminada";
+    }
 
+    if (solicitud.rut_solicitante !== user.rut) {
+      throw new Error("No tienes permiso para eliminar esta solicitud");
+    }
+
+    await solicitudRepository.remove(solicitud);
     return "Solicitud eliminada";
   } catch (error) {
     throw new Error(error.message || "Error al eliminar la solicitud");

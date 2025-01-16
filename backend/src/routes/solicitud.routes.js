@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { isAdmin } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
+import { verifyUserPermission } from "../middlewares/permission.middleware.js";
 import {
   createSolicitud,
   deleteSolicitud,
@@ -12,15 +13,15 @@ import {
 
 const router = Router();
 
-router
-  .use(authenticateJwt)
-  .use(isAdmin);
-  
-router
-  .get("/", getAllSolicitudes)
-  .get("/:id_solicitud", getSolicitud)
-  .post("/add", createSolicitud)
-  .put("/edit/:id_solicitud", updateSolicitud)
-  .delete("/delete/:id_solicitud", deleteSolicitud);
+router.post("/add", authenticateJwt, createSolicitud);
+
+
+router.get("/", authenticateJwt, getAllSolicitudes);
+
+router.get("/:id_solicitud", authenticateJwt, verifyUserPermission, getSolicitud);
+
+router.delete("/delete/:id_solicitud", authenticateJwt, verifyUserPermission, deleteSolicitud);
+
+router.put("/edit/:id_solicitud", authenticateJwt, isAdmin, updateSolicitud);
 
 export default router;

@@ -46,6 +46,7 @@ const SolicitudSchema = new EntitySchema({
     estado: {
       type: "varchar",
       length: 20,
+      default: "pendiente",
       nullable: false,
     },
     observaciones: {
@@ -60,7 +61,7 @@ const SolicitudSchema = new EntitySchema({
     prioridad: {
       type: "varchar",
       length: 10,
-      nullable: false,
+      nullable: false, 
     },
   },
   relations: {
