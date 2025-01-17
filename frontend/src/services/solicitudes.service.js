@@ -1,10 +1,11 @@
 import axios from './root.service.js';
+import { formatSolicitudData } from '@helpers/formatSolicitudData.js';
 
 
 export async function getAllSolicitudes() {
     try {
-        const { data } = await axios.get('/solicitudes/');
-        const formattedData = data.data.map(formatSolicitudData); // Formato opcional
+        const { data } = await axios.get('/application/');
+        const formattedData = data.data.map(formatSolicitudData); 
         return formattedData;
     } catch (error) {
         return error.response?.data || { message: "Error al obtener las solicitudes" };
@@ -12,51 +13,42 @@ export async function getAllSolicitudes() {
 }
 
 
-export async function getSolicitud(idSolicitud) {
+export async function getSolicitud(id_solicitud) {
     try {
-        const { data } = await axios.get(`/solicitudes/${idSolicitud}`);
-        return formatSolicitudData(data.data); // Formato opcional
+        const { data } = await axios.get(`/application/${id_solicitud}`);
+        return formatSolicitudData(data.data); 
     } catch (error) {
-        return error.response?.data || { message: `Error al obtener la solicitud ${idSolicitud}` };
+        return error.response?.data || { message: `Error al obtener la solicitud ${id_solicitud}` };
     }
 }
 
 
 export async function createSolicitud(solicitudData) {
     try {
-        const { data } = await axios.post('/solicitudes/add', solicitudData);
-        return formatSolicitudData(data.data); // Formato opcional
+        const { data } = await axios.post('/application/add', solicitudData);
+        return formatSolicitudData(data.data); 
     } catch (error) {
         return error.response?.data || { message: "Error al crear la solicitud" };
     }
 }
 
 
-export async function updateSolicitud(idSolicitud, solicitudData) {
+export async function updateSolicitud(id_solicitud, solicitudData) {
     try {
-        const { data } = await axios.put(`/solicitudes/edit/${idSolicitud}`, solicitudData);
-        return formatSolicitudData(data.data); // Formato opcional
+        const { data } = await axios.put(`/application/edit/${id_solicitud}`, solicitudData);
+        return formatSolicitudData(data.data); 
     } catch (error) {
         return error.response?.data || { message: `Error al actualizar la solicitud ${idSolicitud}` };
     }
 }
 
 
-export async function deleteSolicitud(idSolicitud) {
+export async function deleteSolicitud(id_solicitud) {
     try {
-        const { data } = await axios.delete(`/solicitudes/delete/${idSolicitud}`);
+        const { data } = await axios.delete(`/application/delete/${id_solicitud}`);
         return data;
     } catch (error) {
-        return error.response?.data || { message: `Error al eliminar la solicitud ${idSolicitud}` };
+        return error.response?.data || { message: `Error al eliminar la solicitud ${id_solicitud}` };
     }
 }
-
-
-function formatSolicitudData(solicitud) {
-    return {
-        id: solicitud.id_solicitud,
-        nombre: solicitud.nombre || "No especificado",
-        estado: solicitud.estado || "Pendiente",
-        fecha: solicitud.createdAt,
-    };
-}
+ 
