@@ -5,6 +5,7 @@ import authRoutes from "./auth.routes.js";
 import recordRoutes from "./registro.routes.js";
 import applicationRoutes from "./solicitud.routes.js";
 import vehicleRoutes from "./vehiculo.routes.js";
+import driversRoutes from "./conductor.routes.js";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router
     .use("/record", recordRoutes)
     .use("/application", applicationRoutes)
     .use("/vehicle", vehicleRoutes)
+    .use("/driver", driversRoutes);
 
 export default router;

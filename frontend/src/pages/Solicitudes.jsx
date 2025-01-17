@@ -1,5 +1,6 @@
 import Table from '../components/table.jsx';
 import useGetSolicitudes from '../hooks/applications/useGetSolicitudes.jsx';
+import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import Search from '../components/Search.jsx';
 import Popup from '../components/Popup.jsx';
 import DeleteIcon from '../assets/deleteIcon.svg';
@@ -13,6 +14,7 @@ import useDeleteSolicitud from '../hooks/applications/useDeleteSolicitud.jsx';
 
 const Solicitudes = () => {
     const { solicitudes, fetchSolicitudes, setSolicitudes } = useGetSolicitudes();
+    const { conductores } = useGetConductores();
     const [filterId, setFilterId] = useState('');
 
     const {
@@ -34,14 +36,26 @@ const Solicitudes = () => {
         setDataSolicitud(selectedSolicitudes);
     }, [setDataSolicitud]);
 
-    const colums = [
-        { title: "ID Solicitud", field: "id_solicitud", width: 150, responsive: 0 },
-        { title: "RUT Solicitante", field: "rut_solicitante", width: 200, responsive: 3 },
+    const solicitudesConNombreConductor = solicitudes.map(solicitud => {
+        const rutSolicitud = solicitud.rut_conductor.replace(/[^\d-]+/g, "");  
+        const conductor = conductores.find(conductor => conductor.rut_conductor === rutSolicitud);
+
+        return {
+            ...solicitud,
+            nombre_conductor: conductor && conductor.nombre ? conductor.nombre : 'Desconocido', 
+        };
+    });
+    
+    const columns = [
+        { title: "Nombre Agrupación", field: "nombre_agrupacion", width: 200, responsive: 3 },
+        { title: "Número Teléfono", field: "num_telefono", width: 200, responsive: 3 },
         { title: "Fecha Solicitud", field: "fecha_solicitud", width: 200, responsive: 2 },
-        { title: "Estado", field: "estado", width: 150, responsive: 2 },
+        { title: "Fecha Salida", field: "fecha_salida", width: 200, responsive: 2 },
         { title: "Destino", field: "destino", width: 300, responsive: 2 },
-        { title: "Prioridad", field: "prioridad", width: 150, responsive: 2 }
+        { title: "Vehículo", field: "placa_patente", width: 150, responsive: 2 },
+        { title: "Nombre Conductor", field: "nombre_conductor", width: 200, responsive: 2 }
     ];
+    
 
     return (
         <div className='main-container'>
@@ -67,8 +81,8 @@ const Solicitudes = () => {
                     </div>
                 </div>
                 <Table
-                    data={solicitudes}
-                    columns={colums}
+                    data={solicitudesConNombreConductor}
+                    columns={columns}
                     filterId={filterId}
                     dataToFilter={'id_solicitud'}
                     initialSortName={'id_solicitud'}

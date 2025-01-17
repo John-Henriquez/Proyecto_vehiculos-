@@ -51,4 +51,5 @@ export async function deleteSolicitud(id_solicitud) {
         return error.response?.data || { message: `Error al eliminar la solicitud ${id_solicitud}` };
     }
 }
+
  
