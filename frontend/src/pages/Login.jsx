@@ -42,7 +42,7 @@ const Login = () => {
                         maxLength: 30,
                         errorMessageData: errorEmail,
                         validate: {
-                            emailDomain: (value) => value.includes('@'), // Validar presencia de @
+                            emailDomain: (value) => value.includes('@'),
                         },
                         onChange: (e) => handleInputChange('email', e.target.value),
                     },

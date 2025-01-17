@@ -63,6 +63,10 @@ const SolicitudSchema = new EntitySchema({
       length: 10,
       nullable: false, 
     },
+    fecha_regreso: {
+      type: "timestamp",
+      nullable: true, 
+    },
   },
   relations: {
     solicitante: {

@@ -3,13 +3,39 @@
 import { AppDataSource } from "../config/configDb.js";
 import  Solicitud  from "../entity/solicitud.entity.js";
 import Registro from "../entity/registro.entity.js";
-import User from "../entity/user.entity.js";
+import Conductor from "../entity/conductor.entity.js";
+import { assignConductorService, isConductorAvailableService, releaseConductorService } from "./conductor.service.js";
+
+export async function createSolicitudService(solicitudData) {
+  try {
+    const solicitudRepository = AppDataSource.getRepository(Solicitud);
+
+    const conductor = await assignConductorService();
+    if (!conductor) {
+      throw new Error("No hay conductores disponibles");
+    }
+
+    const solicitud = solicitudRepository.create(solicitudData);
+    solicitud.rut_conductor = conductor.rut_conductor;
+    await solicitudRepository.save(solicitud);
+
+    const currentData = new Date();
+    if (solicitud.fecha_regreso && new Date(solicitud.fecha_regreso) < currentData) {
+      await releaseConductorService(solicitud.rut_conductor);
+    }
+
+    return solicitud; 
+  } catch (error) {
+    throw new Error(error.message || "Error al crear la solicitud");
+  }
+}
 
 export async function updateSolicitudService(id_solicitud, solicitudData) {
 
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
+    const conductorRepository = AppDataSource.getRepository(Conductor);
 
     const solicitud = await solicitudRepository.findOne({
       where: { id_solicitud }
@@ -22,7 +48,6 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
     if (!solicitudData.rut_solicitante || !solicitudData.placa_patente || !solicitudData.estado || !solicitudData.prioridad) {
       throw new Error("Campos necesarios faltan para procesar la solicitud");
     }
-    
     
     solicitudRepository.merge(solicitud, solicitudData);
     await solicitudRepository.save(solicitud);
@@ -37,39 +62,17 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
         prioridad: solicitud.prioridad,
         fecha_cambio_estado: new Date(),
       };
-
-
       const registro = registroRepository.create(registroData);
       await registroRepository.save(registro);
     }
 
+    const currentData = new Date();
+    if (solicitud.fecha_regreso && new Date(solicitud.fecha_regreso) < currentData) {
+      await releaseConductorService(solicitud.rut_conductor);
+    }
     return solicitud
   } catch (error) {
     throw new Error(error.message || "Error al actualizar la solicitud");
-  }
-}
-
-export async function createSolicitudService(solicitudData) {
-  try {
-    const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const userRepository = AppDataSource.getRepository(User);
-
-    const user = await userRepository.findOne({ where: { rut: solicitudData.rut_solicitante } });
-
-    if (!user) {
-      throw new Error("El usuario con el rut proporcionado no existe");
-    }
-
-    const solicitud = solicitudRepository.create({
-      ...solicitudData,
-      rut_solicitante: user.rut,
-    });
-
-    await solicitudRepository.save(solicitud);
-
-    return solicitud; 
-  } catch (error) {
-    throw new Error(error.message || "Error al crear la solicitud");
   }
 }
 
