@@ -66,6 +66,15 @@ const Navbar = () => {
                             </li>
                         </>
                     )}
+                        <li>
+                            <NavLink
+                                to="/add-application"
+                                className={({ isActive }) => (isActive ? 'active' : '')}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Crear solicitud
+                            </NavLink>
+                    </li>
                     <li>
                         <NavLink
                             to="/auth"

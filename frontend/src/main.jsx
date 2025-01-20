@@ -8,6 +8,7 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Solicitudes from '@pages/Solicitudes'; 
 import Registro from '@pages/Registro';
+import CrearSolicitud from '@pages/CrearSolicitud';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -42,6 +43,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Registro  /> 
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/add-application', 
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <CrearSolicitud  /> 
           </ProtectedRoute>
         ),
       },
