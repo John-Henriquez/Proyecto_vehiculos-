@@ -1,19 +1,8 @@
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-<<<<<<< HEAD
-import Popup from '../components/Popup.jsx';
-import DeleteIcon from '../assets/deleteIcon.svg';
-import DeleteIconDisable from '../assets/deleteIconDisabled.svg';
-import UpdateIcon from '../assets/updateIcon.svg';
-import UpdateIconDisable from '../assets/updateIconDisabled.svg';
-import { useCallback, useState } from 'react';
-import useEditSolicitud from '../hooks/applications/useEditSolicitud.jsx';
-import useDeleteSolicitud from '../hooks/applications/useDeleteSolicitud.jsx';
-=======
 import {  useState,useEffect } from 'react';
 import { getAllSolicitudes, acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
 import useGetConductores  from '../hooks/drivers/useGetConductores.jsx';
->>>>>>> f52907f (vista y backend funcional - parcial)
 
 const Solicitudes = () => {
     const { conductores } = useGetConductores();
@@ -22,8 +11,12 @@ const Solicitudes = () => {
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
-            const fetchSolicitudes = await getAllSolicitudes();
-            setSolicitudes(fetchSolicitudes);
+            const fetchedSolicitudes = await getAllSolicitudes();
+            if (Array.isArray(fetchedSolicitudes)) {
+                setSolicitudes(fetchedSolicitudes);
+            } else {
+                console.error('La respuesta de solicitudes no es un arreglo:', fetchedSolicitudes);
+            }
         };
         fetchSolicitudes();
     }, []);
@@ -55,9 +48,10 @@ const Solicitudes = () => {
         };
     });
 
-    const filteredSolicitudes = solicitudesConNombreConductor.filter((solicitud) =>
-        solicitud.id_solicitud.toString().includes(filterId)
-    ); 
+    const filteredSolicitudes = solicitudesConNombreConductor
+    .filter((solicitud) => solicitud.estado === 'pendiente')
+    .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId));
+
 
     return (
         <div className='main-container'>

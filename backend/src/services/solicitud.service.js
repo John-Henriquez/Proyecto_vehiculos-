@@ -52,18 +52,11 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       throw new Error("Solicitud no encontrada");
     }
 
-<<<<<<< HEAD
-    if (!solicitudData.rut_solicitante || !solicitudData.placa_patente 
-      || !solicitudData.estado || !solicitudData.prioridad) {
-      throw new Error("Campos necesarios faltan para procesar la solicitud");
-    }
-=======
     Object.keys(solicitudData).forEach((key) => {
       if(solicitudData[key] !== undefined){
         solicitud[key] = solicitudData[key];
       }
   });
->>>>>>> f52907f (vista y backend funcional - parcial)
     
     await solicitudRepository.save(solicitud);
 
