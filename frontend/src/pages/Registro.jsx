@@ -26,6 +26,14 @@ const RegistroSolicitudes = () => {
         (solicitud) => solicitud.estado === 'aprobada' || solicitud.estado === 'rechazada'
     );
 
+    const solicitudesFiltradas = solicitudesRegistradas.map(solicitud => ({
+        placa_vehiculo: solicitud.placa_patente,
+        fecha_solicitud: solicitud.fecha_solicitud,
+        estado: solicitud.estado,
+        observaciones: solicitud.observaciones,
+        prioridad: solicitud.prioridad,
+    }));
+
     const handleAcceptRegistro = async (id_registro) => {
         const response = await acceptRegistro(id_registro);
         if (response) {
@@ -47,7 +55,7 @@ const RegistroSolicitudes = () => {
                     <h1 className='title-table'>Registro de Solicitudes</h1>
                 </div>
                 <RegistrosTable
-                    data={solicitudesRegistradas}
+                    data={solicitudesFiltradas}
                     onAccept={handleAcceptRegistro}
                     onReject={handleRejectRegistro}
                 />
