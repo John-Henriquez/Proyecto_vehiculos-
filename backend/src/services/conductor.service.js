@@ -4,17 +4,19 @@ import Conductor from "../entity/conductor.entity.js";
 
 export async function getConductoresService(rut_conductor) {
   try {
+    console.log("getConductoresService - Buscando conductor con RUT:", rut_conductor);
     const conductorRepository = AppDataSource.getRepository(Conductor);
     const conductor = await conductorRepository.findOne({
       where: { rut_conductor },
     });
     
     if (!conductor) {
-      throw new Error("Conductor no encontrado");
+      throw new Error("getConductoresService - Conductor no encontrado");
     }
     
     return conductor;
   }catch (error) {
+    console.error("Error en getConductoresService:", error);
     throw new Error(error.message || "Error al obtener conductores");
   }
 }
@@ -30,13 +32,19 @@ export async function getAllConductoresService() {
 
 export async function isConductorAvailableService(rut_conductor) {
   try {
+    console.log("isConductorAvailableService - Verificando disponibilidad del conductor con RUT:", rut_conductor);
+    const conductorRepository = AppDataSource.getRepository(Conductor);
     const conductor = await getConductoresService(rut_conductor);
 
-    if (conductor.estado !== "disponible") {
-      throw new Error("Conductor no disponible");
+    if (!conductor) {
+      throw new Error("isConductorAvailableService - Conductor no encontrado");
     }
 
-    return true;
+    if (conductor.estado !== "disponible") {
+      throw new Error("isConductorAvailableService - Conductor no disponible");
+    }
+
+    return conductor;
   } catch (error) {
     throw new Error(error.message || "Error al verificar disponibilidad del conductor");
   }
@@ -44,19 +52,26 @@ export async function isConductorAvailableService(rut_conductor) {
 
 export async function assignConductorService(rut_conductor) {
   try {
-    const conductorRepository = AppDataSource.getRepository(Conductor);
-
+    console.log("Verificando disponibilidad del conductor con RUT:", rut_conductor);
     await isConductorAvailableService(rut_conductor);
 
     const conductor = await getConductoresService(rut_conductor);
-    conductor.estado = "asignado";
+    console.log("Conductor obtenido:", conductor);
 
-    await conductorRepository.save(conductor);
-    return conductor;
+    if (!conductor) {
+      throw new Error("Conductor no encontrado");
+    }
+
+    conductor.estado = "asignado";
+    await AppDataSource.getRepository(Conductor).save(conductor);
+
+    return conductor; 
   } catch (error) {
+    console.error("Error en assignConductorService:", error);
     throw new Error(error.message || "Error al asignar conductor");
   }
 }
+
 
 export async function releaseConductorService(rut_conductor) {
   try {

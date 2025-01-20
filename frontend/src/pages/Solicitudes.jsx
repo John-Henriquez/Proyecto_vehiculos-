@@ -8,7 +8,6 @@ import DeleteIconDisable from '../assets/deleteIconDisabled.svg';
 import UpdateIcon from '../assets/updateIcon.svg';
 import UpdateIconDisable from '../assets/updateIconDisabled.svg';
 import { useCallback, useState } from 'react';
-//import '@styles/solicitudes.css';
 import useEditSolicitud from '../hooks/applications/useEditSolicitud.jsx';
 import useDeleteSolicitud from '../hooks/applications/useDeleteSolicitud.jsx';
 

@@ -2,10 +2,10 @@
 
 import {
   createSolicitudService,
+  deleteSolicitudService,
   getAllSolicitudesService,
   getSolicitudService,
   updateSolicitudService,
-  deleteSolicitudService,
 } from "../services/solicitud.service.js";
 
 import {
@@ -37,13 +37,8 @@ export async function getSolicitud(req, res) {
 
 export async function getAllSolicitudes(req, res) {
   try {
-    let solicitudes;
+    const solicitudes = await getAllSolicitudesService(req.user);
 
-    if (req.user.rol === "administrador") {
-      solicitudes = await getAllSolicitudesService(req.user);
-    } else {
-      solicitudes = await getAllSolicitudesService(req.user);
-    }
 
     if (!solicitudes || solicitudes.length === 0) {
       return handleErrorClient(res, 404, "No hay solicitudes registradas"); 
@@ -65,13 +60,14 @@ export async function createSolicitud(req, res) {
       num_telefono, 
       fecha_salida, 
       destino, 
-      observaciones 
+      observaciones,
+      rut_conductor
     } = req.body;
 
-    if (!placa_patente || !fecha_solicitud || !prioridad) {
-      return handleErrorClient(res, 400, "Faltan campos obligatorios"); 
+    if (!placa_patente || !fecha_solicitud || !prioridad || !nombre_agrupacion || !num_telefono || !rut_conductor) {
+      return handleErrorClient(res, 400, "Faltan campos obligatorios en la solicitud");
     }
-
+       
     const rut_solicitante = req.user.rut;
     
     const solicitudData = {
@@ -83,7 +79,8 @@ export async function createSolicitud(req, res) {
       num_telefono,
       fecha_salida,
       destino,
-      observaciones
+      observaciones,
+      rut_conductor
     };
 
     const solicitud = await createSolicitudService(solicitudData);

@@ -7,16 +7,22 @@ import Conductor from "../entity/conductor.entity.js";
 import { assignConductorService, isConductorAvailableService, releaseConductorService } from "./conductor.service.js";
 
 export async function createSolicitudService(solicitudData) {
+  console.log("Solicitud Data:", solicitudData);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
+    console.log("Asignando conductor con RUT:", solicitudData.rut_conductor);
 
-    const conductor = await assignConductorService();
+    const conductor = await assignConductorService(solicitudData.rut_conductor);
+    console.log("Conductor asignado:", conductor);
+
     if (!conductor) {
-      throw new Error("No hay conductores disponibles");
+      throw new Error("Conductor no asignado");
     }
-
+    
+  
     const solicitud = solicitudRepository.create(solicitudData);
     solicitud.rut_conductor = conductor.rut_conductor;
+
     await solicitudRepository.save(solicitud);
 
     const currentData = new Date();
@@ -45,7 +51,8 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       throw new Error("Solicitud no encontrada");
     }
 
-    if (!solicitudData.rut_solicitante || !solicitudData.placa_patente || !solicitudData.estado || !solicitudData.prioridad) {
+    if (!solicitudData.rut_solicitante || !solicitudData.placa_patente 
+      || !solicitudData.estado || !solicitudData.prioridad) {
       throw new Error("Campos necesarios faltan para procesar la solicitud");
     }
     
