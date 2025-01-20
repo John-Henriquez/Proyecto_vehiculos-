@@ -4,12 +4,14 @@ import { useState,useEffect } from 'react';
 import { getAllSolicitudes, acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
 import useGetConductores  from '../hooks/drivers/useGetConductores.jsx';
 import FiltroVehiculo from '../components/FiltroVehiculo.jsx';
+import axios from '../services/root.service.js'; 
 
 const Solicitudes = () => {
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
     const [filterId, setFilterId] = useState('');
     const [filterType, setFilterType] = useState('');
+    const [vehiculos, setVehiculos] = useState([]);
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
@@ -20,7 +22,17 @@ const Solicitudes = () => {
                 console.error('La respuesta de solicitudes no es un arreglo:', fetchedSolicitudes);
             }
         };
+        const fetcVehiculos = async () => {
+            try{
+                const vehiculosResponse = await axios.get('/vehicle');
+                setVehiculos(vehiculosResponse.data);
+            }catch (error){
+                console.error('Error al obtener los vehiculos:', error);
+            }
+        };
+        
         fetchSolicitudes();
+        fetcVehiculos();
     }, []);
 
      const handleAccept = async (id) => {
@@ -54,11 +66,14 @@ const Solicitudes = () => {
     const filteredSolicitudes = solicitudesConNombreConductor
     .filter((solicitud) => solicitud.estado === 'pendiente')
     .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId))
-    .filter((solicitud) => (filterType ? solicitud.tipo_vehiculo === filterType : true));
+    .filter((solicitud) => {
+        const vehiculo = vehiculos.find((vehiculo) => vehiculo.placa === solicitud.placa_vehiculo);
+        return vehiculo && (filterType ? vehiculo.id_tipo_vehiculo === filterType : true);
+    });
 
     const handleTipoVehiculoChange = (tipo) => {
         setFilterType(tipo);
-    };
+    }
 
     return (
         <div className='main-container'>

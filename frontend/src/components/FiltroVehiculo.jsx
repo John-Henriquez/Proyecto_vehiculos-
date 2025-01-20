@@ -4,22 +4,27 @@ import axios from "../services/root.service.js";
 
 const FiltroVehiculo = ({ onChange }) => {
   const [tiposVehiculo, setTiposVehiculo] = useState([]);
+  const [vehiculos, setVehiculos] = useState([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("");
 
   useEffect(() => {
-    const fetchTiposVehiculo = async () => {
+    const fetchDatosVehiculo = async () => {
       try {
-        const { data } = await axios.get("/tipos-vehiculos");
-        setTiposVehiculo(data); 
+        const [tiposResponse, vehiculosResponse] = await Promise.all([
+          axios.get("/tipos-vehiculos"),
+          axios.get("/vehicle"),
+        ]);
+        setTiposVehiculo(tiposResponse.data);
+        setVehiculos(vehiculosResponse.data);
       } catch (error) {
-        console.error("Error al obtener los tipos de vehículos:", error);
+        console.error("Error al obtener los datos de vehículos:", error);
       }
     };
 
-    fetchTiposVehiculo();
+    fetchDatosVehiculo();
   }, []);
 
-  const handleChange = (event) => {
+  const handleTipoChange = (event) => {
     const tipo = event.target.value;
     setTipoSeleccionado(tipo);
     onChange(tipo); 
@@ -30,7 +35,7 @@ const FiltroVehiculo = ({ onChange }) => {
       <InputLabel>Tipo de Vehículo</InputLabel>
       <Select
         value={tipoSeleccionado || ""}
-        onChange={handleChange}
+        onChange={handleTipoChange}
         label="Tipo de Vehículo"
       >
         <MenuItem value="">Todos</MenuItem>

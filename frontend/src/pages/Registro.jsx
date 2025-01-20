@@ -42,7 +42,6 @@ const RegistroSolicitudes = () => {
         prioridad: solicitud.prioridad,
     }));
 
-    // Definir un manejador de cambios para el filtro de tipo de vehículo
     const handleTipoVehiculoChange = (e) => {
         setFiltroTipoVehiculo(e.target.value);
     };
