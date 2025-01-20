@@ -8,6 +8,7 @@ const Solicitudes = () => {
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
     const [filterId, setFilterId] = useState('');
+    const [filterType, setFilterType] = useState('');
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
@@ -20,6 +21,7 @@ const Solicitudes = () => {
         };
         fetchSolicitudes();
     }, []);
+
      const handleAccept = async (id) => {
         const updatedSolicitud = await acceptSolicitud(id);
         setSolicitudes((prev) => 
@@ -50,8 +52,10 @@ const Solicitudes = () => {
 
     const filteredSolicitudes = solicitudesConNombreConductor
     .filter((solicitud) => solicitud.estado === 'pendiente')
-    .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId));
+    .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId))
+    .filter((solicitud) => (filterType ? solicitud.tipo_vehiculo === filterType : true));
 
+    const uniqueVehicleTypes = [...new Set(solicitudesConNombreConductor.map(solicitud => solicitud.tipo_vehiculo))];
 
     return (
         <div className='main-container'>
@@ -60,6 +64,14 @@ const Solicitudes = () => {
                     <h1 className='title-table'>Solicitudes</h1>
                     <div className='filter-actions'>
                         <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID de solicitud'/>
+                        <div className="vehicle-filter">
+                            {uniqueVehicleTypes.map((tipo) => (
+                                <button key={tipo} onClick={() => setFilterType(tipo)}>
+                                    {tipo}
+                                </button>
+                            ))}
+                            <button onClick={() => setFilterType('')}>Ver Todos</button>
+                        </div>
                     </div>
                 </div>
                 <SolicitudesTable
