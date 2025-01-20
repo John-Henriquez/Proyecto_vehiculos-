@@ -18,6 +18,7 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>ID Solicitud</TableCell>
             <TableCell>Nombre Agrupación</TableCell>
             <TableCell>Número Teléfono</TableCell>
             <TableCell>Fecha Solicitud</TableCell>
@@ -31,6 +32,7 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
         <TableBody>
           {data.map((row) => (
             <TableRow key={row.id_solicitud}>
+              <TableCell>{row.id_solicitud}</TableCell>
               <TableCell>{row.nombre_agrupacion}</TableCell>
               <TableCell>{row.num_telefono}</TableCell>
               <TableCell>{row.fecha_solicitud}</TableCell>

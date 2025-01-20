@@ -15,7 +15,8 @@ export default function RegistrosTable({ data }) {
       <Table>
         <TableHead>
           <TableRow>
-          <TableCell>Placa Vehículo</TableCell>
+            <TableCell>ID Registro</TableCell>
+            <TableCell>Placa Vehículo</TableCell>
             <TableCell>Fecha Solicitud</TableCell>
             <TableCell>Observaciones</TableCell>
             <TableCell>Prioridad</TableCell>
@@ -25,6 +26,7 @@ export default function RegistrosTable({ data }) {
         <TableBody>
         {data.map((row) => (
             <TableRow key={row.id_registro}>
+              <TableCell>{row.id_registro}</TableCell>
               <TableCell>{row.placa_vehiculo}</TableCell>
               <TableCell>{row.fecha_solicitud}</TableCell>
               <TableCell>{row.observaciones || "Sin observaciones"}</TableCell>
