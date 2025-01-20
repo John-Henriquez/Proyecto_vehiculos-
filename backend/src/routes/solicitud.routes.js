@@ -22,6 +22,6 @@ router.get("/:id_solicitud", authenticateJwt, verifyUserPermission, getSolicitud
 
 router.delete("/delete/:id_solicitud", authenticateJwt, verifyUserPermission, deleteSolicitud);
 
-router.put("/edit/:id_solicitud", authenticateJwt, isAdmin, updateSolicitud);
+router.patch("/edit/:id_solicitud", authenticateJwt, isAdmin, updateSolicitud);
 
 export default router;

@@ -4,7 +4,7 @@ import { AppDataSource } from "../config/configDb.js";
 import  Solicitud  from "../entity/solicitud.entity.js";
 import Registro from "../entity/registro.entity.js";
 import Conductor from "../entity/conductor.entity.js";
-import { assignConductorService, isConductorAvailableService, releaseConductorService } from "./conductor.service.js";
+import { assignConductorService, releaseConductorService } from "./conductor.service.js";
 
 export async function createSolicitudService(solicitudData) {
   console.log("Solicitud Data:", solicitudData);
@@ -38,10 +38,11 @@ export async function createSolicitudService(solicitudData) {
 
 export async function updateSolicitudService(id_solicitud, solicitudData) {
 
+  console.log("Datos a actualizar",solicitudData)
+  console.log("Id solicitud",id_solicitud)
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
-    const conductorRepository = AppDataSource.getRepository(Conductor);
 
     const solicitud = await solicitudRepository.findOne({
       where: { id_solicitud }
@@ -51,12 +52,19 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       throw new Error("Solicitud no encontrada");
     }
 
+<<<<<<< HEAD
     if (!solicitudData.rut_solicitante || !solicitudData.placa_patente 
       || !solicitudData.estado || !solicitudData.prioridad) {
       throw new Error("Campos necesarios faltan para procesar la solicitud");
     }
+=======
+    Object.keys(solicitudData).forEach((key) => {
+      if(solicitudData[key] !== undefined){
+        solicitud[key] = solicitudData[key];
+      }
+  });
+>>>>>>> f52907f (vista y backend funcional - parcial)
     
-    solicitudRepository.merge(solicitud, solicitudData);
     await solicitudRepository.save(solicitud);
 
     if (["aprobada", "rechazada"].includes(solicitudData.estado)) {
@@ -77,6 +85,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
     if (solicitud.fecha_regreso && new Date(solicitud.fecha_regreso) < currentData) {
       await releaseConductorService(solicitud.rut_conductor);
     }
+
     return solicitud
   } catch (error) {
     throw new Error(error.message || "Error al actualizar la solicitud");

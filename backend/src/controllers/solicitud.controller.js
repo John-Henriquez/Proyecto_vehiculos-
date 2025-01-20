@@ -97,8 +97,8 @@ export async function updateSolicitud(req, res) {
     const { id_solicitud } = req.params;
     const { rut_solicitante, placa_patente, estado, prioridad, observaciones } = req.body;
 
-    if (!rut_solicitante || !placa_patente || !estado || !prioridad) {
-      return handleErrorClient(res, 400, "Faltan campos obligatorios");
+    if (!estado) {
+      return handleErrorClient(res, 400, "El campo 'estado' es obligatorio");
     }
 
     const solicitud = await updateSolicitudService(id_solicitud, req.body);
