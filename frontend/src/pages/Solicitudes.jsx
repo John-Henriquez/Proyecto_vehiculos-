@@ -16,15 +16,23 @@ const Solicitudes = () => {
     useEffect(() => {
         const fetchSolicitudes = async () => {
             const fetchedSolicitudes = await getAllSolicitudes();
+            console.log('Solicitudes obtenidas:', fetchedSolicitudes); 
+            
             if (Array.isArray(fetchedSolicitudes)) {
-                setSolicitudes(fetchedSolicitudes);
-            } else {
+                const solicitudesNormalizadas = fetchedSolicitudes.map(solicitud => ({
+                    ...solicitud,
+                    placa_vehiculo: solicitud.placaPatente || solicitud.placa_patente,  // Prioriza el campo correcto
+                }));
+    
+                setSolicitudes(solicitudesNormalizadas);
+            }else {
                 console.error('La respuesta de solicitudes no es un arreglo:', fetchedSolicitudes);
             }
         };
         const fetcVehiculos = async () => {
             try{
                 const vehiculosResponse = await axios.get('/vehicle');
+                console.log('Vehiculos obtenidos:', vehiculosResponse.data);
                 setVehiculos(vehiculosResponse.data);
             }catch (error){
                 console.error('Error al obtener los vehiculos:', error);

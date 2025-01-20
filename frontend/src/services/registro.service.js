@@ -2,7 +2,8 @@ import axios from './root.service.js';
 
 export async function getAllRegistros() {
     try {
-        const { data } = await axios.get('/record/'); 
+        const { data } = await axios.get('/record/');
+        console.log('Service - Datos recibidos del backend:', data); 
         return data;  
     } catch (error) {
         return error.response?.data || { message: "Error al obtener los registros" };
