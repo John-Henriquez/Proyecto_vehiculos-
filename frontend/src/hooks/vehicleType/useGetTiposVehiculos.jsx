@@ -1,30 +1,24 @@
-// src/hooks/useGetTiposVehiculos.js
-
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getTiposVehiculos } from '../../services/tipoVehiculo.service.js';  
 
 const useGetTiposVehiculos = () => {
-  const [tiposVehiculos, setTiposVehiculos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [tiposVehiculos, setTiposVehiculos] = useState([]);
 
-  useEffect(() => {
-    const fetchTiposVehiculos = async () => {
-      try {
-        const response = await axios.get('/api/tipos-vehiculos');  
-        setTiposVehiculos(response.data);  
-      } catch (error) {
-        setError('Error al obtener los tipos de vehículos');
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    const fetchTipoVehiculo = async () => {
+        try {
+            const data = await getTiposVehiculos();  
+            console.log('Tipos de vehículos obtenidos:', data);
+            setTiposVehiculos(data);  
+        } catch (error) {
+            console.error('Error al obtener los tipos de vehículos:', error);
+        }
     };
 
-    fetchTiposVehiculos();
-  }, []); 
+    useEffect(() => {
+        fetchTipoVehiculo();  
+    }, []);
 
-  return { tiposVehiculos, loading, error };
+    return { tiposVehiculos, fetchTipoVehiculo };
 };
 
 export default useGetTiposVehiculos;

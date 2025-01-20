@@ -1,8 +1,9 @@
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import {  useState,useEffect } from 'react';
+import { useState,useEffect } from 'react';
 import { getAllSolicitudes, acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
 import useGetConductores  from '../hooks/drivers/useGetConductores.jsx';
+import FiltroVehiculo from '../components/FiltroVehiculo.jsx';
 
 const Solicitudes = () => {
     const { conductores } = useGetConductores();
@@ -55,7 +56,9 @@ const Solicitudes = () => {
     .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId))
     .filter((solicitud) => (filterType ? solicitud.tipo_vehiculo === filterType : true));
 
-    const uniqueVehicleTypes = [...new Set(solicitudesConNombreConductor.map(solicitud => solicitud.tipo_vehiculo))];
+    const handleTipoVehiculoChange = (tipo) => {
+        setFilterType(tipo);
+    };
 
     return (
         <div className='main-container'>
@@ -64,14 +67,8 @@ const Solicitudes = () => {
                     <h1 className='title-table'>Solicitudes</h1>
                     <div className='filter-actions'>
                         <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID de solicitud'/>
-                        <div className="vehicle-filter">
-                            {uniqueVehicleTypes.map((tipo) => (
-                                <button key={tipo} onClick={() => setFilterType(tipo)}>
-                                    {tipo}
-                                </button>
-                            ))}
-                            <button onClick={() => setFilterType('')}>Ver Todos</button>
-                        </div>
+
+                        <FiltroVehiculo onChange={handleTipoVehiculoChange} />
                     </div>
                 </div>
                 <SolicitudesTable

@@ -1,12 +1,15 @@
 import RegistrosTable from '../components/RegistroTable.jsx';
-import { useState, useEffect } from 'react';
+import Search from '../components/Search.jsx';
 import { getAllSolicitudes } from '../services/solicitudes.service.js';  
-import useGetRegistros from '../hooks/records/useGetRegistros.jsx';  
-import { acceptRegistro, rejectRegistro } from '../services/registro.service.js';  
+import { useState, useEffect } from 'react';
+import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos.jsx';
+import FiltroVehiculo from '../components/FiltroVehiculo.jsx';
 
 const RegistroSolicitudes = () => {
-    const { registros, fetchRegistros } = useGetRegistros();  
     const [solicitudes, setSolicitudes] = useState([]);
+    const { tiposVehiculos, fetchTipoVehiculo } = useGetTiposVehiculos();
+    const [filtroTipoVehiculo, setFiltroTipoVehiculo] = useState('');
+    const [filterId, setFilterId] = useState('');
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
@@ -20,11 +23,16 @@ const RegistroSolicitudes = () => {
         };
         fetchSolicitudes();
     }, []);
-    
 
-    const solicitudesRegistradas = solicitudes.filter(
-        (solicitud) => solicitud.estado === 'aprobada' || solicitud.estado === 'rechazada'
-    );
+    useEffect(() => {
+        fetchTipoVehiculo();
+    }, []);
+    
+    const solicitudesRegistradas = solicitudes.filter((solicitud) => {
+        const esAprobadaORechazada = solicitud.estado === 'aprobada' || solicitud.estado === 'rechazada';
+        const coincideTipoVehiculo = filtroTipoVehiculo ? solicitud.tipo_vehiculo === filtroTipoVehiculo : true; 
+        return esAprobadaORechazada && coincideTipoVehiculo;
+    });
 
     const solicitudesFiltradas = solicitudesRegistradas.map(solicitud => ({
         placa_vehiculo: solicitud.placa_patente,
@@ -34,18 +42,9 @@ const RegistroSolicitudes = () => {
         prioridad: solicitud.prioridad,
     }));
 
-    const handleAcceptRegistro = async (id_registro) => {
-        const response = await acceptRegistro(id_registro);
-        if (response) {
-            fetchRegistros();  
-        }
-    };
-
-    const handleRejectRegistro = async (id_registro) => {
-        const response = await rejectRegistro(id_registro);
-        if (response) {
-            fetchRegistros(); 
-        }
+    // Definir un manejador de cambios para el filtro de tipo de vehículo
+    const handleTipoVehiculoChange = (e) => {
+        setFiltroTipoVehiculo(e.target.value);
     };
 
     return (
@@ -53,12 +52,12 @@ const RegistroSolicitudes = () => {
             <div className='table-container'>
                 <div className='top-table'>
                     <h1 className='title-table'>Registro de Solicitudes</h1>
+                    <div className='filter-actions'>
+                        <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID de solicitud'/>
+                        <FiltroVehiculo onChange={handleTipoVehiculoChange} />
+                    </div>
                 </div>
-                <RegistrosTable
-                    data={solicitudesFiltradas}
-                    onAccept={handleAcceptRegistro}
-                    onReject={handleRejectRegistro}
-                />
+                <RegistrosTable data={solicitudesFiltradas} />
             </div>
         </div>
     );
