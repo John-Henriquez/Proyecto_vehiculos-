@@ -24,8 +24,6 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
             <TableCell>Fecha Solicitud</TableCell>
             <TableCell>Fecha Salida</TableCell>
             <TableCell>Destino</TableCell>
-            <TableCell>Vehículo</TableCell>
-            <TableCell>Nombre Conductor</TableCell>
             <TableCell>Acciones</TableCell>
           </TableRow>
         </TableHead>
@@ -38,8 +36,6 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
               <TableCell>{row.fecha_solicitud}</TableCell>
               <TableCell>{row.fecha_salida}</TableCell>
               <TableCell>{row.destino}</TableCell>
-              <TableCell>{row.placa_patente}</TableCell>
-              <TableCell>{row.nombre_conductor}</TableCell>
               <TableCell>
                 {row.estado === "pendiente" && (
                   <>

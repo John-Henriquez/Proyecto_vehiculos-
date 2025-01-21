@@ -41,7 +41,7 @@ const SolicitudSchema = new EntitySchema({
     placa_patente: {
       type: "varchar",
       length: 20,
-      nullable: false,
+      nullable: true,
     },
     estado: {
       type: "varchar",
@@ -69,23 +69,17 @@ const SolicitudSchema = new EntitySchema({
     },
   },
   relations: {
-    solicitante: {
-      target: "User",
-      type: "many-to-one",
-      joinColumn: { name: "rut_solicitante", referencedColumnName: "rut" },
-      onDelete: "CASCADE",
-    },
     vehiculo: {
       target: "Vehiculo",
       type: "many-to-one",
       joinColumn: { name: "placa_patente", referencedColumnName: "placa" },
-      onDelete: "CASCADE",
+      onDelete: "SET NULL",
     },
     conductor: {
       target: "Conductor",
       type: "many-to-one",
       joinColumn: { name: "rut_conductor", referencedColumnName: "rut_conductor" },
-      onDelete: "CASCADE",
+      onDelete: "SET NULL",
     },
   },
   indices: [

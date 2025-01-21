@@ -61,15 +61,14 @@ export async function createSolicitud(req, res) {
       fecha_salida, 
       destino, 
       observaciones,
-      rut_conductor
+      rut_conductor,
+      rut_solicitante
     } = req.body;
 
-    if (!placa_patente || !fecha_solicitud || !prioridad || !nombre_agrupacion || !num_telefono || !rut_conductor) {
+    if (!fecha_solicitud || !prioridad || !nombre_agrupacion || !num_telefono || !rut_solicitante) {
       return handleErrorClient(res, 400, "Faltan campos obligatorios en la solicitud");
     }
        
-    const rut_solicitante = req.user.rut;
-    
     const solicitudData = {
       rut_solicitante,
       placa_patente,

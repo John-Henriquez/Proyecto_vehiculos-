@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createSolicitud } from '../services/solicitudes.service';
+import { getAllVehiculos } from '../services/vehiculos.service';
 import '../styles/crearSolicitud.css'; 
 
 const formatDate = (date) => {
@@ -17,7 +18,8 @@ export default function VehicleRequestForm() {
     placaPatente: '',
     observaciones: '',
     prioridad: 'alta',
-    rutConductor: ''
+    rutConductor: '',
+    rutSolicitante: ''
   });
 
   const [errors, setErrors] = useState({
@@ -32,11 +34,30 @@ export default function VehicleRequestForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [vehiculos, setVehiculos] = useState([]);
+
+  useEffect(() => {
+    const fetchVehiculos = async () => {
+      try {
+        const data = await getAllVehiculos();
+        setVehiculos(data);
+      } catch (error) {
+        console.error('Error al cargar los vehículos:', error);
+      }
+    };
+
+    fetchVehiculos();
+  }, []);
+
   const validate = () => {
     let valid = true;
     const newErrors = { ...errors };
-
     // Validación de campos
+    if (!formData.rutSolicitante) {
+      newErrors.rutSolicitante = 'RUT del solicitante es requerido';
+      valid = false;
+    }
+    
     if (!formData.fechaSalida) {
       newErrors.fechaSalida = 'Fecha de salida es requerida';
       valid = false;
@@ -54,16 +75,6 @@ export default function VehicleRequestForm() {
 
     if (!formData.destino) {
       newErrors.destino = 'Destino es requerido';
-      valid = false;
-    }
-
-    if (!formData.placaPatente) {
-      newErrors.placaPatente = 'Placa del vehículo es requerida';
-      valid = false;
-    }
-
-    if (!formData.rutConductor) {
-      newErrors.rutConductor = 'RUT del conductor es requerido';
       valid = false;
     }
 
@@ -87,12 +98,11 @@ export default function VehicleRequestForm() {
           placa_patente: formData.placaPatente,
           observaciones: formData.observaciones,
           prioridad: formData.prioridad,
-          rut_conductor: formData.rutConductor
+          rut_conductor: formData.rutConductor,
+          rut_solicitante: formData.rutSolicitante
         };
         const response = await createSolicitud(finalFormData);
         console.log("Respuesta del servidor:", response);
-
-        
 
         if (response?.success === true) {
           setSuccessMessage('Solicitud creada exitosamente');
@@ -134,19 +144,6 @@ export default function VehicleRequestForm() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-fields">
-          {/* Fecha de salida */}
-          <div className="form-group">
-            <label htmlFor="fechaSalida">Fecha de salida</label>
-            <input
-              id="fechaSalida"
-              name="fechaSalida"
-              type="date"
-              value={formData.fechaSalida}
-              onChange={handleChange}
-              className={`input ${errors.fechaSalida ? 'error' : ''}`}
-            />
-            {errors.fechaSalida && <p className="error-message">{errors.fechaSalida}</p>}
-          </div>
 
           {/* Nombre de la agrupación */}
           <div className="form-group">
@@ -160,6 +157,34 @@ export default function VehicleRequestForm() {
               placeholder="Nombre de la agrupación"
             />
             {errors.nombreAgrupacion && <p className="error-message">{errors.nombreAgrupacion}</p>}
+          </div>
+
+          {/* RUT del solicitante */}
+          <div className="form-group">
+            <label htmlFor="rutSolicitante">RUT del solicitante</label>
+            <input
+              id="rutSolicitante"
+              name="rutSolicitante"
+              value={formData.rutSolicitante}
+              onChange={handleChange}
+              className={`input ${errors.rutSolicitante ? 'error' : ''}`}
+              placeholder="RUT del solicitante"
+            />
+            {errors.rutSolicitante && <p className="error-message">{errors.rutSolicitante}</p>}
+          </div>
+
+          {/* Fecha de salida */}
+          <div className="form-group">
+            <label htmlFor="fechaSalida">Fecha de salida</label>
+            <input
+              id="fechaSalida"
+              name="fechaSalida"
+              type="date"
+              value={formData.fechaSalida}
+              onChange={handleChange}
+              className={`input ${errors.fechaSalida ? 'error' : ''}`}
+            />
+            {errors.fechaSalida && <p className="error-message">{errors.fechaSalida}</p>}
           </div>
 
           {/* Número de teléfono */}
@@ -191,34 +216,6 @@ export default function VehicleRequestForm() {
             {errors.destino && <p className="error-message">{errors.destino}</p>}
           </div>
 
-          {/* Placa del vehículo */}
-          <div className="form-group">
-            <label htmlFor="placaPatente">Placa del vehículo</label>
-            <input
-              id="placaPatente"
-              name="placaPatente"
-              value={formData.placaPatente}
-              onChange={handleChange}
-              className={`input ${errors.placaPatente ? 'error' : ''}`}
-              placeholder="Placa del vehículo"
-            />
-            {errors.placaPatente && <p className="error-message">{errors.placaPatente}</p>}
-          </div>
-
-          {/* RUT del conductor */}
-          <div className="form-group">
-            <label htmlFor="rutConductor">RUT del conductor</label>
-            <input
-              id="rutConductor"
-              name="rutConductor"
-              value={formData.rutConductor}
-              onChange={handleChange}
-              className={`input ${errors.rutConductor ? 'error' : ''}`}
-              placeholder="RUT del conductor"
-            />
-            {errors.rutConductor && <p className="error-message">{errors.rutConductor}</p>}
-          </div>
-
           {/* Observaciones */}
           <div className="form-group">
             <label htmlFor="observaciones">Observaciones</label>
@@ -231,7 +228,6 @@ export default function VehicleRequestForm() {
               placeholder="Observaciones adicionales"
             />
           </div>
-
         </div>
 
         {/* Botón de enviar */}

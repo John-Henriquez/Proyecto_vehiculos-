@@ -10,18 +10,16 @@ export async function createSolicitudService(solicitudData) {
   console.log("Solicitud Data:", solicitudData);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    console.log("Asignando conductor con RUT:", solicitudData.rut_conductor);
-
-    const conductor = await assignConductorService(solicitudData.rut_conductor);
-    console.log("Conductor asignado:", conductor);
-
-    if (!conductor) {
-      throw new Error("Conductor no asignado");
+    if(!solicitudData.rut_solicitante){
+      throw new Error("Rut solicitante es requerido");
     }
-    
-  
-    const solicitud = solicitudRepository.create(solicitudData);
-    solicitud.rut_conductor = conductor.rut_conductor;
+
+    const solicitud = solicitudRepository.create({
+      ...solicitudData,
+      rut_conductor: solicitudData.rut_conductor || null,
+      placa_patente: solicitudData.placa_patente || null,  
+    });
+
 
     await solicitudRepository.save(solicitud);
 
