@@ -23,14 +23,25 @@ export async function getSolicitud(id_solicitud) {
 }
 
 
-export async function createSolicitud(solicitudData) {
+export const createSolicitud = async (data) => {
     try {
-        const { data } = await axios.post('/application/add', solicitudData);
-        return formatSolicitudData(data.data); 
+      const response = await axios.post('/application/add', data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      // Verifica si la respuesta contiene un mensaje de éxito
+      return { success: true, message: response.data.message || 'Solicitud creada correctamente' };
     } catch (error) {
-        return error.response?.data || { message: "Error al crear la solicitud" };
+      // Maneja el error, revisando si el error contiene respuesta
+      return {
+        success: false,
+        message: error.response?.data?.message || error.message || 'Error al crear la solicitud',
+      };
     }
-}
+  };
+  
 
 
 export async function updateSolicitud(id_solicitud, solicitudData) {
@@ -38,7 +49,7 @@ export async function updateSolicitud(id_solicitud, solicitudData) {
         const { data } = await axios.put(`/application/edit/${id_solicitud}`, solicitudData);
         return formatSolicitudData(data.data); 
     } catch (error) {
-        return error.response?.data || { message: `Error al actualizar la solicitud ${idSolicitud}` };
+        return error.response?.data || { message: `Error al actualizar la solicitud ${id_solicitud}` };
     }
 }
 
