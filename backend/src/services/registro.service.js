@@ -3,10 +3,21 @@
 import { AppDataSource } from "../config/configDb.js";
 import Registro from "../entity/registro.entity.js";
 
-export async function createRegistroService(registroData) {
+export async function createRegistroService(solicitud) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
     
+    // Copiar todos los datos de la solicitud relevante al registro
+    const registroData = {
+      id_solicitud: solicitud.id_solicitud,
+      placa_vehiculo: solicitud.placa_patente,
+      fecha_solicitud: solicitud.fecha_solicitud,
+      estado: solicitud.estado,  
+      observaciones: solicitud.observaciones,  
+      prioridad: solicitud.prioridad,  
+      fecha_cambio_estado: new Date(),  
+    };
+
     const registro = registroRepository.create(registroData);
     await registroRepository.save(registro);
 

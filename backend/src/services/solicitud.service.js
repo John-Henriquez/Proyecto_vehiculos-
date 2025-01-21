@@ -1,13 +1,13 @@
 "use strict";
 
 import { AppDataSource } from "../config/configDb.js";
-import  Solicitud  from "../entity/solicitud.entity.js";
+import Solicitud from "../entity/solicitud.entity.js";
 import Registro from "../entity/registro.entity.js";
 import Conductor from "../entity/conductor.entity.js";
 import { assignConductorService, releaseConductorService } from "./conductor.service.js";
 
 export async function createSolicitudService(solicitudData) {
-  console.log("Solicitud Data:", solicitudData);
+  console.log("solicitudService - Solicitud Data:", solicitudData);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     if(!solicitudData.rut_solicitante){
@@ -20,6 +20,7 @@ export async function createSolicitudService(solicitudData) {
       placa_patente: solicitudData.placa_patente || null,  
     });
 
+    console.log("solicitudService - Creando solicitud:", solicitud);
 
     await solicitudRepository.save(solicitud);
 
@@ -28,6 +29,7 @@ export async function createSolicitudService(solicitudData) {
       await releaseConductorService(solicitud.rut_conductor);
     }
 
+    console.log("solicitudService - Solicitud creada con éxito:", solicitud);
     return solicitud; 
   } catch (error) {
     throw new Error(error.message || "Error al crear la solicitud");
@@ -36,8 +38,8 @@ export async function createSolicitudService(solicitudData) {
 
 export async function updateSolicitudService(id_solicitud, solicitudData) {
 
-  console.log("Datos a actualizar",solicitudData)
-  console.log("Id solicitud",id_solicitud)
+  console.log("solicitudService - Datos a actualizar", solicitudData);
+  console.log("solicitudService - Id solicitud", id_solicitud);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
@@ -50,12 +52,16 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       throw new Error("Solicitud no encontrada");
     }
 
+    console.log("solicitudService - Solicitud encontrada:", solicitud);
+
     Object.keys(solicitudData).forEach((key) => {
       if(solicitudData[key] !== undefined){
         solicitud[key] = solicitudData[key];
       }
-  });
-    
+    });
+
+    console.log("solicitudService - Solicitud actualizada:", solicitud);
+
     await solicitudRepository.save(solicitud);
 
     if (["aprobada", "rechazada"].includes(solicitudData.estado)) {
@@ -70,6 +76,10 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       };
       const registro = registroRepository.create(registroData);
       await registroRepository.save(registro);
+
+      console.log("solicitudService - Registro creado:", registro);
+
+      await solicitudRepository.remove(solicitud);
     }
 
     const currentData = new Date();
@@ -77,34 +87,29 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       await releaseConductorService(solicitud.rut_conductor);
     }
 
-    return solicitud
+    console.log("solicitudService - Solicitud actualizada con éxito:", solicitud);
+    return solicitud;
   } catch (error) {
     throw new Error(error.message || "Error al actualizar la solicitud");
   }
 }
 
-export async function getAllSolicitudesService(user) {
+export async function getAllSolicitudesService() {
+  console.log("solicitudService - Obtener todas las solicitudes");
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-
-    let solicitudes;
-
-    if (user.rol === "administrador") {
-      solicitudes = await solicitudRepository.find();
-    } else if (user.rol === "usuario") {
-      solicitudes = await solicitudRepository.find({ where: { rut_solicitante: user.rut } });
-    } else {
-      throw new Error("No tienes permiso para acceder a este recurso");
-    }
-
+    const solicitudes = await solicitudRepository.find();
+    console.log("solicitudService - Solicitudes obtenidas:", solicitudes);
     return solicitudes;
   } catch (error) {
     throw new Error(error.message || "Error al obtener las solicitudes");
   }
 }
 
-export async function getSolicitudService(id_solicitud, user) {
 
+
+export async function getSolicitudService(id_solicitud, user) {
+  console.log("solicitudService - Obtener solicitud con id:", id_solicitud, "para el usuario:", user);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
 
@@ -116,14 +121,16 @@ export async function getSolicitudService(id_solicitud, user) {
     } else {
       throw new Error("No tienes permiso para acceder a este recurso");
     }
-    
-    return solicitud
+
+    console.log("solicitudService - Solicitud encontrada:", solicitud);
+    return solicitud;
   } catch (error) {
     throw new Error(error.message || "Error al obtener la solicitud");
   }
 }
 
 export async function deleteSolicitudService(id_solicitud, user) {
+  console.log("solicitudService - Eliminar solicitud con id:", id_solicitud, "para el usuario:", user);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
 
@@ -137,6 +144,7 @@ export async function deleteSolicitudService(id_solicitud, user) {
 
     if(user.rol === "administrador") {
       await solicitudRepository.remove(solicitud);
+      console.log("solicitudService - Solicitud eliminada");
       return "Solicitud eliminada";
     }
 
@@ -145,6 +153,7 @@ export async function deleteSolicitudService(id_solicitud, user) {
     }
 
     await solicitudRepository.remove(solicitud);
+    console.log("solicitudService - Solicitud eliminada");
     return "Solicitud eliminada";
   } catch (error) {
     throw new Error(error.message || "Error al eliminar la solicitud");

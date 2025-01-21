@@ -6,9 +6,19 @@ import QuestionIcon from '@assets/QuestionCircleIcon.svg';
 export default function RejectPopup({ show, setShow, data, action }) {
     const solicitudData = data && data.length > 0 ? data[0] : {};
 
+    console.log("RejectPopup - solicitudData:", solicitudData);
+    
     const handleSubmit = (formData) => {
-        action(formData);
+        if (!solicitudData.id_solicitud) {
+            console.error("RejectPopup - id_solicitud no encontrada", solicitudData);
+            return;
+        }
+
+        const dataWithId = { ...formData, id_solicitud: solicitudData.id_solicitud };
+        console.log("RejectPopup - Datos a enviar:", dataWithId);
+        action(dataWithId);  
     };
+        
 
     return (
         <div>

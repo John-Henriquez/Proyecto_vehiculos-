@@ -57,8 +57,14 @@ export async function getRegistrosByVehiculo(req, res) {
 
 export async function createRegistro(req, res) {
   try {
-    const registroData = req.body;  
-    const [registro, error] = await createRegistroService(registroData);
+    const { id_solicitud } = req.body;  
+    const solicitud = await getSolicitudService(id_solicitud);  
+
+    if (!solicitud) {
+      return res.status(404).json({ error: "Solicitud no encontrada" });
+    }
+
+    const [registro, error] = await createRegistroService(solicitud);
 
     if (error) {
       return res.status(500).json({ error: error });
@@ -70,6 +76,7 @@ export async function createRegistro(req, res) {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
 
 export async function deleteRegistro(req, res) {
   try {
