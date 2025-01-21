@@ -64,7 +64,6 @@ export async function updateSolicitud(id_solicitud, solicitudData) {
 
 export async function deleteSolicitud(id_solicitud) {
     try {
-        console.log(`Eliminando solicitud (ID: ${id_solicitud})`);
         const { data } = await axios.delete(`/application/delete/${id_solicitud}`);
         console.log('Solicitud eliminada:', data);
         return data;

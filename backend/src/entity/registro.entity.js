@@ -17,7 +17,7 @@ const RegistroSchema = new EntitySchema({
     placa_vehiculo: {
       type: "varchar",
       length: 20,
-      nullable: false,
+      nullable: true,
     },
     fecha_solicitud: {
       type: "date",
@@ -54,7 +54,7 @@ const RegistroSchema = new EntitySchema({
       target: "Solicitud",
       type: "many-to-one",
       joinColumn: { name: "id_solicitud", referencedColumnName: "id_solicitud" },
-      onDelete: "CASCADE",
+      onDelete: "SET NULL",
     },
   },
   indices: [

@@ -38,18 +38,19 @@ export async function getSolicitud(req, res) {
 
 export async function getAllSolicitudes(req, res) {
   try {
-    console.log("solicitudController - Obtener todas las solicitudes para el usuario:", req.user);
-    const solicitudes = await getAllSolicitudesService(req.user);
+    const solicitudes = await getAllSolicitudesService();
 
-    if (!solicitudes || solicitudes.length === 0) {
-      return handleErrorClient(res, 404, "No hay solicitudes registradas"); 
+    if (!Array.isArray(solicitudes) || solicitudes.length === 0) {
+      return handleErrorClient(res, 404, "No hay solicitudes registradas");
     }
+
     return handleSuccess(res, 200, "Solicitudes encontradas", solicitudes);
   } catch (error) {
     console.error("solicitudController - Error al obtener las solicitudes:", error);
     return handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
+
 
 export async function createSolicitud(req, res) {
   try {

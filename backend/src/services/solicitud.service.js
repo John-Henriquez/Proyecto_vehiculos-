@@ -38,8 +38,6 @@ export async function createSolicitudService(solicitudData) {
 
 export async function updateSolicitudService(id_solicitud, solicitudData) {
 
-  console.log("solicitudService - Datos a actualizar", solicitudData);
-  console.log("solicitudService - Id solicitud", id_solicitud);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
@@ -59,8 +57,6 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
         solicitud[key] = solicitudData[key];
       }
     });
-
-    console.log("solicitudService - Solicitud actualizada:", solicitud);
 
     await solicitudRepository.save(solicitud);
 
@@ -108,18 +104,16 @@ export async function getAllSolicitudesService() {
 
 
 
-export async function getSolicitudService(id_solicitud, user) {
-  console.log("solicitudService - Obtener solicitud con id:", id_solicitud, "para el usuario:", user);
+export async function getSolicitudService(id_solicitud) {
+  console.log("solicitudService - Obtener solicitud con id:", id_solicitud);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
 
-    let solicitud;
-    if (user.rol === "administrador") {
-      solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
-    } else if (user.rol === "usuario") {
-      solicitud = await solicitudRepository.findOne({ where: { id_solicitud, rut_solicitante: user.rut } });
-    } else {
-      throw new Error("No tienes permiso para acceder a este recurso");
+
+    const solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
+
+    if (!solicitud) {
+      throw new Error("Solicitud no encontrada");
     }
 
     console.log("solicitudService - Solicitud encontrada:", solicitud);
@@ -128,6 +122,7 @@ export async function getSolicitudService(id_solicitud, user) {
     throw new Error(error.message || "Error al obtener la solicitud");
   }
 }
+
 
 export async function deleteSolicitudService(id_solicitud, user) {
   console.log("solicitudService - Eliminar solicitud con id:", id_solicitud, "para el usuario:", user);

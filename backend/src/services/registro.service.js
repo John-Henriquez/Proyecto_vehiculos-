@@ -6,8 +6,7 @@ import Registro from "../entity/registro.entity.js";
 export async function createRegistroService(solicitud) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
-    
-    // Copiar todos los datos de la solicitud relevante al registro
+  
     const registroData = {
       id_solicitud: solicitud.id_solicitud,
       placa_vehiculo: solicitud.placa_patente,
@@ -21,12 +20,13 @@ export async function createRegistroService(solicitud) {
     const registro = registroRepository.create(registroData);
     await registroRepository.save(registro);
 
-    return [registro, null];
+    return [registro, null]; 
   } catch (error) {
     console.error("Error al crear el registro:", error);
-    return [null, "Error interno del servidor"];
+    return [null, error.message || "Error interno del servidor"];
   }
 }
+
 
 export async function getAllRegistrosService() {
   try {

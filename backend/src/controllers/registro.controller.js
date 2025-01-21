@@ -1,6 +1,11 @@
 "use strict";
-
-import { getAllRegistrosService, getRegistroService, createRegistroService, deleteRegistroService, updateRegistroService } from "../services/registro.service.js";
+import { getSolicitudService } from "../services/solicitud.service.js";
+import {
+  getAllRegistrosService, 
+  getRegistroService, 
+  createRegistroService, 
+  deleteRegistroService, 
+  updateRegistroService } from "../services/registro.service.js";
 
 export async function getAllRegistros(req, res) {
   try {
@@ -64,7 +69,8 @@ export async function createRegistro(req, res) {
       return res.status(404).json({ error: "Solicitud no encontrada" });
     }
 
-    const [registro, error] = await createRegistroService(solicitud);
+    const result = await createRegistroService(solicitud);
+    const [registro, error] = result;
 
     if (error) {
       return res.status(500).json({ error: error });
@@ -76,6 +82,8 @@ export async function createRegistro(req, res) {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
+
 
 
 export async function deleteRegistro(req, res) {

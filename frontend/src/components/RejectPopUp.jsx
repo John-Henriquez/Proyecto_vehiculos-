@@ -1,13 +1,14 @@
 import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
-import QuestionIcon from '@assets/QuestionCircleIcon.svg';
 
 export default function RejectPopup({ show, setShow, data, action }) {
-    const solicitudData = data && data.length > 0 ? data[0] : {};
+    const solicitudData = data && Array.isArray(data) && data.length > 0 ? data[0] : null;
 
-    console.log("RejectPopup - solicitudData:", solicitudData);
-    
+    if (!solicitudData || !solicitudData.id_solicitud) {
+        console.error("RejectPopup - Datos de la solicitud inválidos:", solicitudData);
+    }
+
     const handleSubmit = (formData) => {
         if (!solicitudData.id_solicitud) {
             console.error("RejectPopup - id_solicitud no encontrada", solicitudData);
@@ -18,8 +19,7 @@ export default function RejectPopup({ show, setShow, data, action }) {
         console.log("RejectPopup - Datos a enviar:", dataWithId);
         action(dataWithId);  
     };
-        
-
+    
     return (
         <div>
             {show && (

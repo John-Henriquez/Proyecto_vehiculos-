@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import { getAllSolicitudes, acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
+import { getAllSolicitudes } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
+import { createRegistro } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
@@ -19,7 +20,6 @@ const Solicitudes = () => {
     useEffect(() => {
         const fetchSolicitudes = async () => {
             const fetchedSolicitudes = await getAllSolicitudes();
-            
             if (Array.isArray(fetchedSolicitudes)) {
                 const solicitudesNormalizadas = fetchedSolicitudes.map(solicitud => {
                     return {
@@ -45,38 +45,82 @@ const Solicitudes = () => {
     }, []);
 
     const handleAccept = (solicitud) => {
+        console.log("handleAccept:", solicitud);
         setCurrentSolicitud(solicitud); 
         setShowAcceptPopup(true); 
     };
 
-    const handleReject = (solicitud) => {
-        setCurrentSolicitud(solicitud); 
+    const handleReject = (id_solicitud) => {
+        if (typeof id_solicitud !== 'number') {
+            console.error("Error: La solicitud pasada a handleReject no es un ID válido", id_solicitud);
+            return;
+        }
+        setCurrentSolicitud({ id_solicitud }); 
         setShowRejectPopup(true); 
     };
+    
 
     const handleConfirmAccept = async (updatedSolicitud) => {
-        await acceptSolicitud(currentSolicitud.id_solicitud, updatedSolicitud);
+        console.log("Confirmando aceptación para la solicitud ID:", currentSolicitud.id_solicitud);
+    
+        // 1. Crear un registro con la información de la solicitud aceptada
+        const registroData = {
+            id_solicitud: currentSolicitud.id_solicitud,
+            placa_vehiculo: currentSolicitud.placa_vehiculo,
+            fecha_solicitud: currentSolicitud.fecha_solicitud,
+            estado: 'aceptada',
+            observaciones: updatedSolicitud.observaciones,
+            prioridad: currentSolicitud.prioridad,
+            fecha_cambio_estado: new Date(), // Fecha actual
+        };
+    
+        const [registro, error] = await createRegistro(registroData); // Llamada a la función de servicio para crear el registro
+        if (error) {
+            console.error("Error al crear el registro:", error);
+            return;
+        }
+    
+        // 2. Eliminar la solicitud después de crear el registro
+        await deleteSolicitud(currentSolicitud.id_solicitud);
+    
+        // 3. Actualizar el estado de la solicitud en el frontend
         setSolicitudes((prev) =>
-            prev.map((sol) =>
-                sol.id_solicitud === currentSolicitud.id_solicitud
-                    ? { ...sol, estado: 'aceptada', observaciones: updatedSolicitud.observaciones }
-                    : sol
-            )
+            prev.filter((sol) => sol.id_solicitud !== currentSolicitud.id_solicitud)
         );
         setShowAcceptPopup(false);
     };
+    
 
     const handleConfirmReject = async (updatedSolicitud) => {
-        await rejectSolicitud(currentSolicitud.id_solicitud, updatedSolicitud);
+        console.log("Confirmando rechazo para la solicitud ID:", currentSolicitud.id_solicitud);
+    
+        // 1. Crear un registro con la información de la solicitud rechazada
+        const registroData = {
+            id_solicitud: currentSolicitud.id_solicitud,
+            placa_vehiculo: currentSolicitud.placa_vehiculo,
+            fecha_solicitud: currentSolicitud.fecha_solicitud,
+            estado: 'rechazada',
+            observaciones: updatedSolicitud.observaciones,
+            prioridad: currentSolicitud.prioridad,
+            fecha_cambio_estado: new Date(), // Fecha actual
+        };
+    
+        const [registro, error] = await createRegistro(registroData); // Llamada a la función de servicio para crear el registro
+        if (error) {
+            console.error("Error al crear el registro:", error);
+            return;
+        }
+    
+        // 2. Eliminar la solicitud después de crear el registro
+        await deleteSolicitud(currentSolicitud.id_solicitud);
+    
+        // 3. Actualizar el estado de la solicitud en el frontend
         setSolicitudes((prev) =>
-            prev.map((sol) =>
-                sol.id_solicitud === currentSolicitud.id_solicitud
-                    ? { ...sol, estado: 'rechazada', observaciones: updatedSolicitud.observaciones }
-                    : sol
-            )
+            prev.filter((sol) => sol.id_solicitud !== currentSolicitud.id_solicitud)
         );
         setShowRejectPopup(false);
     };
+    
 
     const solicitudesConNombreConductor = solicitudes.map(solicitud => {
         const rutSolicitud = solicitud.rut_conductor ? solicitud.rut_conductor.replace(/[^\d-]+/g, "") : null;  
@@ -92,6 +136,8 @@ const Solicitudes = () => {
         .filter((solicitud) => solicitud.estado === 'pendiente')
         .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId));
 
+    console.log("Solicitudes filtradas:", filteredSolicitudes);
+    
     return (
         <div className='main-container'>
             <div className='table-container'>

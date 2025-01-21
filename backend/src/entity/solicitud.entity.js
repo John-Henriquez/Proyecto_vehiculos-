@@ -81,6 +81,12 @@ const SolicitudSchema = new EntitySchema({
       joinColumn: { name: "rut_conductor", referencedColumnName: "rut_conductor" },
       onDelete: "SET NULL",
     },
+    solicitud: {
+      target: "Solicitud",
+      type: "many-to-one",
+      joinColumn: { name: "id_solicitud", referencedColumnName: "id_solicitud" },
+      onDelete: "SET NULL",  // Cambiado para mantener registros
+    },
   },
   indices: [
     {
