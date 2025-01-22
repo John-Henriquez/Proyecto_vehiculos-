@@ -136,7 +136,7 @@ const Solicitudes = () => {
         .filter((solicitud) => solicitud.estado === 'pendiente')
         .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId));
 
-    console.log("Solicitudes filtradas:", filteredSolicitudes);
+    //console.log("Solicitudes filtradas:", filteredSolicitudes);
     
     return (
         <div className='main-container'>

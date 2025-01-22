@@ -16,7 +16,6 @@ import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 export default function SolicitudesTable({ data, onAccept, onReject }) {
   const { tiposVehiculos } = useGetTiposVehiculos();
 
-  // Función para obtener el nombre del tipo de vehículo según su ID
   const getTipoVehiculoNombre = (id) => {
     const tipo = tiposVehiculos.find((t) => t.id_tipo_vehiculo === id);
     return tipo ? tipo.nombre : "Desconocido";
@@ -31,7 +30,6 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
             <TableCell>Nombre Agrupación</TableCell>
             <TableCell>Número Teléfono</TableCell>
             <TableCell>Fecha Solicitud</TableCell>
-            <TableCell>Fecha Salida</TableCell>
             <TableCell>Destino</TableCell>
             <TableCell>Tipo Vehículo</TableCell>
             <TableCell>Acciones</TableCell>
@@ -43,8 +41,7 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
               <TableCell>{row.id_solicitud}</TableCell>
               <TableCell>{row.nombre_agrupacion}</TableCell>
               <TableCell>{row.numero_telefono}</TableCell>
-              <TableCell>{row.fechaSolicitud}</TableCell>
-              <TableCell>{row.fechaSalida}</TableCell>
+              <TableCell>{row.fecha_creacion}</TableCell>
               <TableCell>{row.destino}</TableCell>
               <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
               <TableCell>

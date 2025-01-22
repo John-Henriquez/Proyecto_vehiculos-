@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
 import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 
-export default function AcceptPopup({ show, setShow, data, action, vehiculos }) {
+export default function AcceptPopup({ show, setShow, data, action, vehiculos, conductores }) {
     const solicitudData = data && data.length > 0 ? data[0] : {};
+
+    console.log("AcceptPopUp - conductores recibidos", conductores); 
 
     const handleSubmit = (formData) => {
         action(formData);
@@ -39,13 +40,15 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos }) 
                                     required: false,
                                 },
                                 {
-                                    label: 'RUT del Conductor',
+                                    label: 'Conductor',
                                     name: 'rutConductor',
-                                    defaultValue: solicitudData.rut_conductor || '',
-                                    placeholder: 'Escribe el RUT del conductor...',
-                                    fieldType: 'input',
-                                    type: 'text',
+                                    fieldType: 'select',
+                                    options: conductores.map(conductor => ({
+                                        value: conductor.rut_conductor,
+                                        label: `${conductor.nombre} - ${conductor.rut_conductor}`
+                                    })),
                                     required: true,
+                                    defeatValue: '',
                                 },
                                 {
                                     label: 'Vehículo',

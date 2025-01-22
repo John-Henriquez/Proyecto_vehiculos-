@@ -64,7 +64,8 @@ export async function getRegistrosByVehiculo(req, res) {
 export async function createRegistro(req, res) {
   try {
     const { id_solicitud } = req.body;  
-    const [solicitud, errorSolicitud] = await getSolicitudService(id_solicitud);  
+    console.log("registro.controller - Creando registro para la solicitud con ID:", id_solicitud);
+    const [solicitud, errorSolicitud] = await getSolicitudService(id_solicitud); 
 
     if (errorSolicitud || !solicitud) {
       return res.status(404).json({ error: "Solicitud no encontrada" });

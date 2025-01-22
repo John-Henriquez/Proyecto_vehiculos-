@@ -4,11 +4,11 @@ import { formatSolicitudData } from '@helpers/formatSolicitudData.js';
 export async function getAllSolicitudes() {
     try {
         const { data } = await axios.get('/application/');
-        console.log('Respuesta completa del backend:', data);
+        //console.log('Respuesta completa del backend:', data);
         
         if (data && Array.isArray(data.data)) {
             const formattedData = data.data.map(formatSolicitudData);
-            console.log('Solicitudes formateadas:', formattedData);
+            //console.log('Solicitudes formateadas:', formattedData);
             return formattedData;
         } else {
             console.error('La respuesta no contiene el formato esperado:', data);
@@ -35,9 +35,6 @@ export const createSolicitud = async (data) => {
     try {
         console.log('Enviando datos de nueva solicitud:', data);
         const response = await axios.post('/application/add', data, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
         });
         console.log('Respuesta al crear solicitud:', response.data);
         return { success: true, message: response.data.message || 'Solicitud creada correctamente' };

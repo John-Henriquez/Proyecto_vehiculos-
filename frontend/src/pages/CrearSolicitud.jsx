@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { createSolicitud } from '../services/solicitudes.service';
-import { getAllVehiculos } from '../services/vehiculos.service';
+import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos';
 import '../styles/crearSolicitud.css'; 
 
 const formatDate = (date) => {
-  const [year, month, day] = date.split("-");
-  return `${day}-${month}-${year}`;
+  if (!date || !date.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)) {
+    return date; 
+  }
+  const [day, month, year] = date.split("/");  
+  return `${year}-${month}-${day}`;  
 };
+
 
 export default function VehicleRequestForm() {
   const [formData, setFormData] = useState({
@@ -18,8 +22,9 @@ export default function VehicleRequestForm() {
     placaPatente: '',
     observaciones: '',
     prioridad: 'alta',
-    rutConductor: '',
-    rutSolicitante: ''
+    rutSolicitante: '',
+    fechaRegreso: '',
+    idTipoVehiculo: '',
   });
 
   const [errors, setErrors] = useState({
@@ -27,27 +32,13 @@ export default function VehicleRequestForm() {
     nombreAgrupacion: '',
     numTelefono: '',
     destino: '',
-    placaPatente: '',
-    rutConductor: ''
+    rutSolicitante: '',
   });
 
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [vehiculos, setVehiculos] = useState([]);
-
-  useEffect(() => {
-    const fetchVehiculos = async () => {
-      try {
-        const data = await getAllVehiculos();
-        setVehiculos(data);
-      } catch (error) {
-        console.error('Error al cargar los vehículos:', error);
-      }
-    };
-
-    fetchVehiculos();
-  }, []);
+  const { tiposVehiculos } = useGetTiposVehiculos();
 
   const validate = () => {
     let valid = true;
@@ -86,21 +77,30 @@ export default function VehicleRequestForm() {
     e.preventDefault();
 
     if (validate()) {
+      if (!isValidDate(formData.fechaSalida) || !isValidDate(formData.fechaRegreso)) {
+        setErrorMessage('Las fechas deben tener el formato dd/mm/yyyy');
+        return;
+      }
       try {
-        const formattedDate = formatDate(formData.fechaSalida);
+        const formattedFechaSalida = formatDate(formData.fechaSalida); // Formateamos la fecha
+      const formattedFechaRegreso = formatDate(formData.fechaRegreso);
 
         const finalFormData = {
           fecha_salida: formattedDate,
           nombre_agrupacion: formData.nombreAgrupacion,
-          num_telefono: formData.numTelefono,
+          numero_telefono: formData.numTelefono, // Cambiado a "numero_telefono"
           fecha_solicitud: formData.fechaSolicitud,
           destino: formData.destino,
-          placa_patente: formData.placaPatente,
           observaciones: formData.observaciones,
           prioridad: formData.prioridad,
-          rut_conductor: formData.rutConductor,
-          rut_solicitante: formData.rutSolicitante
+          rut_solicitante: formData.rutSolicitante,
+          fecha_regreso: formData.fechaRegreso,
+          id_tipo_vehiculo: Number(formData.idTipoVehiculo), // Convertir a número
+          placa_patente: formData.placaPatente || "", // Incluyendo si está vacío
+          rut_conductor: formData.rutConductor || "", // Incluyendo si está vacío
+          estado: 'pendiente',
         };
+        
         const response = await createSolicitud(finalFormData);
         console.log("Respuesta del servidor:", response);
 
@@ -186,6 +186,18 @@ export default function VehicleRequestForm() {
             />
             {errors.fechaSalida && <p className="error-message">{errors.fechaSalida}</p>}
           </div>
+           {/* Fecha de regreso */}
+           <div className="form-group">
+            <label htmlFor="fechaRegreso">Fecha de regreso</label>
+            <input
+              id="fechaRegreso"
+              name="fechaRegreso"
+              type="date"
+              value={formData.fechaRegreso}
+              onChange={handleChange}
+              className="input"
+            />
+          </div>
 
           {/* Número de teléfono */}
           <div className="form-group">
@@ -214,6 +226,28 @@ export default function VehicleRequestForm() {
               placeholder="Destino"
             />
             {errors.destino && <p className="error-message">{errors.destino}</p>}
+          </div>
+
+          {/* Tipo de vehículo */}  
+          <div className="form-group">
+            <label htmlFor="idTipoVehiculo">Tipo de vehículo</label>
+            <select
+              id="idTipoVehiculo"
+              name="idTipoVehiculo"
+              value={formData.idTipoVehiculo}
+              onChange={handleChange}
+              className="input"
+              >
+              {tiposVehiculos.length === 0 ? (
+                <option value="">Cargando tipos de vehículos...</option>
+              ) : (
+                tiposVehiculos.map((tipo) => (
+                  <option key={tipo.id_tipo_vehiculo} value={tipo.id_tipo_vehiculo}>
+                    {tipo.nombre}
+                  </option>
+                ))
+              )}
+            </select>
           </div>
 
           {/* Observaciones */}
