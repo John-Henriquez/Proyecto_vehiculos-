@@ -11,8 +11,17 @@ import {
 } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
 export default function SolicitudesTable({ data, onAccept, onReject }) {
+  const { tiposVehiculos } = useGetTiposVehiculos();
+
+  // Función para obtener el nombre del tipo de vehículo según su ID
+  const getTipoVehiculoNombre = (id) => {
+    const tipo = tiposVehiculos.find((t) => t.id_tipo_vehiculo === id);
+    return tipo ? tipo.nombre : "Desconocido";
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -24,6 +33,7 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
             <TableCell>Fecha Solicitud</TableCell>
             <TableCell>Fecha Salida</TableCell>
             <TableCell>Destino</TableCell>
+            <TableCell>Tipo Vehículo</TableCell>
             <TableCell>Acciones</TableCell>
           </TableRow>
         </TableHead>
@@ -32,12 +42,13 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
             <TableRow key={row.id_solicitud}>
               <TableCell>{row.id_solicitud}</TableCell>
               <TableCell>{row.nombre_agrupacion}</TableCell>
-              <TableCell>{row.num_telefono}</TableCell>
-              <TableCell>{row.fecha_solicitud}</TableCell>
-              <TableCell>{row.fecha_salida}</TableCell>
+              <TableCell>{row.numero_telefono}</TableCell>
+              <TableCell>{row.fechaSolicitud}</TableCell>
+              <TableCell>{row.fechaSalida}</TableCell>
               <TableCell>{row.destino}</TableCell>
+              <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
               <TableCell>
-                {row.estado === "pendiente" && (
+                {row.estado === "pendiente" ? (
                   <>
                     <IconButton color="success" onClick={() => onAccept(row.id_solicitud)}>
                       <CheckIcon />
@@ -46,8 +57,9 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
                       <CloseIcon />
                     </IconButton>
                   </>
+                ) : (
+                  <span>{row.estado}</span>
                 )}
-                {row.estado !== "pendiente" && <span>{row.estado}</span>}
               </TableCell>
             </TableRow>
           ))}
