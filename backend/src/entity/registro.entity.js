@@ -12,15 +12,38 @@ const RegistroSchema = new EntitySchema({
     },
     id_solicitud: {
       type: "int",
-      generated: true,
+      nullable: false,
     },
-    placa_vehiculo: {
+    nombre_agrupacion: {
       type: "varchar",
-      length: 20,
-      nullable: true,
+      length: 100,
+      nullable: false,
+    },
+    num_telefono: {
+      type: "varchar",
+      length: 15,
+      nullable: false,
     },
     fecha_solicitud: {
       type: "date",
+      nullable: false,
+    },
+    fecha_salida: {
+      type: "date",
+      nullable: false,
+    },
+    fecha_regreso: {
+      type: "date",
+      nullable: true,
+    },
+    destino: {
+      type: "varchar",
+      length: 150,
+      nullable: false,
+    },
+    prioridad: {
+      type: "varchar",
+      length: 10,
       nullable: false,
     },
     estado: {
@@ -32,29 +55,33 @@ const RegistroSchema = new EntitySchema({
       type: "text",
       nullable: true,
     },
-    prioridad: {
+    placa_vehiculo: {
       type: "varchar",
-      length: 10,
-      nullable: false,
+      length: 20,
+      nullable: true,
+    },
+    rut_conductor: {
+      type: "varchar",
+      length: 15,
+      nullable: true,
     },
     fecha_cambio_estado: {
-      type: "date",
-      nullable: false,
+      type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
+    },
   },
-},
   relations: {
     vehiculo: {
       target: "Vehiculo",
       type: "many-to-one",
       joinColumn: { name: "placa_vehiculo", referencedColumnName: "placa" },
-      onDelete: "CASCADE",
+      onDelete: "SET NULL",
     },
     solicitud: {
       target: "Solicitud",
       type: "many-to-one",
       joinColumn: { name: "id_solicitud", referencedColumnName: "id_solicitud" },
-      onDelete: "SET NULL",
+      onDelete: "CASCADE",
     },
   },
   indices: [

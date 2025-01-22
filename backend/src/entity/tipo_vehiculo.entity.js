@@ -18,7 +18,7 @@ relations: {
   vehiculos: {
     target: "Vehiculo",
     type: "one-to-many",
-    inverseSide: "tipoVehiculo", // Relación inversa
+    inverseSide: "tipoVehiculo", 
     cascade: true,
   },
 },

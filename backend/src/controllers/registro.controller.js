@@ -5,13 +5,14 @@ import {
   getRegistroService, 
   createRegistroService, 
   deleteRegistroService, 
-  updateRegistroService } from "../services/registro.service.js";
+  updateRegistroService 
+} from "../services/registro.service.js";
 
 export async function getAllRegistros(req, res) {
   try {
     const [registros, error] = await getAllRegistrosService();
 
-    if (error) {
+    if (error || !registros) {
       return res.status(404).json({ error: "No se encontraron registros" });
     }
 
@@ -22,13 +23,12 @@ export async function getAllRegistros(req, res) {
   }
 }
 
-
 export async function getRegistroById(req, res) {
   try {
     const { id_registro } = req.params;
     const [registro, error] = await getRegistroService(id_registro);
 
-    if (error) {
+    if (error || !registro) {
       return res.status(404).json({ error: "Registro no encontrado" });
     }
 
@@ -39,12 +39,14 @@ export async function getRegistroById(req, res) {
   }
 }
 
-
 export async function getRegistrosByVehiculo(req, res) {
   try {
     const { placa } = req.params;
     const [registros, error] = await getAllRegistrosService();
 
+    if (error || !registros) {
+      return res.status(404).json({ error: "No se encontraron registros" });
+    }
 
     const registrosFiltrados = registros.filter(registro => registro.placa_vehiculo === placa);
 
@@ -59,21 +61,19 @@ export async function getRegistrosByVehiculo(req, res) {
   }
 }
 
-
 export async function createRegistro(req, res) {
   try {
     const { id_solicitud } = req.body;  
-    const solicitud = await getSolicitudService(id_solicitud);  
+    const [solicitud, errorSolicitud] = await getSolicitudService(id_solicitud);  
 
-    if (!solicitud) {
+    if (errorSolicitud || !solicitud) {
       return res.status(404).json({ error: "Solicitud no encontrada" });
     }
 
-    const result = await createRegistroService(solicitud);
-    const [registro, error] = result;
+    const [registro, error] = await createRegistroService(solicitud);
 
-    if (error) {
-      return res.status(500).json({ error: error });
+    if (error || !registro) {
+      return res.status(500).json({ error: error || "No se pudo crear el registro" });
     }
 
     return res.status(201).json(registro);
@@ -83,19 +83,16 @@ export async function createRegistro(req, res) {
   }
 }
 
-
-
-
 export async function deleteRegistro(req, res) {
   try {
     const { id_registro } = req.params;  
     const [registro, error] = await deleteRegistroService(id_registro);
 
-    if (error) {
+    if (error || !registro) {
       return res.status(404).json({ error: "Registro no encontrado" });
     }
 
-    return res.status(200).json({ message: "Registro eliminado", registro });
+    return res.status(200).json({ message: "Registro eliminado correctamente", registro });
   } catch (error) {
     console.error("Error al eliminar el registro:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
@@ -108,11 +105,11 @@ export async function updateRegistro(req, res) {
     const registroData = req.body;  
     const [registro, error] = await updateRegistroService(id_registro, registroData);
 
-    if (error) {
-      return res.status(404).json({ error: "Registro no encontrado" });
+    if (error || !registro) {
+      return res.status(404).json({ error: "Registro no encontrado o no se pudo actualizar" });
     }
 
-    return res.status(200).json({ message: "Registro actualizado", registro });
+    return res.status(200).json({ message: "Registro actualizado correctamente", registro });
   } catch (error) {
     console.error("Error al actualizar el registro:", error);
     return res.status(500).json({ error: "Error interno del servidor" });

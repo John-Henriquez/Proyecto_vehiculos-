@@ -15,33 +15,34 @@ const SolicitudSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
-    rut_creador: { // Nueva columna
+    rut_creador: {
       type: "varchar",
       length: 20,
       nullable: false, 
     },
-    fecha_salida: {
-      type: "date",
-      nullable: false,
-    },
     nombre_agrupacion: {
       type: "varchar",
       length: 100,
-      nullable: true,
+      nullable: false,
     },
-    num_telefono: {
+    numero_telefono: {
       type: "varchar",
       length: 20,
-      nullable: true,
+      nullable: false,
     },
-    fecha_solicitud: {
+    fecha_creacion: {
+      type: "date",
+      default: () => "CURRENT_DATE",
+      nullable: false,
+    },
+    fecha_salida: {
       type: "date",
       nullable: true,
     },
     destino: {
       type: "varchar",
       length: 225,
-      nullable: false,
+      nullable: true,
     },
     placa_patente: {
       type: "varchar",
@@ -51,7 +52,6 @@ const SolicitudSchema = new EntitySchema({
     estado: {
       type: "varchar",
       length: 20,
-      default: "pendiente",
       nullable: false,
     },
     observaciones: {
@@ -72,25 +72,24 @@ const SolicitudSchema = new EntitySchema({
       type: "timestamp",
       nullable: true,
     },
+    cantidad_pasajeros: {
+      type: "int",
+      nullable: true,
+    },
+    id_tipo_vehiculo: {
+      type: "int",
+      nullable: false,
+    },
   },
   relations: {
-    vehiculo: {
-      target: "Vehiculo",
+    tipoVehiculo: {
+      target: "TipoVehiculo",
       type: "many-to-one",
-      joinColumn: { name: "placa_patente", referencedColumnName: "placa" },
-      onDelete: "SET NULL",
-    },
-    conductor: {
-      target: "Conductor",
-      type: "many-to-one",
-      joinColumn: { name: "rut_conductor", referencedColumnName: "rut_conductor" },
-      onDelete: "SET NULL",
-    },
-    solicitud: {
-      target: "Solicitud",
-      type: "many-to-one",
-      joinColumn: { name: "id_solicitud", referencedColumnName: "id_solicitud" },
-      onDelete: "SET NULL",
+      joinColumn: {
+        name: "id_tipo_vehiculo",
+        referencedColumnName: "id_tipo_vehiculo",
+      },
+      onDelete: "CASCADE",
     },
   },
   indices: [

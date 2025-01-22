@@ -5,16 +5,23 @@ import Registro from "../entity/registro.entity.js";
 
 export async function createRegistroService(solicitud) {
   try {
+    console.log("Fecha de solicitud antes de crear registro:", solicitud.fecha_solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
-  
+
     const registroData = {
       id_solicitud: solicitud.id_solicitud,
-      placa_vehiculo: solicitud.placa_patente,
-      fecha_solicitud: solicitud.fecha_solicitud,
+      nombre_agrupacion: solicitud.nombre_agrupacion,
+      num_telefono: solicitud.num_telefono,
+      fecha_solicitud: solicitud.fecha_creacion,
+      fecha_salida: solicitud.fecha_salida,
+      fecha_regreso: solicitud.fecha_regreso || null,  
+      destino: solicitud.destino,
+      prioridad: solicitud.prioridad,
       estado: solicitud.estado,  
-      observaciones: solicitud.observaciones,  
-      prioridad: solicitud.prioridad,  
-      fecha_cambio_estado: new Date(),  
+      observaciones: solicitud.observaciones || null,  
+      placa_vehiculo: solicitud.placa_vehiculo || null,  
+      rut_conductor: solicitud.rut_conductor || null,
+      fecha_cambio_estado: new Date(),
     };
 
     const registro = registroRepository.create(registroData);
@@ -27,11 +34,12 @@ export async function createRegistroService(solicitud) {
   }
 }
 
-
 export async function getAllRegistrosService() {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
-    const registros = await registroRepository.find();
+    const registros = await registroRepository.find({
+      relations: ["vehiculo", "solicitud"], // Incluye relaciones
+    });
 
     return [registros, null];
   } catch (error) {
@@ -45,7 +53,8 @@ export async function getRegistroService(id_registro) {
     const registroRepository = AppDataSource.getRepository(Registro);
     const registro = await registroRepository.findOne({ 
       where: { id_registro },
-     });
+      relations: ["vehiculo", "solicitud"],  // Incluye relaciones
+    });
 
     if (!registro) {
       return [null, "Registro no encontrado"];
@@ -83,7 +92,7 @@ export async function deleteRegistroService(id_registro) {
   try {
     const registroRepository = AppDataSource.getRepository(Registro);
     const registro = await registroRepository.findOne({
-    where: {id_registro }
+      where: { id_registro }
     });
 
     if (!registro) {

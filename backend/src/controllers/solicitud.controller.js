@@ -19,7 +19,7 @@ export async function getSolicitud(req, res) {
     const { id_solicitud } = req.params;
     console.log("solicitudController - Obtener solicitud con id:", id_solicitud);
 
-    const solicitud = await getSolicitudService(id_solicitud, req.user);
+    const solicitud = await getSolicitudService(id_solicitud);
 
     if (!solicitud) {
       return handleErrorClient(res, 404, "Solicitud no encontrada");
@@ -51,41 +51,46 @@ export async function getAllSolicitudes(req, res) {
   }
 }
 
-
 export async function createSolicitud(req, res) {
   try {
-    const {       
-      placa_patente, 
-      fecha_solicitud, 
-      prioridad, 
-      nombre_agrupacion, 
-      num_telefono, 
-      fecha_salida, 
-      destino, 
+    const {
+      rut_solicitante,
+      nombre_agrupacion,
+      numero_telefono,
+      fecha_salida,
+      destino,
+      placa_patente,
+      estado,
       observaciones,
       rut_conductor,
-      rut_solicitante  // Este sigue siendo el valor que el usuario debe enviar
+      prioridad,
+      fecha_regreso,
+      cantidad_pasajeros,
+      id_tipo_vehiculo,
     } = req.body;
 
-    if (!fecha_solicitud || !prioridad || !nombre_agrupacion || !num_telefono || !rut_solicitante) {
+    if (!rut_solicitante || !nombre_agrupacion || !numero_telefono || !estado || !prioridad || !id_tipo_vehiculo) {
       return handleErrorClient(res, 400, "Faltan campos obligatorios en la solicitud");
     }
 
     const solicitudData = {
-      rut_solicitante,  // Este campo sigue siendo proporcionado por el usuario
-      placa_patente,
-      fecha_solicitud,
-      prioridad,
+      rut_solicitante,
       nombre_agrupacion,
-      num_telefono,
+      numero_telefono,
       fecha_salida,
       destino,
-      observaciones,
-      rut_conductor,
+      placa_patente: placa_patente || null,
+      estado,
+      observaciones: observaciones || null,
+      rut_conductor: rut_conductor || null, 
+      prioridad,
+      fecha_regreso: fecha_regreso || null,
+      cantidad_pasajeros: cantidad_pasajeros || null,
+      id_tipo_vehiculo,
     };
 
     console.log("solicitudController - Crear solicitud con los datos:", solicitudData);
-    const solicitud = await createSolicitudService(solicitudData, req.user);  
+    const solicitud = await createSolicitudService(solicitudData, req.user);
 
     return handleSuccess(res, 201, "Solicitud creada exitosamente", solicitud);
   } catch (error) {
@@ -97,15 +102,11 @@ export async function createSolicitud(req, res) {
 export async function updateSolicitud(req, res) {
   try {
     console.log("solicitudController - Parametros recibidos:", req.params);
-    const { id_solicitud } = req.params; 
-    const { estado, observaciones } = req.body;
-
-    if (!estado) {
-      return handleErrorClient(res, 400, "El campo 'estado' es obligatorio");
-    }
+    const { id_solicitud } = req.params;
 
     console.log("solicitudController - Id solicitud a actualizar:", id_solicitud);
-    const solicitud = await updateSolicitudService(id_solicitud, req.body);
+    
+    const solicitud = await updateSolicitudService(id_solicitud, req.body, req.user);
     if (!solicitud) {
       return handleErrorClient(res, 404, "Solicitud no encontrada");
     }
@@ -121,16 +122,6 @@ export async function deleteSolicitud(req, res) {
   try {
     const { id_solicitud } = req.params;
     console.log("solicitudController - Id solicitud a eliminar:", id_solicitud);
-
-    const solicitud = await getSolicitudService(id_solicitud);
-
-    if (!solicitud) {
-      return handleErrorClient(res, 404, "Solicitud no encontrada");
-    }
-
-    if(solicitud.rut_solicitante !== req.user.rut && req.user.rol !== "administrador") {
-      return handleErrorClient(res, 403, "No tienes permiso para eliminar esta solicitud");
-    }
 
     const solicitudEliminada = await deleteSolicitudService(id_solicitud, req.user);
 
