@@ -6,18 +6,19 @@ import Registro from "../entity/registro.entity.js";
 import Conductor from "../entity/conductor.entity.js";
 import { assignConductorService, releaseConductorService } from "./conductor.service.js";
 
-export async function createSolicitudService(solicitudData) {
+export async function createSolicitudService(solicitudData, user) {
   console.log("solicitudService - Solicitud Data:", solicitudData);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    if(!solicitudData.rut_solicitante){
+    if (!solicitudData.rut_solicitante) {
       throw new Error("Rut solicitante es requerido");
     }
 
     const solicitud = solicitudRepository.create({
       ...solicitudData,
+      rut_creador: user.rut,  
       rut_conductor: solicitudData.rut_conductor || null,
-      placa_patente: solicitudData.placa_patente || null,  
+      placa_patente: solicitudData.placa_patente || null,
     });
 
     console.log("solicitudService - Creando solicitud:", solicitud);
@@ -30,7 +31,7 @@ export async function createSolicitudService(solicitudData) {
     }
 
     console.log("solicitudService - Solicitud creada con éxito:", solicitud);
-    return solicitud; 
+    return solicitud;
   } catch (error) {
     throw new Error(error.message || "Error al crear la solicitud");
   }

@@ -64,7 +64,7 @@ export async function createSolicitud(req, res) {
       destino, 
       observaciones,
       rut_conductor,
-      rut_solicitante
+      rut_solicitante  // Este sigue siendo el valor que el usuario debe enviar
     } = req.body;
 
     if (!fecha_solicitud || !prioridad || !nombre_agrupacion || !num_telefono || !rut_solicitante) {
@@ -72,7 +72,7 @@ export async function createSolicitud(req, res) {
     }
 
     const solicitudData = {
-      rut_solicitante,
+      rut_solicitante,  // Este campo sigue siendo proporcionado por el usuario
       placa_patente,
       fecha_solicitud,
       prioridad,
@@ -81,11 +81,11 @@ export async function createSolicitud(req, res) {
       fecha_salida,
       destino,
       observaciones,
-      rut_conductor
+      rut_conductor,
     };
 
     console.log("solicitudController - Crear solicitud con los datos:", solicitudData);
-    const solicitud = await createSolicitudService(solicitudData);
+    const solicitud = await createSolicitudService(solicitudData, req.user);  
 
     return handleSuccess(res, 201, "Solicitud creada exitosamente", solicitud);
   } catch (error) {

@@ -15,6 +15,11 @@ const SolicitudSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
+    rut_creador: { // Nueva columna
+      type: "varchar",
+      length: 20,
+      nullable: false, 
+    },
     fecha_salida: {
       type: "date",
       nullable: false,
@@ -61,11 +66,11 @@ const SolicitudSchema = new EntitySchema({
     prioridad: {
       type: "varchar",
       length: 10,
-      nullable: false, 
+      nullable: false,
     },
     fecha_regreso: {
       type: "timestamp",
-      nullable: true, 
+      nullable: true,
     },
   },
   relations: {
@@ -85,7 +90,7 @@ const SolicitudSchema = new EntitySchema({
       target: "Solicitud",
       type: "many-to-one",
       joinColumn: { name: "id_solicitud", referencedColumnName: "id_solicitud" },
-      onDelete: "SET NULL",  // Cambiado para mantener registros
+      onDelete: "SET NULL",
     },
   },
   indices: [
