@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 import { createSolicitud } from '../services/solicitudes.service';
 import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos';
+import { showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
+import { useNavigate } from 'react-router-dom';
 import '../styles/crearSolicitud.css'; 
 
-const formatDate = (date) => {
+const formatDateForBackend = (date) => {
   if (!date || !date.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)) {
-    return date; 
+    return date;
   }
-  const [day, month, year] = date.split("/");  
-  return `${year}-${month}-${day}`;  
+  const [day, month, year] = date.split("/");
+  return `${year}-${month}-${day}`;
 };
 
-
 export default function VehicleRequestForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fechaSalida: '',
     nombreAgrupacion: '',
@@ -77,27 +79,20 @@ export default function VehicleRequestForm() {
     e.preventDefault();
 
     if (validate()) {
-      if (!isValidDate(formData.fechaSalida) || !isValidDate(formData.fechaRegreso)) {
-        setErrorMessage('Las fechas deben tener el formato dd/mm/yyyy');
-        return;
-      }
       try {
-        const formattedFechaSalida = formatDate(formData.fechaSalida); // Formateamos la fecha
-      const formattedFechaRegreso = formatDate(formData.fechaRegreso);
-
         const finalFormData = {
-          fecha_salida: formattedDate,
+          fecha_salida: formatDateForBackend(formData.fechaSalida),
+          fecha_regreso: formatDateForBackend(formData.fechaRegreso),
           nombre_agrupacion: formData.nombreAgrupacion,
-          numero_telefono: formData.numTelefono, // Cambiado a "numero_telefono"
-          fecha_solicitud: formData.fechaSolicitud,
+          numero_telefono: formData.numTelefono,
+          fecha_solicitud: formData.fechaSolicitud, 
           destino: formData.destino,
           observaciones: formData.observaciones,
           prioridad: formData.prioridad,
           rut_solicitante: formData.rutSolicitante,
-          fecha_regreso: formData.fechaRegreso,
-          id_tipo_vehiculo: Number(formData.idTipoVehiculo), // Convertir a número
-          placa_patente: formData.placaPatente || "", // Incluyendo si está vacío
-          rut_conductor: formData.rutConductor || "", // Incluyendo si está vacío
+          id_tipo_vehiculo: Number(formData.idTipoVehiculo),
+          placa_patente: formData.placaPatente || "",
+          rut_conductor: formData.rutConductor || "",
           estado: 'pendiente',
         };
         
@@ -105,8 +100,10 @@ export default function VehicleRequestForm() {
         console.log("Respuesta del servidor:", response);
 
         if (response?.success === true) {
-          setSuccessMessage('Solicitud creada exitosamente');
-          setErrorMessage('');
+          showSuccessAlert('¡Registrado!','Solicitud enviada exitosamente');
+          setTimeout(() => {
+              navigate('/applications');  
+          }, 1000)
         } else {
           setErrorMessage(response.message || 'Error al crear la solicitud');
         }
@@ -238,6 +235,7 @@ export default function VehicleRequestForm() {
               onChange={handleChange}
               className="input"
               >
+              <option value="">Seleccione tipo de vehículo</option>
               {tiposVehiculos.length === 0 ? (
                 <option value="">Cargando tipos de vehículos...</option>
               ) : (

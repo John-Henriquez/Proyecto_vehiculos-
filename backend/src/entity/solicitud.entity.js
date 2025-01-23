@@ -69,7 +69,7 @@ const SolicitudSchema = new EntitySchema({
       nullable: false,
     },
     fecha_regreso: {
-      type: "timestamp",
+      type: "date",
       nullable: true,
     },
     cantidad_pasajeros: {

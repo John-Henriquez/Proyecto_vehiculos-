@@ -8,6 +8,14 @@ import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
 
+const formatDateForFrontend = (date) => {
+    if (!date || !date.match(/^(\d{4})-(\d{2})-(\d{2})$/)) {
+      return date;
+    }
+    const [year, month, day] = date.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
 const Solicitudes = () => {
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
@@ -26,6 +34,9 @@ const Solicitudes = () => {
                         ...solicitud,
                         placa_vehiculo: solicitud.placaPatente || solicitud.placa_patente || 'SIN PLACA', 
                         rut_conductor: solicitud.rut_conductor || null, 
+                        fecha_solicitud: formatDateForFrontend(solicitud.fecha_solicitud),
+                        fecha_salida: formatDateForFrontend(solicitud.fecha_salida),
+                        fecha_regreso: formatDateForFrontend(solicitud.fecha_regreso),
                     };
                 });
 
@@ -132,11 +143,13 @@ const Solicitudes = () => {
         };
     });
 
+    console.log("Solicitudes - Solicitudes con nombre de conductor:", solicitudesConNombreConductor);
+
     const filteredSolicitudes = solicitudesConNombreConductor
         .filter((solicitud) => solicitud.estado === 'pendiente')
         .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId));
 
-    //console.log("Solicitudes filtradas:", filteredSolicitudes);
+    console.log("Solicitudes - Solicitudes filtradas:", filteredSolicitudes);
     
     return (
         <div className='main-container'>

@@ -30,6 +30,8 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
             <TableCell>Nombre Agrupación</TableCell>
             <TableCell>Número Teléfono</TableCell>
             <TableCell>Fecha Solicitud</TableCell>
+            <TableCell>Fecha Salida</TableCell>
+            <TableCell>Fecha Llegada</TableCell>            
             <TableCell>Destino</TableCell>
             <TableCell>Tipo Vehículo</TableCell>
             <TableCell>Acciones</TableCell>
@@ -42,6 +44,8 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
               <TableCell>{row.nombre_agrupacion}</TableCell>
               <TableCell>{row.numero_telefono}</TableCell>
               <TableCell>{row.fecha_creacion}</TableCell>
+              <TableCell>{row.fecha_salida}</TableCell>
+              <TableCell>{row.fecha_regreso}</TableCell>
               <TableCell>{row.destino}</TableCell>
               <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
               <TableCell>
