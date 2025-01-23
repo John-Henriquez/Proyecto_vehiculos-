@@ -8,53 +8,46 @@ import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
 
-const formatDateForFrontend = (date) => {
-    if (!date || !date.match(/^(\d{4})-(\d{2})-(\d{2})$/)) {
-      return date;
-    }
-    const [year, month, day] = date.split("-");
-    return `${day}/${month}/${year}`;
-  };
-
 const Solicitudes = () => {
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
-    const [filterId, setFilterId] = useState('');
     const [vehiculos, setVehiculos] = useState([]);
+    const [filterId, setFilterId] = useState('');
     const [showAcceptPopup, setShowAcceptPopup] = useState(false);
     const [showRejectPopup, setShowRejectPopup] = useState(false);
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
-            const fetchedSolicitudes = await getAllSolicitudes();
-            if (Array.isArray(fetchedSolicitudes)) {
-                const solicitudesNormalizadas = fetchedSolicitudes.map(solicitud => {
-                    return {
-                        ...solicitud,
-                        placa_vehiculo: solicitud.placaPatente || solicitud.placa_patente || 'SIN PLACA', 
-                        rut_conductor: solicitud.rut_conductor || null, 
-                        fecha_solicitud: formatDateForFrontend(solicitud.fecha_solicitud),
-                        fecha_salida: formatDateForFrontend(solicitud.fecha_salida),
-                        fecha_regreso: formatDateForFrontend(solicitud.fecha_regreso),
-                    };
-                });
+            try {
+                const fetchedSolicitudes = await getAllSolicitudes();
+                console.log('Solicitudes - Respuesta de solicitudes:', fetchedSolicitudes);
 
-                setSolicitudes(solicitudesNormalizadas);
-            } else {
-                console.error('La respuesta de solicitudes no es un arreglo:', fetchedSolicitudes);
+                if (Array.isArray(fetchedSolicitudes)) {
+                    // Usamos directamente la respuesta del backend sin modificarla
+                    setSolicitudes(fetchedSolicitudes);
+                } else {
+                    console.error('La respuesta de solicitudes no contiene un arreglo válido');
+                }
+            } catch (error) {
+                console.error('Error al obtener las solicitudes:', error);
+                setSolicitudes([]);
             }
         };
-
+        
         const fetchVehiculos = async () => {
-            const fetchedVehiculos = await getAllVehiculos();
-            setVehiculos(fetchedVehiculos);
+            try {
+                const fetchedVehiculos = await getAllVehiculos();
+                setVehiculos(fetchedVehiculos);
+            } catch (error) {
+                console.error('Error al obtener los vehículos:', error);
+            }
         };
-
+    
         fetchSolicitudes();
         fetchVehiculos();
     }, []);
-
+    
     const handleAccept = (solicitud) => {
         console.log("handleAccept:", solicitud);
         setCurrentSolicitud(solicitud); 
@@ -132,25 +125,6 @@ const Solicitudes = () => {
         setShowRejectPopup(false);
     };
     
-
-    const solicitudesConNombreConductor = solicitudes.map(solicitud => {
-        const rutSolicitud = solicitud.rut_conductor ? solicitud.rut_conductor.replace(/[^\d-]+/g, "") : null;  
-        const conductor = rutSolicitud ? conductores.find(conductor => conductor.rut_conductor === rutSolicitud) : null;
-
-        return {
-            ...solicitud,
-            nombre_conductor: conductor && conductor.nombre ? conductor.nombre : 'Desconocido', 
-        };
-    });
-
-    console.log("Solicitudes - Solicitudes con nombre de conductor:", solicitudesConNombreConductor);
-
-    const filteredSolicitudes = solicitudesConNombreConductor
-        .filter((solicitud) => solicitud.estado === 'pendiente')
-        .filter((solicitud) => solicitud.id_solicitud.toString().includes(filterId));
-
-    console.log("Solicitudes - Solicitudes filtradas:", filteredSolicitudes);
-    
     return (
         <div className='main-container'>
             <div className='table-container'>
@@ -161,10 +135,13 @@ const Solicitudes = () => {
                     </div>
                 </div>
                 <SolicitudesTable
-                    data={filteredSolicitudes}
+                    data={solicitudes.filter(sol => 
+                        sol.id_solicitud.toString().includes(filterId)
+                    )}
                     onAccept={handleAccept}
                     onReject={handleReject}
                 />
+
             </div>
             {showAcceptPopup && (
                 <AcceptPopup

@@ -42,6 +42,7 @@
 	flex-direction: column;
 	border-radius: 24px;
 	align-items: center;
+	position: relative;
 	h1 {
 		color: #384B70; /*Color del titulo del formulario*/
 		font-size: 30px;
@@ -185,6 +186,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 20px;
 }
 
 input[type='email'] {
@@ -233,3 +235,11 @@ input {
 	height: 25px;
 	margin-top: 4px;
 }
+.logo {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 2vh;
+}
+
+

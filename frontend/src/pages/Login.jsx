@@ -3,6 +3,9 @@ import { login } from '@services/auth.service.js';
 import Form from '@components/Form';
 import useLogin from '@hooks/auth/useLogin.jsx';
 import '@styles/form.css';
+import logo from '../assets/logo_muni.jpg'; 
+
+
 
 const Login = () => {
     const navigate = useNavigate();
@@ -28,6 +31,7 @@ const Login = () => {
 
     return (
         <main className="container">
+            <img src={logo} alt="Escudo" className="logo" />
             <Form
                 title="Iniciar sesión"
                 fields={[

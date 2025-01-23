@@ -13,11 +13,18 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
+// Función para formatear fechas
+const formatDate = (date) => {
+  if (!date) return "-"; // Si no hay fecha, devolvemos un guion
+ // const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  return date;//new Date(date).toLocaleDateString('es-CL', options);
+};
+
 export default function SolicitudesTable({ data, onAccept, onReject }) {
   const { tiposVehiculos } = useGetTiposVehiculos();
 
   const getTipoVehiculoNombre = (id) => {
-    const tipo = tiposVehiculos.find((t) => t.id_tipo_vehiculo === id);
+    const tipo = tiposVehiculos?.find((t) => t.id_tipo_vehiculo === id);
     return tipo ? tipo.nombre : "Desconocido";
   };
 
@@ -38,20 +45,20 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row) => (
+          {data?.length > 0 ? data.map((row) => (
             <TableRow key={row.id_solicitud}>
               <TableCell>{row.id_solicitud}</TableCell>
-              <TableCell>{row.nombre_agrupacion}</TableCell>
-              <TableCell>{row.numero_telefono}</TableCell>
-              <TableCell>{row.fecha_creacion}</TableCell>
-              <TableCell>{row.fecha_salida}</TableCell>
-              <TableCell>{row.fecha_regreso}</TableCell>
-              <TableCell>{row.destino}</TableCell>
+              <TableCell>{row.nombre_agrupacion || "-"}</TableCell>
+              <TableCell>{row.numero_telefono || "-"}</TableCell>
+              <TableCell>{formatDate(row.fecha_creacion)}</TableCell>
+              <TableCell>{formatDate(row.fecha_salida)}</TableCell>
+              <TableCell>{formatDate(row.fecha_regreso)}</TableCell>
+              <TableCell>{row.destino || "Sin destino"}</TableCell>
               <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
               <TableCell>
                 {row.estado === "pendiente" ? (
                   <>
-                    <IconButton color="success" onClick={() => onAccept(row.id_solicitud)}>
+                    <IconButton color="success" onClick={() => onAccept(row)}>
                       <CheckIcon />
                     </IconButton>
                     <IconButton color="error" onClick={() => onReject(row.id_solicitud)}>
@@ -63,7 +70,13 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
                 )}
               </TableCell>
             </TableRow>
-          ))}
+          )) : (
+            <TableRow>
+              <TableCell colSpan={9} align="center">
+                No hay solicitudes disponibles
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </TableContainer>

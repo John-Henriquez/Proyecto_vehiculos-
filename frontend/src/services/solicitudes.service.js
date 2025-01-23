@@ -52,7 +52,7 @@ export async function updateSolicitud(id_solicitud, solicitudData) {
         console.log(`Actualizando solicitud (ID: ${id_solicitud}) con datos:`, solicitudData);
         const { data } = await axios.put(`/application/edit/${id_solicitud}`, solicitudData);
         console.log('Solicitud actualizada:', data);
-        return formatSolicitudData(data.data); 
+        return formatSolicitudData(data); 
     } catch (error) {
         console.error(`Error al actualizar la solicitud ${id_solicitud}:`, error);
         return error.response?.data || { message: `Error al actualizar la solicitud ${id_solicitud}` };
