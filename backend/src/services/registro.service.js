@@ -5,13 +5,12 @@ import Registro from "../entity/registro.entity.js";
 
 export async function createRegistroService(solicitud) {
   try {
-    console.log("Fecha de solicitud antes de crear registro:", solicitud.fecha_solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
 
     const registroData = {
       id_solicitud: solicitud.id_solicitud,
       nombre_agrupacion: solicitud.nombre_agrupacion,
-      num_telefono: solicitud.num_telefono,
+      num_telefono: solicitud.numero_telefono,
       fecha_solicitud: solicitud.fecha_creacion,
       fecha_salida: solicitud.fecha_salida,
       fecha_regreso: solicitud.fecha_regreso || null,  

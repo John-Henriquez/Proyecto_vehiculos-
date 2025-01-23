@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import { getAllSolicitudes } from '../services/solicitudes.service.js';
+import { getAllSolicitudes, deleteSolicitud } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
 import { createRegistro } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
@@ -21,7 +21,7 @@ const Solicitudes = () => {
         const fetchSolicitudes = async () => {
             try {
                 const fetchedSolicitudes = await getAllSolicitudes();
-                console.log('Solicitudes - Respuesta de solicitudes:', fetchedSolicitudes);
+                //console.log('Solicitudes - Respuesta de solicitudes:', fetchedSolicitudes);
 
                 if (Array.isArray(fetchedSolicitudes)) {
                     setSolicitudes(fetchedSolicitudes);
@@ -96,8 +96,7 @@ const Solicitudes = () => {
 
     const handleConfirmReject = async (updatedSolicitud) => {
         console.log("Confirmando rechazo para la solicitud ID:", currentSolicitud.id_solicitud);
-    
-        // 1. Crear un registro con la información de la solicitud rechazada
+
         const registroData = {
             id_solicitud: currentSolicitud.id_solicitud,
             placa_vehiculo: currentSolicitud.placa_vehiculo,
@@ -108,9 +107,9 @@ const Solicitudes = () => {
             fecha_cambio_estado: new Date(), 
         };
     
-        const [registro, error] = await createRegistro(registroData); 
-        if (error) {
-            console.error("Error al crear el registro:", error);
+        const response = await createRegistro(registroData); 
+        if (response.message) {
+            console.error("Error al crear el registro:", response.message);
             return;
         }
     

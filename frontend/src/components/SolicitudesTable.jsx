@@ -35,7 +35,7 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
             <TableCell>ID Solicitud</TableCell>
             <TableCell>Nombre Agrupación</TableCell>
             <TableCell>Número Teléfono</TableCell>
-            <TableCell>Fecha Solicitud</TableCell>
+            <TableCell>Fecha Creacion</TableCell>
             <TableCell>Fecha Salida</TableCell>
             <TableCell>Fecha Llegada</TableCell>            
             <TableCell>Destino</TableCell>

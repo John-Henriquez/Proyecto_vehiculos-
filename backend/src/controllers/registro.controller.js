@@ -65,9 +65,10 @@ export async function createRegistro(req, res) {
   try {
     const { id_solicitud } = req.body;  
     console.log("registro.controller - Creando registro para la solicitud con ID:", id_solicitud);
-    const [solicitud, errorSolicitud] = await getSolicitudService(id_solicitud); 
 
-    if (errorSolicitud || !solicitud) {
+    const solicitud = await getSolicitudService(id_solicitud); 
+
+    if (!solicitud) {
       return res.status(404).json({ error: "Solicitud no encontrada" });
     }
 
