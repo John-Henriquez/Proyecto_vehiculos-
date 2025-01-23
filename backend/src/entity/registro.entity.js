@@ -81,7 +81,7 @@ const RegistroSchema = new EntitySchema({
       target: "Solicitud",
       type: "many-to-one",
       joinColumn: { name: "id_solicitud", referencedColumnName: "id_solicitud" },
-      onDelete: "CASCADE",
+      onDelete: "SET NULL",
     },
   },
   indices: [
