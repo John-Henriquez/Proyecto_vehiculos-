@@ -7,7 +7,6 @@ const useGetTiposVehiculos = () => {
     const fetchTipoVehiculo = async () => {
         try {
             const data = await getTiposVehiculos();  
-            console.log('Tipos de vehículos obtenidos:', data);
             setTiposVehiculos(data);  
         } catch (error) {
             console.error('Error al obtener los tipos de vehículos:', error);

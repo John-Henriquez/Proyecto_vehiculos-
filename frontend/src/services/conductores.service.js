@@ -3,7 +3,7 @@ import axios from './root.service.js';
 export async function getAllConductores() {
     try {
         const { data } = await axios.get('/driver/'); 
-        console.log('Conductores recuperados:', data);
+        //console.log('Conductores recuperados:', data);
         return data; 
     } catch (error) {
         return error.response?.data || { message: "Error al obtener los conductores" };

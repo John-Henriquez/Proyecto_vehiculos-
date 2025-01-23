@@ -3,7 +3,7 @@ import { login } from '@services/auth.service.js';
 import Form from '@components/Form';
 import useLogin from '@hooks/auth/useLogin.jsx';
 import '@styles/form.css';
-import logo from '../assets/logo_muni.jpg'; 
+import logo from '../assets/logo_muni.png'; 
 
 
 

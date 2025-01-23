@@ -24,7 +24,6 @@ const Solicitudes = () => {
                 console.log('Solicitudes - Respuesta de solicitudes:', fetchedSolicitudes);
 
                 if (Array.isArray(fetchedSolicitudes)) {
-                    // Usamos directamente la respuesta del backend sin modificarla
                     setSolicitudes(fetchedSolicitudes);
                 } else {
                     console.error('La respuesta de solicitudes no contiene un arreglo válido');
@@ -75,10 +74,10 @@ const Solicitudes = () => {
             estado: 'aceptada',
             observaciones: updatedSolicitud.observaciones,
             prioridad: currentSolicitud.prioridad,
-            fecha_cambio_estado: new Date(), // Fecha actual
+            fecha_cambio_estado: new Date(), 
         };
     
-        const [registro, error] = await createRegistro(registroData); // Llamada a la función de servicio para crear el registro
+        const [registro, error] = await createRegistro(registroData); 
         if (error) {
             console.error("Error al crear el registro:", error);
             return;
@@ -106,10 +105,10 @@ const Solicitudes = () => {
             estado: 'rechazada',
             observaciones: updatedSolicitud.observaciones,
             prioridad: currentSolicitud.prioridad,
-            fecha_cambio_estado: new Date(), // Fecha actual
+            fecha_cambio_estado: new Date(), 
         };
     
-        const [registro, error] = await createRegistro(registroData); // Llamada a la función de servicio para crear el registro
+        const [registro, error] = await createRegistro(registroData); 
         if (error) {
             console.error("Error al crear el registro:", error);
             return;

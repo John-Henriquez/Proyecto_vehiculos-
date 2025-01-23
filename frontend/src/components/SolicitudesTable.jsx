@@ -13,11 +13,10 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
-// Función para formatear fechas
+
 const formatDate = (date) => {
-  if (!date) return "-"; // Si no hay fecha, devolvemos un guion
- // const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  return date;//new Date(date).toLocaleDateString('es-CL', options);
+  if (!date) return "-"; 
+  return date;
 };
 
 export default function SolicitudesTable({ data, onAccept, onReject }) {
@@ -50,8 +49,8 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
               <TableCell>{row.id_solicitud}</TableCell>
               <TableCell>{row.nombre_agrupacion || "-"}</TableCell>
               <TableCell>{row.numero_telefono || "-"}</TableCell>
-              <TableCell>{formatDate(row.fecha_creacion)}</TableCell>
-              <TableCell>{formatDate(row.fecha_salida)}</TableCell>
+              <TableCell>{formatDate(row.fechaSolicitud)}</TableCell>
+              <TableCell>{formatDate(row.fechaSalida)}</TableCell>
               <TableCell>{formatDate(row.fecha_regreso)}</TableCell>
               <TableCell>{row.destino || "Sin destino"}</TableCell>
               <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
