@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos.jsx';
 import FiltroVehiculo from '../components/FiltroVehiculo.jsx';  
 import { getAllRegistros } from '../services/registro.service.js';
+import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import axios from '../services/root.service.js';
 import { jsPDF } from 'jspdf';
 
 const RegistroSolicitudes = () => {
+    const { conductores } = useGetConductores();
     const [registros, setRegistros] = useState([]);
     const [vehiculos, setVehiculos] = useState([]);
     const [filterId, setFilterId] = useState('');
@@ -125,7 +127,11 @@ const RegistroSolicitudes = () => {
                         <button onClick={handleDownloadPDF} className='btn-download'>Descargar PDF</button>
                     </div>
                 </div>
-                <RegistrosTable data={registrosFiltrados} />
+                <RegistrosTable 
+                data={registrosFiltrados} 
+                conductores={conductores}
+                vehiculos={vehiculos}
+                />
             </div>
         </div>
     );

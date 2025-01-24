@@ -134,8 +134,9 @@ const Solicitudes = () => {
                     </div>
                 </div>
                 <SolicitudesTable
-                    data={solicitudes.filter(sol => 
-                        sol.id_solicitud.toString().includes(filterId)
+                    data={solicitudes
+                        .filter(sol => sol.estado === 'pendiente')
+                        .filter(sol => sol.id_solicitud.toString().includes(filterId)
                     )}
                     onAccept={handleAccept}
                     onReject={handleReject}
