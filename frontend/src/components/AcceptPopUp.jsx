@@ -42,7 +42,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                 },
                                 {
                                     label: 'Conductor',
-                                    name: 'rutConductor',
+                                    name: 'rut_conductor',
                                     fieldType: 'select',
                                     options: conductores.map(conductor => ({
                                         value: conductor.rut_conductor,
@@ -53,7 +53,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                 },
                                 {
                                     label: 'Vehículo',
-                                    name: 'placaPatente',
+                                    name: 'placa_vehiculo',
                                     fieldType: 'select',
                                     options: vehiculos.map(vehiculo => ({
                                         value: vehiculo.placa,

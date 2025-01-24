@@ -6,7 +6,10 @@ import FiltroVehiculo from '../components/FiltroVehiculo.jsx';
 import { getAllRegistros } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import axios from '../services/root.service.js';
+import logo from '../assets/logo_muni.png'; 
 import { jsPDF } from 'jspdf';
+
+
 
 const RegistroSolicitudes = () => {
     const { conductores } = useGetConductores();
@@ -15,6 +18,7 @@ const RegistroSolicitudes = () => {
     const [filterId, setFilterId] = useState('');
     const [filterType, setFilterType] = useState('');
     const { tiposVehiculos } = useGetTiposVehiculos();
+    const [logoBase64, setLogoBase64] = useState('');
 
     useEffect(() => {
         const fetchRegistros = async () => {
@@ -39,7 +43,19 @@ const RegistroSolicitudes = () => {
                 console.error('Error al obtener los vehículos:', error);
             }
         };
+        const convertToBase64 = async () => {
+            const response = await fetch(logo);
+            const blob = await response.blob();
+            const reader = new FileReader();
+            
+            reader.onloadend = () => {
+                setLogoBase64(reader.result);
+            };
+            
+            reader.readAsDataURL(blob);
+        }
 
+        convertToBase64();
         fetchRegistros();
         fetchVehiculos();
     }, []);
@@ -62,11 +78,14 @@ const RegistroSolicitudes = () => {
     };
 
     const handleDownloadPDF = () => {
-        console.log('Datos que se guardarán en el PDF:', registrosFiltrados);
         const doc = new jsPDF();
         doc.setFont('helvetica', 'normal'); 
         doc.setFontSize(14);
     
+        if (logoBase64) {
+            doc.addImage(logoBase64, 'PNG', 10, 5, 30, 15);  // Posición x, y, ancho, alto
+        }
+
         // Encabezado principal
         doc.setFontSize(14); // Tamaño mayor para el encabezado
         doc.text('Informe de Solicitudes', 105, 20, { align: 'center' });
@@ -106,15 +125,18 @@ const RegistroSolicitudes = () => {
             doc.text(`Tipo Vehículo: ${registro.tipo_vehiculo}`, columnRightX, y + 30);
             doc.text(`Vehículo: ${registro.placa_vehiculo}`, columnRightX, y + 40);
             doc.text(`Capacidad Máxima: ${registro.vehiculo.capacidad_maxima}`, columnRightX, y + 50);
+            
+            
+            doc.setDrawColor(173, 216, 230); 
+            doc.setLineWidth(0.5);
+            doc.line(10, y + 70, 200, y + 70);
+            
+            y += 80;  
     
-            // Asegurar que el espacio entre registros sea consistente
-            y += 70;  // Espacio entre registros, ajustable según sea necesario
         });
     
         doc.save('informe_solicitudes.pdf');
     };
-    
-    
     
     return (
         <div className='main-container'>

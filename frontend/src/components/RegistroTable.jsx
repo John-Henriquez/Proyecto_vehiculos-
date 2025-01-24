@@ -59,8 +59,8 @@ export default function RegistrosTable({ data, conductores, vehiculos }) {
               <TableCell>{formatDate(row.fecha_solicitud)}</TableCell>
               <TableCell>{formatDate(row.fecha_salida)}</TableCell>
               <TableCell>{row.destino}</TableCell>
-              <TableCell>{row.placa_vehiculo}</TableCell> {/* Muestra la placa del vehículo */}
-              <TableCell>{getConductorName(row.rut_conductor)}</TableCell> {/* Muestra el nombre del conductor */}
+              <TableCell>{row.placa_vehiculo}</TableCell> 
+              <TableCell>{getConductorName(row.rut_conductor)}</TableCell> 
               <TableCell>{row.estado}</TableCell>
               </TableRow>
             ))

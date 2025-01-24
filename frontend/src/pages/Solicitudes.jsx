@@ -21,8 +21,6 @@ const Solicitudes = () => {
         const fetchSolicitudes = async () => {
             try {
                 const fetchedSolicitudes = await getAllSolicitudes();
-                //console.log('Solicitudes - Respuesta de solicitudes:', fetchedSolicitudes);
-
                 if (Array.isArray(fetchedSolicitudes)) {
                     setSolicitudes(fetchedSolicitudes);
                 } else {
