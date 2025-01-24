@@ -7,7 +7,8 @@ import {
   getSolicitudService,
   updateSolicitudService,
 } from "../services/solicitud.service.js";
-
+import { sendEmail } from "../services/email.service.js";
+import { getUserService } from "../services/user.service.js";
 import {
   handleErrorClient,
   handleErrorServer,
@@ -101,14 +102,40 @@ export async function createSolicitud(req, res) {
 
 export async function updateSolicitud(req, res) {
   try {
-    console.log("solicitudController - Parametros recibidos:", req.params);
+    console.log("Datos del usuario autenticado:", req.user);
     const { id_solicitud } = req.params;
+    const { estado, observaciones } = req.body;
 
     console.log("solicitudController - Id solicitud a actualizar:", id_solicitud);
     
     const solicitud = await updateSolicitudService(id_solicitud, req.body, req.user);
     if (!solicitud) {
       return handleErrorClient(res, 404, "Solicitud no encontrada");
+    }
+
+    const { rut_creador } = solicitud;
+
+    const [usuarioCreador, error] = await getUserService({ rut: rut_creador });
+    if (error) {
+      return handleErrorClient(res, 404, "Creador de la solicitud no encontrado");
+    }
+
+    const emailUsuario = usuarioCreador.email;
+
+    console.log("correo del usuario:", emailUsuario);
+
+    if (estado === "aprobada") {
+      await sendEmail(
+        emailUsuario,
+        "Tu solicitud ha sido aceptada",
+        `Tu solicitud ha sido aceptada.\nDetalles: ${observaciones || "Ninguna"}`
+      );
+    }else if (estado === "rechazada") {
+      await sendEmail(
+        emailUsuario,
+        "Tu solicitud ha sido rechazada",
+        `Tu solicitud ha sido rechazada.\nDetalles: ${observaciones || "Ninguna"}`
+      );
     }
 
     return handleSuccess(res, 200, "Solicitud actualizada exitosamente", solicitud);

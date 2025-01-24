@@ -13,7 +13,7 @@ export async function verifyUserPermission(req, res, next) {
           return next();
       }
 
-        if (solicitud.rut_solicitante !== req.user.rut) {
+        if (solicitud.rut_creador !== req.user.rut) {
           return handleErrorClient(res, 403, "No tienes permiso para acceder a esta solicitud");
         }
 

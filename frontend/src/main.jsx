@@ -49,7 +49,7 @@ const router = createBrowserRouter([
       {
         path: '/add-application', 
         element: (
-          <ProtectedRoute allowedRoles={['administrador']}>
+          <ProtectedRoute allowedRoles={['administrador', 'usuario']}>
             <CrearSolicitud  /> 
           </ProtectedRoute>
         ),
