@@ -30,50 +30,53 @@ const Login = () => {
     };
 
     return (
-        <main className="container">
-            <img src={logo} alt="Escudo" className="logo" />
-            <Form
-                title="Iniciar sesión"
-                fields={[
-                    {
-                        label: "Correo electrónico",
-                        name: "email",
-                        placeholder: "ejemplo@dominio.cl",
-                        fieldType: 'input',
-                        type: "email",
-                        required: true,
-                        minLength: 5,
-                        maxLength: 30,
-                        errorMessageData: errorEmail,
-                        validate: {
-                            emailDomain: (value) => value.includes('@'),
-                        },
-                        onChange: (e) => handleInputChange('email', e.target.value),
-                    },
-                    {
-                        label: "Contraseña",
-                        name: "password",
-                        placeholder: "**********",
-                        fieldType: 'input',
-                        type: "password",
-                        required: true,
-                        minLength: 7,
-                        maxLength: 26,
-                        pattern: /^[a-zA-Z0-9]+$/,
-                        patternMessage: "Debe contener solo letras y números",
-                        errorMessageData: errorPassword,
-                        onChange: (e) => handleInputChange('password', e.target.value)
-                    },
-                ]}
-                buttonText="Iniciar sesión"
-                onSubmit={loginSubmit}
-                footerContent={
-                    <p>
-                        ¿No tienes cuenta?, <a href="/register">¡Regístrate aquí!</a>
-                    </p>
-                }
-            />
-        </main>
+<main className="container">
+    <div className="logo-container">
+        <img src={logo} alt="Escudo" className="logo" />
+    </div>
+    <Form
+        title="Iniciar sesión"
+        fields={[
+            {
+                label: "Correo electrónico",
+                name: "email",
+                placeholder: "ejemplo@dominio.cl",
+                fieldType: 'input',
+                type: "email",
+                required: true,
+                minLength: 5,
+                maxLength: 30,
+                errorMessageData: errorEmail,
+                validate: {
+                    emailDomain: (value) => value.includes('@'),
+                },
+                onChange: (e) => handleInputChange('email', e.target.value),
+            },
+            {
+                label: "Contraseña",
+                name: "password",
+                placeholder: "**********",
+                fieldType: 'input',
+                type: "password",
+                required: true,
+                minLength: 7,
+                maxLength: 26,
+                pattern: /^[a-zA-Z0-9]+$/,
+                patternMessage: "Debe contener solo letras y números",
+                errorMessageData: errorPassword,
+                onChange: (e) => handleInputChange('password', e.target.value)
+            },
+        ]}
+        buttonText="Iniciar sesión"
+        onSubmit={loginSubmit}
+        footerContent={
+            <p>
+                ¿No tienes cuenta?, <a href="/register">¡Regístrate aquí!</a>
+            </p>
+        }
+    />
+</main>
+
     );
 };
 
