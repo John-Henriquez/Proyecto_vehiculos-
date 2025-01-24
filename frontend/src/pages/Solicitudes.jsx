@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import { getAllSolicitudes, deleteSolicitud } from '../services/solicitudes.service.js';
+import { getAllSolicitudes, updateSolicitud } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
 import { createRegistro } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
@@ -48,7 +48,7 @@ const Solicitudes = () => {
     }, []);
     
     const handleAccept = (solicitud) => {
-        console.log("handleAccept:", solicitud);
+        console.log("handleAccept - Solicitud seleccionada para aceptar:", solicitud);
         setCurrentSolicitud(solicitud); 
         setShowAcceptPopup(true); 
     };
@@ -66,32 +66,36 @@ const Solicitudes = () => {
     const handleConfirmAccept = async (updatedSolicitud) => {
         console.log("Confirmando aceptación para la solicitud ID:", currentSolicitud.id_solicitud);
     
-        // 1. Crear un registro con la información de la solicitud aceptada
-        const registroData = {
-            id_solicitud: currentSolicitud.id_solicitud,
-            placa_vehiculo: currentSolicitud.placa_vehiculo,
-            fecha_solicitud: currentSolicitud.fecha_solicitud,
+        // 1. Actualizar la solicitud con los nuevos datos
+        const updatedData = {
+            ...currentSolicitud,
+            placa_patente: updatedSolicitud.placa_vehiculo,
             estado: 'aceptada',
             observaciones: updatedSolicitud.observaciones,
-            prioridad: currentSolicitud.prioridad,
-            fecha_cambio_estado: new Date(), 
+            rut_conductor: updatedSolicitud.rut_conductor,
         };
     
-        const [registro, error] = await createRegistro(registroData); 
-        if (error) {
-            console.error("Error al crear el registro:", error);
-            return;
+        try {
+            // 2. Llamar a la función de actualización de solicitud
+            const updatedSolicitudData = await updateSolicitud(currentSolicitud.id_solicitud, updatedData);
+    
+            if (updatedSolicitudData?.message) {
+                console.error("Error al actualizar la solicitud:", updatedSolicitudData.message);
+                return;
+            }
+    
+            // 3. Eliminar la solicitud del estado (se eliminan del frontend)
+            setSolicitudes((prev) =>
+                prev.filter((sol) => sol.id_solicitud !== updatedData.id_solicitud)
+            );
+    
+            setShowAcceptPopup(false);
+        } catch (error) {
+            console.error("Error en el proceso de aceptación:", error);
         }
-    
-        // 2. Eliminar la solicitud después de crear el registro
-        await deleteSolicitud(currentSolicitud.id_solicitud);
-    
-        // 3. Actualizar el estado de la solicitud en el frontend
-        setSolicitudes((prev) =>
-            prev.filter((sol) => sol.id_solicitud !== currentSolicitud.id_solicitud)
-        );
-        setShowAcceptPopup(false);
     };
+    
+    
     
 
     const handleConfirmReject = async (updatedSolicitud) => {
@@ -113,10 +117,7 @@ const Solicitudes = () => {
             return;
         }
     
-        // 2. Eliminar la solicitud después de crear el registro
-        await deleteSolicitud(currentSolicitud.id_solicitud);
-    
-        // 3. Actualizar el estado de la solicitud en el frontend
+        // 2. Actualizar el estado de la solicitud en el frontend
         setSolicitudes((prev) =>
             prev.filter((sol) => sol.id_solicitud !== currentSolicitud.id_solicitud)
         );

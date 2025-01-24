@@ -24,16 +24,24 @@ export default function RegistrosTable({ data }) {
           </TableRow>
         </TableHead>
         <TableBody>
-        {data.map((row) => (
-            <TableRow key={row.id_registro}>
-              <TableCell>{row.id_registro}</TableCell>
-              <TableCell>{row.placa_vehiculo}</TableCell>
-              <TableCell>{row.fecha_solicitud}</TableCell>
-              <TableCell>{row.observaciones || "Sin observaciones"}</TableCell>
-              <TableCell>{row.prioridad}</TableCell>
-              <TableCell>{row.estado}</TableCell>
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} align="center">
+                No hay solicitudes disponibles
+              </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            data.map((row) => (
+              <TableRow key={row.id_registro}>
+                <TableCell>{row.id_registro}</TableCell>
+                <TableCell>{row.placa_vehiculo}</TableCell>
+                <TableCell>{row.fecha_solicitud}</TableCell>
+                <TableCell>{row.observaciones || "Sin observaciones"}</TableCell>
+                <TableCell>{row.prioridad}</TableCell>
+                <TableCell>{row.estado}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </TableContainer>

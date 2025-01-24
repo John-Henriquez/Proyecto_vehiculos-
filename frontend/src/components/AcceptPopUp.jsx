@@ -8,6 +8,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
     console.log("AcceptPopUp - conductores recibidos", conductores); 
 
     const handleSubmit = (formData) => {
+        console.log("AcceptPopUp - formData", formData);
         action(formData);
     };
 
@@ -48,7 +49,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                         label: `${conductor.nombre} - ${conductor.rut_conductor}`
                                     })),
                                     required: true,
-                                    defeatValue: '',
+                                    defaultValue: '',
                                 },
                                 {
                                     label: 'Vehículo',

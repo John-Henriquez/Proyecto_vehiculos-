@@ -19,10 +19,8 @@ export async function createSolicitudService(solicitudData, user) {
       placa_patente: solicitudData.placa_patente || null,
     });
 
-    console.log("solicitudService - Creando solicitud:", solicitud);
     await solicitudRepository.save(solicitud);
 
-    console.log("solicitudService - Solicitud creada con éxito:");
     return solicitud;
   } catch (error) {
     throw new Error(error.message || "Error al crear la solicitud");
@@ -40,8 +38,9 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       throw new Error("Solicitud no encontrada");
     }
 
-    console.log("solicitudService - Solicitud encontrada:", solicitud);
     const estadoAnterior = solicitud.estado;
+
+    console.log("solicitud.service - Solicitud antes de la actualización:", solicitud);
 
     Object.keys(solicitudData).forEach((key) => {
       if (solicitudData[key] !== undefined) {
@@ -49,11 +48,11 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       }
     });
 
-    console.log("solicitudService - Solicitud actualizada con éxito:", solicitud);
-    console.log("solicitudService - Estado anterior:", estadoAnterior);
-    console.log("solicitudSerice - Estado actualizado:", solicitud.estado);
+    console.log("solicitud.service - Solicitud después de la actualización:", solicitud); 
+
     await solicitudRepository.save(solicitud);
 
+    console.log("solicitud.service - Solicitud guardada en la base de datos:", solicitud);
 
     if ((estadoAnterior !== solicitud.estado) && (solicitud.estado === "aceptada" || solicitud.estado === "rechazada")) {
       
@@ -72,8 +71,9 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
         rut_conductor: solicitud.rut_conductor || null,  
       });
 
-      console.log("solicitudService - Registro creado para solicitud:", registro);
+      console.log("solicitud.service - Registro creado:", registro);
       await registroRepository.save(registro);
+      console.log("solicitud.service - Registro guardado en la base de datos:", registro);
     }
 
     return solicitud;
@@ -83,11 +83,9 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
 }
 
 export async function getAllSolicitudesService() {
-  console.log("solicitudService - Obtener todas las solicitudes");
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitudes = await solicitudRepository.find();
-    console.log("solicitudService - Solicitudes obtenidas:", solicitudes);
     return solicitudes;
   } catch (error) {
     throw new Error(error.message || "Error al obtener las solicitudes");
@@ -95,7 +93,6 @@ export async function getAllSolicitudesService() {
 }
 
 export async function getSolicitudService(id_solicitud) {
-  console.log("solicitudService - Obtener solicitud con id:", id_solicitud);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
@@ -104,7 +101,6 @@ export async function getSolicitudService(id_solicitud) {
       throw new Error("Solicitud no encontrada");
     }
 
-    console.log("solicitudService - Solicitud encontrada:", solicitud);
     return solicitud;
   } catch (error) {
     throw new Error(error.message || "Error al obtener la solicitud");
@@ -112,7 +108,6 @@ export async function getSolicitudService(id_solicitud) {
 }
 
 export async function deleteSolicitudService(id_solicitud, user) {
-  console.log("solicitudService - Eliminar solicitud con id:", id_solicitud, "para el usuario:", user);
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
@@ -126,7 +121,6 @@ export async function deleteSolicitudService(id_solicitud, user) {
     }
 
     await solicitudRepository.remove(solicitud);
-    console.log("solicitudService - Solicitud eliminada");
     return "Solicitud eliminada";
   } catch (error) {
     throw new Error(error.message || "Error al eliminar la solicitud");
