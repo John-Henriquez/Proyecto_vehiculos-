@@ -31,11 +31,13 @@ const Login = () => {
 
     return (
 <main className="container">
-    <div className="logo-container">
-        <img src={logo} alt="Escudo" className="logo" />
-    </div>
     <Form
-        title="Iniciar sesión"
+        title={
+            <div className="logo-container">
+            <img src={logo} alt="Escudo" className="logo" />
+            <h1>Iniciar sesión</h1>
+        </div>
+        }
         fields={[
             {
                 label: "Correo electrónico",
