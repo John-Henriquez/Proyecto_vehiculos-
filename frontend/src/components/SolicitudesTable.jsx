@@ -60,7 +60,7 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
                     <IconButton color="success" onClick={() => onAccept(row)}>
                       <CheckIcon />
                     </IconButton>
-                    <IconButton color="error" onClick={() => onReject(row.id_solicitud)}>
+                    <IconButton color="error" onClick={() => onReject(row)}>
                       <CloseIcon />
                     </IconButton>
                   </>

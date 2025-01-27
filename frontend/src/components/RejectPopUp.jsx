@@ -49,3 +49,4 @@ export default function RejectPopup({ show, setShow, data, action }) {
         </div>
     );
 }
+ 

@@ -53,13 +53,15 @@ const Solicitudes = () => {
         console.log("handleAccept - Solicitud seleccionada para aceptar:", solicitud);
         setCurrentSolicitud(solicitud); 
         setShowAcceptPopup(true); 
+        console.log("handleAccept - solicitud ", solicitud);
     };
 
     const handleReject = (solicitud) => {
         console.log("handleReject - Solicitud seleccionada para rechazar:", solicitud);
         setCurrentSolicitud(solicitud); 
         setShowRejectPopup(true); 
-        console.log("handleReject - currentSolicitud ", solicitud);
+        console.log("handleReject - solicitud ", solicitud);
+
     };
     
 
@@ -103,7 +105,7 @@ const Solicitudes = () => {
             ...currentSolicitud,
             estado: 'rechazada',
             observaciones: updatedSolicitud.observaciones,
-            fecha_cambio_estado: new Date(), // Fecha de cambio de estado
+            fecha_cambio_estado: new Date(), 
         };
         console.log("handleConfirmReject - currentSolicitud ", currentSolicitud);
     
