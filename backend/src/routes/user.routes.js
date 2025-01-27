@@ -13,12 +13,11 @@ const router = Router();
 
 router
   .use(authenticateJwt)
-  .use(isAdmin);
 
 router
   .get("/", getUsers)
   .get("/detail/", getUser)
-  .patch("/detail/", updateUser)
-  .delete("/detail/", deleteUser);
+  .patch("/detail/", updateUser, isAdmin)
+  .delete("/detail/", deleteUser, isAdmin);
 
 export default router;

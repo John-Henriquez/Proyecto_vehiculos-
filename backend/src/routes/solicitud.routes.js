@@ -13,14 +13,13 @@ import {
 
 const router = Router();
 
-router.post("/add", authenticateJwt, createSolicitud);
+router.post("/add", createSolicitud);
 
+router.get("/", getAllSolicitudes);
 
-router.get("/", authenticateJwt, getAllSolicitudes);
+router.get("/:id_solicitud", authenticateJwt, getSolicitud);
 
-router.get("/:id_solicitud", authenticateJwt, verifyUserPermission, getSolicitud);
-
-router.delete("/delete/:id_solicitud", authenticateJwt, verifyUserPermission, deleteSolicitud);
+router.delete("/delete/:id_solicitud", authenticateJwt, isAdmin, deleteSolicitud);
 
 router.patch("/edit/:id_solicitud", authenticateJwt, isAdmin, updateSolicitud);
 

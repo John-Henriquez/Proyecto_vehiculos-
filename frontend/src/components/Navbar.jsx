@@ -48,15 +48,6 @@ const Navbar = () => {
                             </li>
                             <li>
                                 <NavLink
-                                    to="/applications"
-                                    className={({ isActive }) => (isActive ? 'active' : '')}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Solicitudes
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
                                     to="/records"
                                     className={({ isActive }) => (isActive ? 'active' : '')}
                                     onClick={() => setMenuOpen(false)}
@@ -74,7 +65,16 @@ const Navbar = () => {
                             >
                                 Crear solicitud
                             </NavLink>
-                    </li>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/applications"
+                                className={({ isActive }) => (isActive ? 'active' : '')}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                Solicitudes
+                            </NavLink>
+                        </li>
                     <li>
                         <NavLink
                             to="/auth"

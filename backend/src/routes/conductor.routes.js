@@ -16,9 +16,9 @@ const router = Router();
 
 router.post("/add", authenticateJwt, isAdmin, createConductor);
 
-router.get("/", authenticateJwt, isAdmin, getAllConductores);
+router.get("/", authenticateJwt, getAllConductores);
 
-router.get("/:rut_conductor", authenticateJwt, isAdmin, getConductor);
+router.get("/:rut_conductor", authenticateJwt, getConductor);
 
 router.put("/edit/:rut_conductor", authenticateJwt, isAdmin, updateConductor);
 

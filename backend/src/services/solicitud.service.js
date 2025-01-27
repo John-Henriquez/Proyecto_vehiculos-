@@ -89,7 +89,9 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
         text = `Tu solicitud ha sido rechazada.\n\nObservaciones: ${solicitud.observaciones}`;
       }
 
-      await sendEmail(emailTo, subject, text);
+      setImmediate(async () => {
+        await sendEmail(emailTo, subject, text);
+      });
     }
 
     return solicitud;
@@ -98,15 +100,22 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
   }
 }
 
-export async function getAllSolicitudesService() {
+export async function getAllSolicitudesService(user = null) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const solicitudes = await solicitudRepository.find();
-    return solicitudes;
+    
+    if (!user || user.rol === "administrador") {
+      return await solicitudRepository.find();
+    }
+
+    return await solicitudRepository.find({ where: { rut_creador: user.rut } });
+    
   } catch (error) {
-    throw new Error(error.message || "Error al obtener las solicitudes");
+    throw new Error(`Error al obtener las solicitudes: ${error.message}`);
   }
 }
+
+
 
 export async function getSolicitudService(id_solicitud) {
   try {

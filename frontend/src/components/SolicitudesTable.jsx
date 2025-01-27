@@ -13,13 +13,12 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
-
 const formatDate = (date) => {
   if (!date) return "-"; 
   return date;
 };
 
-export default function SolicitudesTable({ data, onAccept, onReject }) {
+export default function SolicitudesTable({ data, onAccept, onReject, esAdmin }) {
   const { tiposVehiculos } = useGetTiposVehiculos();
 
   const getTipoVehiculoNombre = (id) => {
@@ -55,15 +54,19 @@ export default function SolicitudesTable({ data, onAccept, onReject }) {
               <TableCell>{row.destino || "Sin destino"}</TableCell>
               <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
               <TableCell>
-                {row.estado === "pendiente" ? (
-                  <>
-                    <IconButton color="success" onClick={() => onAccept(row)}>
-                      <CheckIcon />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => onReject(row)}>
-                      <CloseIcon />
-                    </IconButton>
-                  </>
+                {esAdmin ? (
+                  row.estado === "pendiente" ? (
+                    <>
+                      <IconButton color="success" onClick={() => onAccept(row)}>
+                        <CheckIcon />
+                      </IconButton>
+                      <IconButton color="error" onClick={() => onReject(row)}>
+                        <CloseIcon />
+                      </IconButton>
+                    </>
+                  ) : (
+                    <span>{row.estado}</span>
+                  )
                 ) : (
                   <span>{row.estado}</span>
                 )}

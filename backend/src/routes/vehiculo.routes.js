@@ -13,13 +13,12 @@ import {
 const router = Router();
 
 router
-  .use(authenticateJwt)
-  .use(isAdmin);  
+  .use(authenticateJwt)  
 router
   .get("/", getAllVehiculos)
   .get("/:placa", getVehiculo)
-  .post("/add", createVehiculo)
-  .patch("/edit/:placa", updateVehiculo)
-  .delete("/delete/:placa", deleteVehiculo);
+  .post("/add", createVehiculo, isAdmin)
+  .patch("/edit/:placa", updateVehiculo, isAdmin)
+  .delete("/delete/:placa", deleteVehiculo, isAdmin);
 
 export default router;

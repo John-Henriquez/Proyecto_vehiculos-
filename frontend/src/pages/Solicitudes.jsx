@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import useUsers from '../hooks/users/useGetUsers.jsx';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
 import { getAllSolicitudes, updateSolicitud } from '../services/solicitudes.service.js';
@@ -9,6 +10,7 @@ import RejectPopup from '../components/RejectPopUp.jsx';
 import { acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
 
 const Solicitudes = () => {
+    const { users } = useUsers();
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
     const [vehiculos, setVehiculos] = useState([]);
@@ -17,15 +19,26 @@ const Solicitudes = () => {
     const [showRejectPopup, setShowRejectPopup] = useState(false);
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
 
+    const usuarioLogueado = JSON.parse(sessionStorage.getItem('usuario'));
+    
+    
+    const esAdmin = usuarioLogueado?.rol === 'administrador';
+    const usuarioRut = usuarioLogueado?.rut;
+    
     useEffect(() => {
         const fetchSolicitudes = async () => {
             try {
                 const fetchedSolicitudes = await getAllSolicitudes();
-
+                
                 console.log("Solicitudes - Solicitudes cargadas:", fetchedSolicitudes);
+                console.log("solicitudes - usuarioRut", usuarioRut); 
 
                 if (Array.isArray(fetchedSolicitudes)) {
-                    setSolicitudes(fetchedSolicitudes);
+                    const filteredSolicitudes = esAdmin
+                        ? fetchedSolicitudes.filter(solicitud => solicitud.estado === "pendiente")
+                        : fetchedSolicitudes.filter(solicitud => solicitud.rut_creador === usuarioRut);
+    
+                    setSolicitudes(filteredSolicitudes);
                 } else {
                     console.error('La respuesta de solicitudes no contiene un arreglo válido');
                 }
@@ -47,7 +60,7 @@ const Solicitudes = () => {
     
         fetchSolicitudes();
         fetchVehiculos();
-    }, []);
+    }, [esAdmin, usuarioRut]);
     
     const handleAccept = (solicitud) => {
         console.log("handleAccept - Solicitud seleccionada para aceptar:", solicitud);
@@ -145,6 +158,7 @@ const Solicitudes = () => {
                     )}
                     onAccept={handleAccept}
                     onReject={handleReject}
+                    esAdmin={esAdmin}
                 />
 
             </div>
