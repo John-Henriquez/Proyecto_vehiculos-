@@ -124,18 +124,20 @@ export async function updateSolicitud(req, res) {
 
     console.log("correo del usuario:", emailUsuario);
 
-    if (estado === "aprobada") {
-      await sendEmail(
-        emailUsuario,
-        "Tu solicitud ha sido aceptada",
-        `Tu solicitud ha sido aceptada.\nDetalles: ${observaciones || "Ninguna"}`
-      );
-    }else if (estado === "rechazada") {
-      await sendEmail(
-        emailUsuario,
-        "Tu solicitud ha sido rechazada",
-        `Tu solicitud ha sido rechazada.\nDetalles: ${observaciones || "Ninguna"}`
-      );
+    if (estado === "aprobada" || estado === "rechazada") {
+      if (estado === "aprobada") {
+        await sendEmail(
+          emailUsuario,
+          "Tu solicitud ha sido aceptada",
+          `Tu solicitud ha sido aceptada.\nDetalles: ${observaciones || "Ninguna"}`
+        );
+      }else if (estado === "rechazada") {
+        await sendEmail(
+          emailUsuario,
+          "Tu solicitud ha sido rechazada",
+          `Tu solicitud ha sido rechazada.\nDetalles: ${observaciones || "Ninguna"}`
+        );
+      }
     }
 
     return handleSuccess(res, 200, "Solicitud actualizada exitosamente", solicitud);

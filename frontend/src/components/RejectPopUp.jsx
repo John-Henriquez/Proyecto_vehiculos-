@@ -3,21 +3,11 @@ import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 
 export default function RejectPopup({ show, setShow, data, action }) {
-    const solicitudData = data && Array.isArray(data) && data.length > 0 ? data[0] : null;
-
-    if (!solicitudData || !solicitudData.id_solicitud) {
-        console.error("RejectPopup - Datos de la solicitud inválidos:", solicitudData);
-    }
+    const solicitudData = data && Array.isArray(data) && data.length > 0 ? data[0] : {};
 
     const handleSubmit = (formData) => {
-        if (!solicitudData.id_solicitud) {
-            console.error("RejectPopup - id_solicitud no encontrada", solicitudData);
-            return;
-        }
-
-        const dataWithId = { ...formData, id_solicitud: solicitudData.id_solicitud };
-        console.log("RejectPopup - Datos a enviar:", dataWithId);
-        action(dataWithId);  
+        console.log("RejectPopUp - formData", formData);
+        action(formData);
     };
     
     return (

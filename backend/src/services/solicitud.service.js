@@ -1,8 +1,10 @@
 "use strict";
 
 import { AppDataSource } from "../config/configDb.js";
+import { sendEmail } from  "../services/email.service.js";
 import Registro from "../entity/registro.entity.js";
 import Solicitud from "../entity/solicitud.entity.js";
+import User from "../entity/user.entity.js";
 
 export async function createSolicitudService(solicitudData, user) {
   try {
@@ -31,6 +33,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
     const registroRepository = AppDataSource.getRepository(Registro);
+    const userRepository = AppDataSource.getRepository(User);
 
     const solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
 
@@ -40,22 +43,18 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
 
     const estadoAnterior = solicitud.estado;
 
-    console.log("solicitud.service - Solicitud antes de la actualización:", solicitud);
-
     Object.keys(solicitudData).forEach((key) => {
       if (solicitudData[key] !== undefined) {
         solicitud[key] = solicitudData[key];
       }
     });
 
-    console.log("solicitud.service - Solicitud después de la actualización:", solicitud); 
-
     await solicitudRepository.save(solicitud);
 
-    console.log("solicitud.service - Solicitud guardada en la base de datos:", solicitud);
-
-    if ((estadoAnterior !== solicitud.estado) && (solicitud.estado === "aceptada" || solicitud.estado === "rechazada")) {
-      
+    if (
+      (estadoAnterior !== solicitud.estado) && 
+      (solicitud.estado === "aceptada" || solicitud.estado === "rechazada")
+    ) {
       const registro = registroRepository.create({
         id_solicitud: solicitud.id_solicitud,
         nombre_agrupacion: solicitud.nombre_agrupacion,
@@ -71,9 +70,26 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
         rut_conductor: solicitud.rut_conductor || null,  
       });
 
-      console.log("solicitud.service - Registro creado:", registro);
       await registroRepository.save(registro);
-      console.log("solicitud.service - Registro guardado en la base de datos:", registro);
+
+      const user = await userRepository.findOne({ where: { rut: solicitud.rut_creador } });
+
+      if (!user) {
+        throw new Error("Usuario no encontrado");
+      }
+
+      const emailTo = user.email; 
+      const subject = solicitud.estado === "aceptada" ? "Solicitud Aceptada" : "Solicitud Rechazada";
+      let text = '';
+
+      if (solicitud.estado === "aceptada") {
+        text = `¡Tu solicitud ha sido aceptada!\n\nDetalles del vehículo: ${solicitud.placa_patente}\nDetalles del conductor: ${solicitud.rut_conductor}\nFecha de regreso: ${solicitud.fecha_regreso}`;
+
+      } else if (solicitud.estado === "rechazada") {
+        text = `Tu solicitud ha sido rechazada.\n\nObservaciones: ${solicitud.observaciones}`;
+      }
+
+      await sendEmail(emailTo, subject, text);
     }
 
     return solicitud;

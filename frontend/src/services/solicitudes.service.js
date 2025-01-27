@@ -71,26 +71,30 @@ export async function deleteSolicitud(id_solicitud) {
     }
 }
 
-export async function acceptSolicitud(id_solicitud) {
+export async function acceptSolicitud(id_solicitud, solicitudData) {
     try {
-        console.log(`Aceptando solicitud (ID: ${id_solicitud})`);
-        const { data } = await axios.patch(`/application/edit/${id_solicitud}`, { estado: 'aprobada' });
+        console.log(`Aceptando solicitud (ID: ${id_solicitud}) con datos:`, solicitudData);
+        console.log('Enviando solicitud aceptada:', solicitudData);
+        const { data } = await axios.patch(`/application/edit/${id_solicitud}`, solicitudData);
         console.log('Solicitud aceptada:', data);
-        return formatSolicitudData(data.data);
+        return formatSolicitudData(data);
     } catch (error) {
         console.error(`Error al aceptar la solicitud ${id_solicitud}:`, error);
         return error.response?.data || { message: `Error al aceptar la solicitud ${id_solicitud}` };
     }
 }
 
-export async function rejectSolicitud(id_solicitud) {
+
+export async function rejectSolicitud(id_solicitud, solicitudData) {
     try {
-        console.log(`Rechazando solicitud (ID: ${id_solicitud})`);
-        const { data } = await axios.patch(`/application/edit/${id_solicitud}`, { estado: 'rechazada' });
+        console.log(`Rechazando solicitud (ID: ${id_solicitud}) con datos:`, solicitudData);
+        console.log('Enviando solicitud rechazada:', solicitudData);
+        const { data } = await axios.patch(`/application/edit/${id_solicitud}`, solicitudData);
         console.log('Solicitud rechazada:', data);
-        return formatSolicitudData(data.data);
+        return formatSolicitudData(data);
     } catch (error) {
         console.error(`Error al rechazar la solicitud ${id_solicitud}:`, error);
         return error.response?.data || { message: `Error al rechazar la solicitud ${id_solicitud}` };
     }
 }
+

@@ -3,10 +3,10 @@ import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
 import { getAllSolicitudes, updateSolicitud } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
-import { createRegistro } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
+import { acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
 
 const Solicitudes = () => {
     const { conductores } = useGetConductores();
@@ -21,6 +21,9 @@ const Solicitudes = () => {
         const fetchSolicitudes = async () => {
             try {
                 const fetchedSolicitudes = await getAllSolicitudes();
+
+                console.log("Solicitudes - Solicitudes cargadas:", fetchedSolicitudes);
+
                 if (Array.isArray(fetchedSolicitudes)) {
                     setSolicitudes(fetchedSolicitudes);
                 } else {
@@ -35,6 +38,7 @@ const Solicitudes = () => {
         const fetchVehiculos = async () => {
             try {
                 const fetchedVehiculos = await getAllVehiculos();
+                console.log("Solicitudes - Vehículos cargados:", fetchedVehiculos);
                 setVehiculos(fetchedVehiculos);
             } catch (error) {
                 console.error('Error al obtener los vehículos:', error);
@@ -51,13 +55,11 @@ const Solicitudes = () => {
         setShowAcceptPopup(true); 
     };
 
-    const handleReject = (id_solicitud) => {
-        if (typeof id_solicitud !== 'number') {
-            console.error("Error: La solicitud pasada a handleReject no es un ID válido", id_solicitud);
-            return;
-        }
-        setCurrentSolicitud({ id_solicitud }); 
+    const handleReject = (solicitud) => {
+        console.log("handleReject - Solicitud seleccionada para rechazar:", solicitud);
+        setCurrentSolicitud(solicitud); 
         setShowRejectPopup(true); 
+        console.log("handleReject - currentSolicitud ", solicitud);
     };
     
 
@@ -75,7 +77,7 @@ const Solicitudes = () => {
     
         try {
             // 2. Llamar a la función de actualización de solicitud
-            const updatedSolicitudData = await updateSolicitud(currentSolicitud.id_solicitud, updatedData);
+            const updatedSolicitudData = await acceptSolicitud(currentSolicitud.id_solicitud, updatedData);
     
             if (updatedSolicitudData?.message) {
                 console.error("Error al actualizar la solicitud:", updatedSolicitudData.message);
@@ -93,33 +95,36 @@ const Solicitudes = () => {
         }
     };
     
-    
-    
-
     const handleConfirmReject = async (updatedSolicitud) => {
         console.log("Confirmando rechazo para la solicitud ID:", currentSolicitud.id_solicitud);
-
-        const registroData = {
-            id_solicitud: currentSolicitud.id_solicitud,
-            placa_vehiculo: currentSolicitud.placa_vehiculo,
-            fecha_solicitud: currentSolicitud.fecha_solicitud,
+    
+        // 1. Actualizar la solicitud con los nuevos datos
+        const updatedData = {
+            ...currentSolicitud,
             estado: 'rechazada',
             observaciones: updatedSolicitud.observaciones,
-            prioridad: currentSolicitud.prioridad,
-            fecha_cambio_estado: new Date(), 
+            fecha_cambio_estado: new Date(), // Fecha de cambio de estado
         };
+        console.log("handleConfirmReject - currentSolicitud ", currentSolicitud);
     
-        const response = await createRegistro(registroData); 
-        if (response.message) {
-            console.error("Error al crear el registro:", response.message);
-            return;
+        try {
+            // 2. Llamar a la función de actualización de solicitud
+            const updatedSolicitudData = await rejectSolicitud(currentSolicitud.id_solicitud, updatedData);
+    
+            if (updatedSolicitudData?.message) {
+                console.error("Error al actualizar la solicitud:", updatedSolicitudData.message);
+                return;
+            }
+    
+            // 3. Eliminar la solicitud del estado (se eliminan del frontend)
+            setSolicitudes((prev) =>
+                prev.filter((sol) => sol.id_solicitud !== updatedData.id_solicitud)
+            );
+    
+            setShowRejectPopup(false);
+        } catch (error) {
+            console.error("Error en el proceso de rechazo:", error);
         }
-    
-        // 2. Actualizar el estado de la solicitud en el frontend
-        setSolicitudes((prev) =>
-            prev.filter((sol) => sol.id_solicitud !== currentSolicitud.id_solicitud)
-        );
-        setShowRejectPopup(false);
     };
     
     return (
@@ -145,7 +150,7 @@ const Solicitudes = () => {
                 <AcceptPopup
                     show={showAcceptPopup}
                     setShow={setShowAcceptPopup}
-                    data={[currentSolicitud]}
+                    data={currentSolicitud}
                     vehiculos={vehiculos}
                     conductores={conductores}
                     action={handleConfirmAccept}
@@ -156,7 +161,7 @@ const Solicitudes = () => {
                 <RejectPopup
                     show={showRejectPopup}
                     setShow={setShowRejectPopup}
-                    data={[currentSolicitud]}
+                    data={currentSolicitud}
                     action={handleConfirmReject}
                 />
             )}
