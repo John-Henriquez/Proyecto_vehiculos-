@@ -54,6 +54,8 @@ export async function getAllSolicitudes(req, res) {
 
 export async function createSolicitud(req, res) {
   try {
+    console.log("Datos del usuario autenticado:", req.user);
+    console.log("Datos de la solicitud:", req.body);
     const {
       rut_solicitante,
       nombre_agrupacion,
@@ -89,8 +91,6 @@ export async function createSolicitud(req, res) {
       cantidad_pasajeros: cantidad_pasajeros || null,
       id_tipo_vehiculo,
     };
-
-    console.log("solicitudController - Crear solicitud con los datos:", solicitudData);
     const solicitud = await createSolicitudService(solicitudData, req.user);
 
     return handleSuccess(res, 201, "Solicitud creada exitosamente", solicitud);
@@ -104,40 +104,12 @@ export async function updateSolicitud(req, res) {
   try {
     console.log("Datos del usuario autenticado:", req.user);
     const { id_solicitud } = req.params;
-    const { estado, observaciones } = req.body;
 
     console.log("solicitudController - Id solicitud a actualizar:", id_solicitud);
-    
+
     const solicitud = await updateSolicitudService(id_solicitud, req.body, req.user);
     if (!solicitud) {
       return handleErrorClient(res, 404, "Solicitud no encontrada");
-    }
-
-    const { rut_creador } = solicitud;
-
-    const [usuarioCreador, error] = await getUserService({ rut: rut_creador });
-    if (error) {
-      return handleErrorClient(res, 404, "Creador de la solicitud no encontrado");
-    }
-
-    const emailUsuario = usuarioCreador.email;
-
-    console.log("correo del usuario:", emailUsuario);
-
-    if (estado === "aprobada" || estado === "rechazada") {
-      if (estado === "aprobada") {
-        await sendEmail(
-          emailUsuario,
-          "Tu solicitud ha sido aceptada",
-          `Tu solicitud ha sido aceptada.\nDetalles: ${observaciones || "Ninguna"}`
-        );
-      }else if (estado === "rechazada") {
-        await sendEmail(
-          emailUsuario,
-          "Tu solicitud ha sido rechazada",
-          `Tu solicitud ha sido rechazada.\nDetalles: ${observaciones || "Ninguna"}`
-        );
-      }
     }
 
     return handleSuccess(res, 200, "Solicitud actualizada exitosamente", solicitud);
@@ -146,6 +118,7 @@ export async function updateSolicitud(req, res) {
     return handleErrorServer(res, 500, "Error interno del servidor");
   }
 }
+
 
 export async function deleteSolicitud(req, res) {
   try {

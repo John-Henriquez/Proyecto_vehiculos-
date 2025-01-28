@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { isAdmin } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
-import { verifyUserPermission } from "../middlewares/permission.middleware.js";
+
 import {
   createSolicitud,
   deleteSolicitud,
@@ -13,7 +13,7 @@ import {
 
 const router = Router();
 
-router.post("/add", createSolicitud);
+router.post("/add",authenticateJwt, createSolicitud);
 
 router.get("/", getAllSolicitudes);
 

@@ -6,6 +6,20 @@ import Registro from "../entity/registro.entity.js";
 import Solicitud from "../entity/solicitud.entity.js";
 import User from "../entity/user.entity.js";
 
+async function scheduleEmail(emailTo, subject, text) {
+  console.log(`Programando envío de correo a ${emailTo}`);
+  try {
+      const [info, error] = await sendEmail(emailTo, subject, text);
+      if (error) {
+          console.error("Error al enviar el correo:", error);
+      } else {
+          console.log("Correo enviado correctamente:", info.messageId);
+      }
+  } catch (error) {
+      console.error("Error inesperado al enviar el correo:", error);
+  }
+}
+
 export async function createSolicitudService(solicitudData, user) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
@@ -30,73 +44,76 @@ export async function createSolicitudService(solicitudData, user) {
 }
 
 export async function updateSolicitudService(id_solicitud, solicitudData) {
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
-    const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    const registroRepository = AppDataSource.getRepository(Registro);
-    const userRepository = AppDataSource.getRepository(User);
+      const solicitudRepository = queryRunner.manager.getRepository(Solicitud);
+      const registroRepository = queryRunner.manager.getRepository(Registro);
+      const userRepository = queryRunner.manager.getRepository(User);
 
-    const solicitud = await solicitudRepository.findOne({ where: { id_solicitud } });
-
-    if (!solicitud) {
-      throw new Error("Solicitud no encontrada");
-    }
-
-    const estadoAnterior = solicitud.estado;
-
-    Object.keys(solicitudData).forEach((key) => {
-      if (solicitudData[key] !== undefined) {
-        solicitud[key] = solicitudData[key];
-      }
-    });
-
-    await solicitudRepository.save(solicitud);
-
-    if (
-      (estadoAnterior !== solicitud.estado) && 
-      (solicitud.estado === "aceptada" || solicitud.estado === "rechazada")
-    ) {
-      const registro = registroRepository.create({
-        id_solicitud: solicitud.id_solicitud,
-        nombre_agrupacion: solicitud.nombre_agrupacion,
-        num_telefono: solicitud.numero_telefono,
-        fecha_solicitud: solicitud.fecha_creacion,
-        fecha_salida: solicitud.fecha_salida,
-        fecha_regreso: solicitud.estado === "aceptada" ? solicitud.fecha_regreso : null, 
-        destino: solicitud.destino,
-        prioridad: solicitud.prioridad,
-        estado: solicitud.estado,
-        observaciones: solicitud.estado === "rechazada" ? solicitud.observaciones : null, 
-        placa_vehiculo: solicitud.placa_patente || null,  
-        rut_conductor: solicitud.rut_conductor || null,  
+      // Bloquear el registro para evitar race conditions
+      const solicitud = await solicitudRepository.findOne({
+          where: { id_solicitud },
+          lock: { mode: "pessimistic_write" }
       });
 
-      await registroRepository.save(registro);
+      if (!solicitud) throw new Error("Solicitud no encontrada");
 
-      const user = await userRepository.findOne({ where: { rut: solicitud.rut_creador } });
+      const estadoAnterior = solicitud.estado;
+      const cambiosEstado = estadoAnterior !== solicitudData.estado;
+      const nuevoEstadoValido = ["aceptada", "rechazada"].includes(solicitudData.estado);
 
-      if (!user) {
-        throw new Error("Usuario no encontrado");
+      // Actualizar solo si hay cambios relevantes
+      if (cambiosEstado && nuevoEstadoValido) {
+          Object.assign(solicitud, solicitudData);
+          await solicitudRepository.save(solicitud);
+
+          const registro = registroRepository.create({
+              id_solicitud: solicitud.id_solicitud,
+              nombre_agrupacion: solicitud.nombre_agrupacion,
+              num_telefono: solicitud.numero_telefono,
+              fecha_solicitud: solicitud.fecha_creacion,
+              fecha_salida: solicitud.fecha_salida,
+              fecha_regreso: solicitud.estado === "aceptada" ? solicitud.fecha_regreso : null,
+              destino: solicitud.destino,
+              prioridad: solicitud.prioridad,
+              estado: solicitud.estado,
+              observaciones: solicitud.estado === "rechazada" ? solicitud.observaciones : null,
+              placa_vehiculo: solicitud.placa_patente || null,
+              rut_conductor: solicitud.rut_conductor || null,
+          });
+
+          await registroRepository.save(registro);
+
+          const user = await userRepository.findOne({ where: { rut: solicitud.rut_creador } });
+          if (!user) throw new Error("Usuario no encontrado");
+
+          const emailContent = {
+              emailTo: user.email,
+              subject: solicitud.estado === "aceptada" ? "Solicitud Aceptada" : "Solicitud Rechazada",
+              text: solicitud.estado === "aceptada" 
+                  ? `¡Tu solicitud ha sido aceptada!\n\nDetalles del vehículo: ${solicitud.placa_patente}\nDetalles del conductor: ${solicitud.rut_conductor}\nFecha de regreso: ${solicitud.fecha_regreso}`
+                  : `Tu solicitud ha sido rechazada.\n\nObservaciones: ${solicitud.observaciones}`
+          };
+
+          // Envío fuera de la transacción
+          await queryRunner.commitTransaction();
+          
+          // Separar completamente el envío del correo
+          scheduleEmail(emailContent.emailTo, emailContent.subject, emailContent.text);
+          
+          return solicitud;
       }
 
-      const emailTo = user.email; 
-      const subject = solicitud.estado === "aceptada" ? "Solicitud Aceptada" : "Solicitud Rechazada";
-      let text = '';
-
-      if (solicitud.estado === "aceptada") {
-        text = `¡Tu solicitud ha sido aceptada!\n\nDetalles del vehículo: ${solicitud.placa_patente}\nDetalles del conductor: ${solicitud.rut_conductor}\nFecha de regreso: ${solicitud.fecha_regreso}`;
-
-      } else if (solicitud.estado === "rechazada") {
-        text = `Tu solicitud ha sido rechazada.\n\nObservaciones: ${solicitud.observaciones}`;
-      }
-
-      setImmediate(async () => {
-        await sendEmail(emailTo, subject, text);
-      });
-    }
-
-    return solicitud;
+      await queryRunner.commitTransaction();
+      return solicitud;
   } catch (error) {
-    throw new Error(error.message || "Error al actualizar la solicitud");
+      await queryRunner.rollbackTransaction();
+      throw new Error(error.message || "Error al actualizar la solicitud");
+  } finally {
+      await queryRunner.release();
   }
 }
 
