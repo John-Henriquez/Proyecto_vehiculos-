@@ -39,6 +39,7 @@ export default function SolicitudesTable({ data, onAccept, onReject, esAdmin }) 
             <TableCell>Fecha Llegada</TableCell>            
             <TableCell>Destino</TableCell>
             <TableCell>Tipo Vehículo</TableCell>
+            <TableCell>Cantidad Pasajeros</TableCell>
             <TableCell>Acciones</TableCell>
           </TableRow>
         </TableHead>
@@ -53,6 +54,7 @@ export default function SolicitudesTable({ data, onAccept, onReject, esAdmin }) 
               <TableCell>{formatDate(row.fecha_regreso)}</TableCell>
               <TableCell>{row.destino || "Sin destino"}</TableCell>
               <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
+              <TableCell>{row.cantidad_pasajeros || "-"}</TableCell>
               <TableCell>
                 {esAdmin ? (
                   row.estado === "pendiente" ? (
@@ -74,7 +76,7 @@ export default function SolicitudesTable({ data, onAccept, onReject, esAdmin }) 
             </TableRow>
           )) : (
             <TableRow>
-              <TableCell colSpan={9} align="center">
+              <TableCell colSpan={10} align="center">
                 No hay solicitudes disponibles
               </TableCell>
             </TableRow>

@@ -33,6 +33,7 @@ export async function createSolicitudService(solicitudData, user) {
       fecha_creacion: new Date(),
       rut_conductor: solicitudData.rut_conductor || null,
       placa_patente: solicitudData.placa_patente || null,
+      cantidad_pasajeros: solicitudData.cantidad_pasajeros || null,
     });
 
     await solicitudRepository.save(solicitud);
@@ -131,8 +132,6 @@ export async function getAllSolicitudesService(user = null) {
     throw new Error(`Error al obtener las solicitudes: ${error.message}`);
   }
 }
-
-
 
 export async function getSolicitudService(id_solicitud) {
   try {

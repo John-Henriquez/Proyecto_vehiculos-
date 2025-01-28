@@ -124,7 +124,6 @@ const RegistroSolicitudes = () => {
             doc.text(`Prioridad: ${registro.prioridad}`, columnRightX, y + 20);
             doc.text(`Tipo Vehículo: ${registro.tipo_vehiculo}`, columnRightX, y + 30);
             doc.text(`Vehículo: ${registro.placa_vehiculo}`, columnRightX, y + 40);
-            doc.text(`Capacidad Máxima: ${registro.vehiculo.capacidad_maxima}`, columnRightX, y + 50);
             
             
             doc.setDrawColor(173, 216, 230); 

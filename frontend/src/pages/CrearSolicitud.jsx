@@ -27,6 +27,7 @@ export default function VehicleRequestForm() {
     rutSolicitante: '',
     fechaRegreso: '',
     idTipoVehiculo: '',
+    cantidadPasajeros: '',
   });
 
   const [errors, setErrors] = useState({
@@ -93,6 +94,7 @@ export default function VehicleRequestForm() {
           id_tipo_vehiculo: Number(formData.idTipoVehiculo),
           placa_patente: formData.placaPatente || "",
           rut_conductor: formData.rutConductor || "",
+          cantidad_pasajeros: formData.cantidadPasajeros || 0,
           estado: 'pendiente',
         };
         
@@ -246,6 +248,21 @@ export default function VehicleRequestForm() {
                 ))
               )}
             </select>
+          </div>
+
+          {/* Cantidad de pasajeros */}
+          <div className="form-group">
+            <label htmlFor="cantidadPasajeros">Cantidad de pasajeros</label>
+            <input
+              id="cantidadPasajeros"
+              name="cantidadPasajeros"
+              type="number"
+              min="0"
+              value={formData.cantidadPasajeros || ''}
+              onChange={handleChange}
+              className="input"
+              placeholder="Cantidad de pasajeros"
+            />
           </div>
 
           {/* Observaciones */}

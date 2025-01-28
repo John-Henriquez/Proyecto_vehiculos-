@@ -152,10 +152,10 @@ const Solicitudes = () => {
                     </div>
                 </div>
                 <SolicitudesTable
-                    data={solicitudes
-                        .filter(sol => sol.estado === 'pendiente')
-                        .filter(sol => sol.id_solicitud.toString().includes(filterId)
-                    )}
+                    data={esAdmin 
+                        ? solicitudes.filter(sol => sol.estado === 'pendiente') 
+                        : solicitudes.filter(sol => sol.rut_creador === usuarioRut)
+                    }
                     onAccept={handleAccept}
                     onReject={handleReject}
                     esAdmin={esAdmin}

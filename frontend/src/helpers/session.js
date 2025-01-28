@@ -12,7 +12,7 @@ export function formatearRUT(inputName) {
         if (input && input.name === inputName) {
             let rut = input.value.replace(/[^0-9kK]/g, "").toUpperCase();
 
-            if (rut.length > 9) { // 11.111.111-1
+            if (rut.length > 9) { 
                 rut = rut.slice(0, 9);
             }
 
