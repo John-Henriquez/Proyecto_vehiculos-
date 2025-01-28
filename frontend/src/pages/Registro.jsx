@@ -8,6 +8,7 @@ import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import axios from '../services/root.service.js';
 import logo from '../assets/logo_muni.png'; 
 import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
 
 
@@ -81,59 +82,56 @@ const RegistroSolicitudes = () => {
         const doc = new jsPDF();
         doc.setFont('helvetica', 'normal'); 
         doc.setFontSize(14);
-    
+        
         if (logoBase64) {
             doc.addImage(logoBase64, 'PNG', 10, 5, 30, 15);  // Posición x, y, ancho, alto
         }
-
+    
         // Encabezado principal
-        doc.setFontSize(14); // Tamaño mayor para el encabezado
+        doc.setFontSize(14);
         doc.text('Informe de Solicitudes', 105, 20, { align: 'center' });
     
-        let y = 40;
-        const columnLeftX = 20;  // Columna izquierda (posición fija)
-        const columnRightX = 120;  // Columna derecha (posición fija)
+        // Definir las columnas para la tabla
+        const columns = [
+            { title: 'Solicitud ID', dataKey: 'id_registro' },
+            { title: 'Nombre Agrupación', dataKey: 'nombre_agrupacion' },
+            { title: 'Teléfono', dataKey: 'num_telefono' },
+            { title: 'Destino', dataKey: 'destino' },
+            { title: 'Fecha Solicitud', dataKey: 'fecha_solicitud' },
+            { title: 'Fecha Salida', dataKey: 'fecha_salida' },
+            { title: 'Fecha Regreso', dataKey: 'fecha_regreso' },
+            { title: 'Estado', dataKey: 'estado' },
+            { title: 'Tipo Vehículo', dataKey: 'tipo_vehiculo' },
+            { title: 'Vehículo', dataKey: 'placa_vehiculo' },
+        ];
     
-        // Añadir encabezado a cada página
-        const addPageHeader = () => {
-            doc.setFontSize(10);  // Tamaño estándar para el encabezado de la página
-            doc.text('Informe de Solicitudes', 105, 10, { align: 'center' });
-            doc.setLineWidth(0.5);
-            doc.line(10, 15, 200, 15);  // Línea horizontal bajo el encabezado
-        };
+        // Crear las filas para la tabla usando los datos proporcionados
+        const rows = registrosFiltrados.map(registro => ({
+            ...registro,
+            fecha_solicitud: new Date(registro.fecha_solicitud).toLocaleDateString(),
+            fecha_salida: new Date(registro.fecha_salida).toLocaleDateString(),
+            fecha_regreso: new Date(registro.fecha_regreso).toLocaleDateString(),
+          }));
     
-        registrosFiltrados.forEach((registro, index) => {
-            if (y > 250) {
-                doc.addPage();
-                y = 20;
-                addPageHeader(); // Agregar encabezado en la nueva página
-            }
-    
-            // Información de la solicitud en la columna izquierda
-            doc.setFontSize(10);  // Usar tamaño estándar para todos los campos
-            doc.text(`Solicitud ID: ${registro.id_registro}`, columnLeftX, y);
-            doc.text(`Nombre Agrupación: ${registro.nombre_agrupacion}`, columnLeftX, y + 10);
-            doc.text(`Teléfono: ${registro.num_telefono}`, columnLeftX, y + 20);
-            doc.text(`Destino: ${registro.destino}`, columnLeftX, y + 30);
-            doc.text(`Fecha Solicitud: ${registro.fecha_solicitud}`, columnLeftX, y + 40);
-            doc.text(`Fecha Salida: ${registro.fecha_salida}`, columnLeftX, y + 50);
-            doc.text(`Fecha Regreso: ${registro.fecha_regreso}`, columnLeftX, y + 60);
-    
-            // Información adicional sobre el vehículo en la columna derecha
-            doc.text(`Estado: ${registro.estado}`, columnRightX, y + 10);
-            doc.text(`Prioridad: ${registro.prioridad}`, columnRightX, y + 20);
-            doc.text(`Tipo Vehículo: ${registro.tipo_vehiculo}`, columnRightX, y + 30);
-            doc.text(`Vehículo: ${registro.placa_vehiculo}`, columnRightX, y + 40);
-            
-            
-            doc.setDrawColor(173, 216, 230); 
-            doc.setLineWidth(0.5);
-            doc.line(10, y + 70, 200, y + 70);
-            
-            y += 80;  
-    
+        // Agregar la tabla al PDF
+        doc.autoTable({
+            columns: columns.map(col => ({ header: col.title, dataKey: col.dataKey })),
+            body: rows,
+            startY: 40,  
+            theme: 'striped', 
+            headStyles: {
+                fontSize: 8,  
+                fontStyle: 'bold',
+                fillColor: [255, 255, 255],
+                textColor: [0, 0, 0],
+                halign: 'center',
+            },
+            bodyStyles: {
+                fontSize: 8,  
+            },
         });
     
+        // Guardar el PDF
         doc.save('informe_solicitudes.pdf');
     };
     

@@ -61,7 +61,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                 },
                                 {
                                     label: 'Vehículo',
-                                    name: 'placa',
+                                    name: 'placa_vehiculo',
                                     fieldType: 'select',
                                     options: vehiculosFiltrados.map(vehiculo => ({
                                         value: vehiculo.placa,
