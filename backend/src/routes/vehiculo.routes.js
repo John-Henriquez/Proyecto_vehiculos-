@@ -11,14 +11,12 @@ import {
 } from "../controllers/vehiculo.controller.js";
 
 const router = Router();
-
+ 
 router
-  .use(authenticateJwt)  
-router
-  .get("/", getAllVehiculos)
-  .get("/:placa", getVehiculo)
-  .post("/add", createVehiculo, isAdmin)
-  .patch("/edit/:placa", updateVehiculo, isAdmin)
-  .delete("/delete/:placa", deleteVehiculo, isAdmin);
+  .get("/",authenticateJwt, getAllVehiculos)
+  .get("/:placa", authenticateJwt, getVehiculo)
+  .post("/add", authenticateJwt, createVehiculo, isAdmin)
+  .patch("/edit/:placa", authenticateJwt, updateVehiculo, isAdmin)
+  .delete("/delete/:placa",authenticateJwt, deleteVehiculo, isAdmin);
 
 export default router;

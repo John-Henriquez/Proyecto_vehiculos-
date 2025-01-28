@@ -5,7 +5,15 @@ import CloseIcon from '@assets/XIcon.svg';
 export default function AcceptPopup({ show, setShow, data, action, vehiculos, conductores }) {
     const solicitudData = data && data.length > 0 ? data[0] : {};
 
-    console.log("AcceptPopUp - conductores recibidos", conductores); 
+    console.log("AcceptPopUp - solicitudData.id_tipo_vehiculo:", data);
+    console.log("AcceptPopUp - vehiculos:", vehiculos);
+    
+
+    const vehiculosFiltrados = vehiculos.filter(
+        vehiculo => vehiculo.id_tipo_vehiculo === data.id_tipo_vehiculo
+    );
+
+    console.log("AcceptPopUp - vehiculosFiltrados", vehiculosFiltrados);
 
     const handleSubmit = (formData) => {
         console.log("AcceptPopUp - formData", formData);
@@ -53,15 +61,17 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                 },
                                 {
                                     label: 'Vehículo',
-                                    name: 'placa_vehiculo',
+                                    name: 'placa',
                                     fieldType: 'select',
-                                    options: vehiculos.map(vehiculo => ({
+                                    options: vehiculosFiltrados.map(vehiculo => ({
                                         value: vehiculo.placa,
-                                        label: `${vehiculo.placa} - ${vehiculo.capacidad_maxima}`
+                                        label: `${vehiculo.marca} - ${vehiculo.modelo} - ${vehiculo.placa}`
                                     })),
                                     required: true,
-                                    defaultValue: '', 
+                                    defaultValue: '',
                                 }
+                                  
+                                  
                             ]}
                             onSubmit={handleSubmit}
                             buttonText="Aceptar Solicitud"

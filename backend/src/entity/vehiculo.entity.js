@@ -22,14 +22,28 @@ const VehiculoSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    marca: {
+      type: "varchar",
+      length: 100,  // Puedes ajustar el tamaño dependiendo del tipo de marca
+      nullable: false, // Si es obligatorio
+    },
+    modelo: {
+      type: "varchar",
+      length: 100,  // Ajusta el tamaño dependiendo del modelo
+      nullable: false, // Si es obligatorio
+    },
+    año_fabricacion: {
+      type: "int",
+      nullable: false,  // Si es obligatorio, si no puedes ponerlo como nullable: true
+    },
   },
   relations: {
     tipoVehiculo: {
       target: "TipoVehiculo",
       type: "many-to-one",
       joinColumn: {
-        name: "id_tipo_vehiculo", 
-        referencedColumnName: "id_tipo_vehiculo", 
+        name: "id_tipo_vehiculo",
+        referencedColumnName: "id_tipo_vehiculo",
       },
     },
   },
