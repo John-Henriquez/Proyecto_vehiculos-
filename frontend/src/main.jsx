@@ -11,6 +11,7 @@ import Registro from '@pages/Registro';
 import CrearSolicitud from '@pages/CrearSolicitud';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
+import Vehiculos from './pages/Vehiculos';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={['administrador']}>
             <Registro  /> 
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/vehicles', 
+        element: (
+          <ProtectedRoute allowedRoles={['administrador']}>
+            <Vehiculos  /> 
           </ProtectedRoute>
         ),
       },

@@ -55,8 +55,26 @@ const Navbar = () => {
                                     Registros
                                 </NavLink>
                             </li>
+                            <li>
+                                <NavLink
+                                    to="/vehicles"
+                                    className={({ isActive }) => (isActive ? 'active' : '')}
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    Vehiculos
+                                </NavLink>
+                            </li>
                         </>
                     )}
+                            <li>
+                                <NavLink
+                                    to="/applications"
+                                    className={({ isActive }) => (isActive ? 'active' : '')}
+                                    onClick={() => setMenuOpen(false)}
+                                >
+                                    Solicitudes
+                                </NavLink>
+                            </li>
                         <li>
                             <NavLink
                                 to="/add-application"
@@ -64,15 +82,6 @@ const Navbar = () => {
                                 onClick={() => setMenuOpen(false)}
                             >
                                 Crear solicitud
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink
-                                to="/applications"
-                                className={({ isActive }) => (isActive ? 'active' : '')}
-                                onClick={() => setMenuOpen(false)}
-                            >
-                                Solicitudes
                             </NavLink>
                         </li>
                     <li>
