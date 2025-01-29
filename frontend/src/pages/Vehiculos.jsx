@@ -6,7 +6,7 @@ import Search from '../components/Search';
 import { showWarningAlert } from '../helpers/sweetAlert'; 
 
 const Vehiculos = () => {
-    const { vehiculos, loading, error, refreshVehiculos } = useVehiculos();
+    const { vehiculos, loading, error } = useVehiculos();
     const [filterPlaca, setFilterPlaca] = useState('');
     const [filterType, setFilterType] = useState('');
 
@@ -39,7 +39,7 @@ const Vehiculos = () => {
                             placeholder='Filtrar por ID de vehículo'
                         />
                         <FiltroVehiculo 
-                            onChange={handleTipoVehiculoChange}  // Agregar el filtro de tipo de vehículo
+                            onChange={handleTipoVehiculoChange}  
                         />
                     </div>
                 </div>

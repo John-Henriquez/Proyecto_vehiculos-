@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -12,8 +12,24 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
 export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
+  // Usar el hook para obtener los tipos de vehículos
+  const { tiposVehiculos, loading, error } = useGetTiposVehiculos();
+  
+  const getTipoVehiculoNombre = (id) => {
+    const tipo = tiposVehiculos?.find((t) => t.id_tipo_vehiculo === id);
+    return tipo ? tipo.nombre : "Desconocido";
+  };
+
+  useEffect(() => {
+    // Asegurarse de que los tipos de vehículos se hayan cargado correctamente
+    if (error) {
+      console.error("Error al cargar los tipos de vehículos:", error);
+    }
+  }, [error]);
+
   return (
     <>
       <Button variant="contained" color="primary" onClick={onAdd} style={{ marginBottom: "10px" }}>
@@ -23,7 +39,6 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID Vehículo</TableCell>
               <TableCell>Placa</TableCell>
               <TableCell>Marca</TableCell>
               <TableCell>Modelo</TableCell>
@@ -36,13 +51,12 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
           <TableBody>
             {data?.length > 0 ? (
               data.map((row) => (
-                <TableRow key={row.id_vehiculo}>
-                  <TableCell>{row.id_vehiculo}</TableCell>
-                  <TableCell>{row.placa_patente}</TableCell>
+                <TableRow key={row.placa}>
+                  <TableCell>{row.placa}</TableCell>
                   <TableCell>{row.marca}</TableCell>
                   <TableCell>{row.modelo}</TableCell>
                   <TableCell>{row.capacidad_maxima}</TableCell>
-                  <TableCell>{row.tipo_vehiculo}</TableCell>
+                  <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
                   <TableCell>{row.estado}</TableCell>
                   <TableCell>
                     <IconButton color="primary" onClick={() => onEdit(row)}>
@@ -56,7 +70,7 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={7} align="center">
                   No hay vehículos disponibles
                 </TableCell>
               </TableRow>
