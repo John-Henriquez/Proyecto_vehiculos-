@@ -62,19 +62,19 @@ const RegistroSolicitudes = () => {
 
     const registrosConVehiculos = registros.map(registro => {
         const vehiculo = vehiculos.find(v => v.placa === registro.placa_vehiculo);
-        
-        if (!vehiculo) {
-            console.warn(`Registro ${registro.id_registro} tiene placa ${registro.placa_vehiculo} sin vehículo asociado`);
-        }
-
+    
+        // Buscar el nombre del tipo de vehículo usando el id_tipo_vehiculo
+        const tipoNombre = tiposVehiculos.find(
+            tipo => tipo.id_tipo_vehiculo === vehiculo?.id_tipo_vehiculo
+        )?.nombre || "No especificado"; // Fallback si no se encuentra
+    
         return {
             ...registro,
-            vehiculo: vehiculo || null, 
+            vehiculo: vehiculo || null,
             id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo,
-            tipo_vehiculo_nombre: vehiculo?.tipo_vehiculo?.nombre,
+            tipo_vehiculo_nombre: tipoNombre, // Asignar el nombre del tipo de vehículo
         };
     });
-
 
     const registrosFiltrados = registrosConVehiculos
         .filter((registro) => registro.id_registro.toString().includes(filterId)) 
@@ -85,6 +85,8 @@ const RegistroSolicitudes = () => {
     };
 
     const handleDownloadPDF = () => {
+
+        console.log("Datos a insertar en el PDF:", registrosFiltrados)
         const doc = new jsPDF();
         doc.setFont('helvetica', 'normal'); 
         doc.setFontSize(14);
@@ -107,7 +109,7 @@ const RegistroSolicitudes = () => {
             { title: 'Fecha Salida', dataKey: 'fecha_salida' },
             { title: 'Fecha Regreso', dataKey: 'fecha_regreso' },
             { title: 'Estado', dataKey: 'estado' },
-            { title: 'Tipo Vehículo', dataKey: 'tipo_vehiculo' },
+            { title: 'Tipo Vehículo', dataKey: 'tipo_vehiculo_nombre' },
             { title: 'Vehículo', dataKey: 'placa_vehiculo' },
         ];
     
