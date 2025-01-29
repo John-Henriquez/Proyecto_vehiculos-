@@ -24,7 +24,6 @@ const RegistroSolicitudes = () => {
     useEffect(() => {
         const fetchRegistros = async () => {
             const fetchedRegistros = await getAllRegistros();
-            console.log('Registros obtenidos:', fetchedRegistros);
 
             if (Array.isArray(fetchedRegistros)) {
                 setRegistros(fetchedRegistros);
@@ -38,7 +37,6 @@ const RegistroSolicitudes = () => {
         const fetchVehiculos = async () => {
             try {
                 const vehiculosResponse = await axios.get('/vehicle');
-                console.log('Vehículos obtenidos:', vehiculosResponse.data);
                 setVehiculos(vehiculosResponse.data);
             } catch (error) {
                 console.error('Error al obtener los vehículos:', error);
@@ -61,19 +59,27 @@ const RegistroSolicitudes = () => {
         fetchVehiculos();
     }, []);
 
+
     const registrosConVehiculos = registros.map(registro => {
-        const vehiculo = vehiculos.find((vehiculo) => vehiculo.placa === registro.placa_vehiculo);
-        const tipoVehiculoNombre = tiposVehiculos.find(tipo => tipo.id_tipo_vehiculo === (vehiculo ? vehiculo.id_tipo_vehiculo : ''))?.nombre || 'Desconocido';
+        const vehiculo = vehiculos.find(v => v.placa === registro.placa_vehiculo);
+        
+        if (!vehiculo) {
+            console.warn(`Registro ${registro.id_registro} tiene placa ${registro.placa_vehiculo} sin vehículo asociado`);
+        }
+
         return {
             ...registro,
-            tipo_vehiculo: tipoVehiculoNombre,
+            vehiculo: vehiculo || null, 
+            id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo,
+            tipo_vehiculo_nombre: vehiculo?.tipo_vehiculo?.nombre,
         };
     });
 
+
     const registrosFiltrados = registrosConVehiculos
         .filter((registro) => registro.id_registro.toString().includes(filterId)) 
-        .filter((registro) => filterType ? registro.tipo_vehiculo === filterType : true); 
-
+        .filter(registro => filterType ? registro.id_tipo_vehiculo=== filterType : true);
+        
     const handleTipoVehiculoChange = (tipo) => {
         setFilterType(tipo);
     };
@@ -142,7 +148,14 @@ const RegistroSolicitudes = () => {
                     <h1 className='title-table'>Registro de Solicitudes</h1>
                     <div className='filter-actions'>
                         <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID de registro'/>
-                        <FiltroVehiculo onChange={handleTipoVehiculoChange} />
+                        <FiltroVehiculo 
+                        options={tiposVehiculos.map(t => ({
+                            value: t.id_tipo_vehiculo,
+                            label: t.nombre
+                        }))} 
+                        onChange={handleTipoVehiculoChange}
+                        />
+
                         <button onClick={handleDownloadPDF} className='btn-download'>Descargar PDF</button>
                     </div>
                 </div>

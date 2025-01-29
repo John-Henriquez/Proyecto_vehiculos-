@@ -69,6 +69,10 @@ const RegistroSchema = new EntitySchema({
       type: "timestamp",
       default: () => "CURRENT_TIMESTAMP",
     },
+    id_tipo_vechiculo: {
+      type: "int",
+      nullable: false,
+    },
   },
   relations: {
     vehiculo: {

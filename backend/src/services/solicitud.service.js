@@ -84,6 +84,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
               observaciones: solicitud.estado === "rechazada" ? solicitud.observaciones : null,
               placa_vehiculo: solicitud.placa_patente || null,
               rut_conductor: solicitud.rut_conductor || null,
+              id_tipo_vechiculo: solicitud.id_tipo_vehiculo,
           });
 
           await registroRepository.save(registro);
