@@ -53,6 +53,15 @@ export default function PopupVehiculo({ show, setShow, data, action }) {
                                 required: true,
                             },
                             {
+                                label: "Año de Fabricacion",
+                                name: "año_fabricacion",
+                                defaultValue: vehiculoData.año_fabricacion || "",
+                                placeholder: '2012',
+                                fieldType: 'input',
+                                type: "number",
+                                required: true,
+                            },
+                            {
                                 label: "Capacidad Máxima",
                                 name: "capacidad_maxima",
                                 defaultValue: vehiculoData.capacidad_maxima || "",

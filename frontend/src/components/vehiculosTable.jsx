@@ -46,6 +46,7 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
               <TableCell>Placa</TableCell>
               <TableCell>Marca</TableCell>
               <TableCell>Modelo</TableCell>
+              <TableCell>Año Fabricacion</TableCell>
               <TableCell>Capacidad Máxima</TableCell>
               <TableCell>Tipo Vehículo</TableCell>
               <TableCell>Estado</TableCell>
@@ -59,6 +60,7 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
                   <TableCell>{row.placa}</TableCell>
                   <TableCell>{row.marca}</TableCell>
                   <TableCell>{row.modelo}</TableCell>
+                  <TableCell>{row.año_fabricacion}</TableCell>
                   <TableCell>{row.capacidad_maxima}</TableCell>
                   <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
                   <TableCell>{row.estado}</TableCell>

@@ -12,6 +12,7 @@ const useGetVehiculos = () => {
     capacidad_maxima: vehiculo.capacidad_maxima,
     estado: vehiculo.estado,
     id_tipo_vehiculo: vehiculo.id_tipo_vehiculo,
+    año_fabricacion: vehiculo.año_fabricacion,
   });
 
   const fetchVehiculos = async () => {
@@ -28,6 +29,8 @@ const useGetVehiculos = () => {
       showWarningAlert("Error", "Error al obtener vehículos");
     }
   };
+
+  console.log(vehiculos);
 
   useEffect(() => {
     fetchVehiculos();
