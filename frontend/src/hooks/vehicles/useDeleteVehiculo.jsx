@@ -4,6 +4,9 @@ import { deleteDataAlert, showErrorAlert, showSuccessAlert } from "@helpers/swee
 const useDeleteVehiculo = (fetchVehiculos, setVehiculos) => {
   const handleDelete = async (vehiculo) => {
 
+    console.log("Vehículo recibido para eliminar:", vehiculo);
+    console.log("Tipo de setVehiculos:", typeof setVehiculos);
+    
     if (!vehiculo) {
       showErrorAlert("Error", "No se seleccionó ningún vehículo para eliminar.");
       return;
@@ -20,7 +23,7 @@ const useDeleteVehiculo = (fetchVehiculos, setVehiculos) => {
 
         showSuccessAlert("¡Eliminado!", "El vehículo ha sido eliminado correctamente.");
         await fetchVehiculos();
-        setVehiculos((prevVehiculos) => prevVehiculos.filter((vehiculo) => vehiculo.placa !== placa));
+        setVehiculos((prevVehiculos) => prevVehiculos.filter((v) => v.placa !== vehiculo.placa));        
       } else {
         showErrorAlert("Cancelado", "La operación fue cancelada.");
       }

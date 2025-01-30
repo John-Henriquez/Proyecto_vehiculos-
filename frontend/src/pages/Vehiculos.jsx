@@ -9,7 +9,7 @@ import useEditVehiculo from '../hooks/vehicles/useEditVehiculo';
 import useDeleteVehiculo from '../hooks/vehicles/useDeleteVehiculo';
 
 const Vehiculos = () => {
-    const { vehiculos = [], loading, error, setVehiculos } = useVehiculos();
+    const { vehiculos = [], loading, error, setVehiculos, fetchVehiculos } = useVehiculos();
     const [filterPlaca, setFilterPlaca] = useState('');
     const [filterType, setFilterType] = useState('');
 
@@ -30,7 +30,7 @@ const Vehiculos = () => {
         setShowPopup(true);
     };
 
-    const { handleDelete } = useDeleteVehiculo(setVehiculos);
+    const { handleDelete } = useDeleteVehiculo(fetchVehiculos, setVehiculos);
 
     const handleTipoVehiculoChange = (tipo) => {
         setFilterType(tipo ? Number(tipo) : null);
