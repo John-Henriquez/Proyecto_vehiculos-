@@ -16,7 +16,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
 export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
-  // Usar el hook para obtener los tipos de vehículos
   const { tiposVehiculos, loading, error } = useGetTiposVehiculos();
   const [currentPage, setCurrentPage] = useState(1);
 

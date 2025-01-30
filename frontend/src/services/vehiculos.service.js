@@ -20,3 +20,13 @@ export async function updateVehiculo(placa, vehiculoData) {
         throw error.response?.data || { message: "Error al editar el vehículo" };
     }
 }
+
+export async function deleteVehiculo(placa) {
+    try {
+      const { data } = await axios.delete(`/vehicle/delete/${placa}`);
+      return data;
+    } catch (error) {
+      console.error("Error al eliminar el vehículo:", error);
+      throw error.response?.data || { message: "Error al eliminar el vehículo" };
+    }
+  }

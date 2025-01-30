@@ -6,6 +6,7 @@ import Search from '../components/Search';
 import { showWarningAlert } from '../helpers/sweetAlert'; 
 import PopupVehiculo from '../components/vehiculosPopUp';
 import useEditVehiculo from '../hooks/vehicles/useEditVehiculo';
+import useDeleteVehiculo from '../hooks/vehicles/useDeleteVehiculo';
 
 const Vehiculos = () => {
     const { vehiculos = [], loading, error, setVehiculos } = useVehiculos();
@@ -28,6 +29,8 @@ const Vehiculos = () => {
         setSelectedVehiculo(vehiculo);
         setShowPopup(true);
     };
+
+    const { handleDelete } = useDeleteVehiculo(setVehiculos);
 
     const handleTipoVehiculoChange = (tipo) => {
         setFilterType(tipo ? Number(tipo) : null);
@@ -66,6 +69,7 @@ const Vehiculos = () => {
                     <VehiculosTable
                         data={filteredData}
                         onEdit={handleEdit}
+                        onDelete={handleDelete}
                     />
                 )}
             </div>
