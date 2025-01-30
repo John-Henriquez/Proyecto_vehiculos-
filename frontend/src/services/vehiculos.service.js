@@ -33,7 +33,7 @@ export async function deleteVehiculo(placa) {
 
   export async function createVehiculo(vehiculoData) {
     try {
-        const { data } = await axios.post('/vehicle/create', vehiculoData);
+        const { data } = await axios.post('/vehicle/add', vehiculoData);
         return data;
     } catch (error) {
         console.error("Error al crear el vehículo:", error);

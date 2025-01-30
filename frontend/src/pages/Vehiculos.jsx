@@ -86,7 +86,7 @@ const Vehiculos = () => {
                 show={showPopup} 
                 setShow={setShowPopup} 
                 data={selectedVehiculo} 
-                action={handleUpdate}
+                action={selectedVehiculo ? handleUpdate : handleCreate}
             />
         </div>
     );
