@@ -9,6 +9,7 @@ import {
   IconButton,
   Paper,
   Button,
+  Pagination
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -17,6 +18,9 @@ import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
   // Usar el hook para obtener los tipos de vehículos
   const { tiposVehiculos, loading, error } = useGetTiposVehiculos();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 10;
   
   const getTipoVehiculoNombre = (id) => {
     const tipo = tiposVehiculos?.find((t) => t.id_tipo_vehiculo === id);
@@ -24,11 +28,15 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
   };
 
   useEffect(() => {
-    // Asegurarse de que los tipos de vehículos se hayan cargado correctamente
+    setCurrentPage(1);
     if (error) {
       console.error("Error al cargar los tipos de vehículos:", error);
     }
-  }, [error]);
+  }, [data, error]);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = data?.slice(startIndex, endIndex) || [];
 
   return (
     <>
@@ -49,8 +57,8 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.length > 0 ? (
-              data.map((row) => (
+            {currentData.length > 0 ? (
+              currentData.map((row) => (
                 <TableRow key={row.placa}>
                   <TableCell>{row.placa}</TableCell>
                   <TableCell>{row.marca}</TableCell>
@@ -59,7 +67,7 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
                   <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
                   <TableCell>{row.estado}</TableCell>
                   <TableCell>
-                    <IconButton color="primary" onClick={() => onEdit(row)}>
+                  <IconButton color="primary" onClick={() => onEdit(row)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton color="error" onClick={() => onDelete(row)}>
@@ -78,6 +86,14 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
           </TableBody>
         </Table>
       </TableContainer>
+      {data?.length > itemsPerPage && (
+        <Pagination
+          count={Math.ceil((data?.length || 0) / itemsPerPage)}
+          page={currentPage}
+          onChange={(_, page) => setCurrentPage(page)}
+          sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}
+        />
+      )}
     </>
   );
 }
