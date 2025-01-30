@@ -30,3 +30,13 @@ export async function deleteVehiculo(placa) {
       throw error.response?.data || { message: "Error al eliminar el vehículo" };
     }
   }
+
+  export async function createVehiculo(vehiculoData) {
+    try {
+        const { data } = await axios.post('/vehicle/create', vehiculoData);
+        return data;
+    } catch (error) {
+        console.error("Error al crear el vehículo:", error);
+        throw error.response?.data || { message: "Error al crear el vehículo" };
+    }
+}

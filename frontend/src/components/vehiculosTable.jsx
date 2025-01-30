@@ -39,9 +39,6 @@ export default function VehiculosTable({ data, onEdit, onDelete, onAdd }) {
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={onAdd} style={{ marginBottom: "10px" }}>
-        Añadir Vehículo
-      </Button>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

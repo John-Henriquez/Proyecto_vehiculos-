@@ -7,6 +7,7 @@ import { showWarningAlert } from '../helpers/sweetAlert';
 import PopupVehiculo from '../components/vehiculosPopUp';
 import useEditVehiculo from '../hooks/vehicles/useEditVehiculo';
 import useDeleteVehiculo from '../hooks/vehicles/useDeleteVehiculo';
+import useCreateVehiculo from '../hooks/vehicles/useCreateVehiculo';
 
 const Vehiculos = () => {
     const { vehiculos = [], loading, error, setVehiculos, fetchVehiculos } = useVehiculos();
@@ -25,8 +26,15 @@ const Vehiculos = () => {
         handleUpdate
     } = useEditVehiculo(setVehiculos);
 
+    const { handleCreate } = useCreateVehiculo(setVehiculos);
+
     const handleEdit = (vehiculo) => {
         setSelectedVehiculo(vehiculo);
+        setShowPopup(true);
+    };
+
+    const handleCreateNew = () => {
+        setSelectedVehiculo(null);
         setShowPopup(true);
     };
 
@@ -60,6 +68,7 @@ const Vehiculos = () => {
                         <FiltroVehiculo 
                             onChange={handleTipoVehiculoChange}  
                         />
+                        <button onClick={handleCreateNew} className='btn-add'>Agregar Vehículo</button>
                     </div>
                 </div>
                 

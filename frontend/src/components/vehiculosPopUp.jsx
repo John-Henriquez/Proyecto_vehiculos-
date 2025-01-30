@@ -3,31 +3,27 @@ import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 
 export default function PopupVehiculo({ show, setShow, data, action }) {
+    const isEditing = !!data;
     const vehiculoData = data || {};
 
     const handleSubmit = (formData) => {
         action({
             ...formData,
-            placa: vehiculoData.placa 
+            placa: isEditing ? vehiculoData.placa : formData.placa, 
         });
     };
 
     return (
         <div>
-            { show && (
-            <div className="bg">
-                <div className="popup">
-                    <input 
-                        type="hidden" 
-                        name="placa" 
-                        value={vehiculoData.placa || ""} 
-                    />
-                    <button className='close' onClick={() => setShow(false)}>
-                        <img src={CloseIcon} alt="Cerrar" />
-                    </button>
-                    <Form
-                        title="Editar vehículo"
-                        fields={[
+            {show && (
+                <div className="bg">
+                    <div className="popup">
+                        <button className='close' onClick={() => setShow(false)}>
+                            <img src={CloseIcon} alt="Cerrar" />
+                        </button>
+                        <Form
+                            title={isEditing ? "Editar vehículo" : "Agregar nuevo vehículo"}
+                            fields={[
                             {
                                 label: "Placa",
                                 name: "placa",
@@ -36,7 +32,7 @@ export default function PopupVehiculo({ show, setShow, data, action }) {
                                 fieldType: 'input',
                                 type: "text",
                                 required: true,
-                                disabled: true,
+                                disabled: isEditing, 
                             },
                             {
                                 label: "Marca",
@@ -89,7 +85,7 @@ export default function PopupVehiculo({ show, setShow, data, action }) {
                             },
                         ]}
                         onSubmit={handleSubmit}
-                        buttonText="Editar vehículo"
+                        buttonText={isEditing ? "Editar vehículo" : "Agregar vehículo"}
                         backgroundColor={'#fff'}
                     />
                 </div>

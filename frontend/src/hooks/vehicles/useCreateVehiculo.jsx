@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createVehiculo } from "@services/vehiculo.service.js";
+import { createVehiculo } from '../../services/vehiculos.service';
 import { showSuccessAlert, showErrorAlert } from "@helpers/sweetAlert.js";
 
 const useCreateVehiculo = (setVehiculos) => {
