@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -8,19 +8,14 @@ import {
   TableRow,
   IconButton,
   Paper,
-  Button,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function ConductoresTable({ data, onEdit, onDelete }) {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [data]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;

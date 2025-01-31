@@ -12,39 +12,34 @@ const Conductores = () => {
     const { conductores = [], loading, error, setConductores, fetchConductores } = useGetConductores();
     const [filterRut, setFilterRut] = useState('');
 
-    const handleSearch = (e) => {
-        setFilterRut(e.target.value);
-    };
-    
+    // Hook para editar conductores
     const {
         isPopupOpen: showPopup,
         setIsPopupOpen: setShowPopup,
         dataConductor: selectedConductor,
         setDataConductor: setSelectedConductor,
-        handleUpdate
+        handleUpdate,
+        loading: editLoading,
+        error: editError,
     } = useEditConductor(setConductores);
 
-    const { handleCreate } = useCreateConductor(setConductores);
+    // Hook para crear conductores
+    const { handleCreate, loading: createLoading, error: createError } = useCreateConductor(setConductores);
 
-    const handleEdit = (conductor) => {
-        setSelectedConductor(conductor);
-        setShowPopup(true);
-    };
+    // Hook para eliminar conductores
+    const { handleDelete, loading: deleteLoading, error: deleteError } = useDeleteConductor(fetchConductores, setConductores);
 
-    const handleCreateNew = () => {
-        setSelectedConductor(null);
-        setShowPopup(true);
-    };
+    // Filtrar conductores por RUT
+    const filteredConductores = conductores.filter((conductor) =>
+        conductor.rut_conductor.toLowerCase().includes(filterRut.toLowerCase())
+    );
 
-    const { handleDelete } = useDeleteConductor(fetchConductores, setConductores);
-    
-    if (error) {
-        showWarningAlert("Error", error);
-        return <div>Error al cargar los conductores</div>;
+    // Manejar errores globales
+    if (error || createError || editError || deleteError) {
+        showWarningAlert("Error", error || createError || editError || deleteError);
+        return <div>Error al cargar o manipular los conductores</div>;
     }
 
-    console.log('setSelectedConductor:', setSelectedConductor);
-    
     return (
         <div className='main-container'>
             <div className='table-container'>
@@ -53,20 +48,26 @@ const Conductores = () => {
                     <div className='filter-actions'>
                         <Search 
                             value={filterRut} 
-                            onChange={handleSearch} 
+                            onChange={(e) => setFilterRut(e.target.value)} 
                             placeholder='Filtrar por RUT'
                         />
-                        <button onClick={handleCreateNew} className='btn-add'>Agregar Conductor</button>
+                        <button onClick={() => {
+                            setSelectedConductor(null); // Limpia el conductor seleccionado
+                            setShowPopup(true); // Abre el popup
+                        }} className='btn-add'>Agregar Conductor</button>
                     </div>
                 </div>
-                
+
                 {loading ? (
-                    <div>Cargando...</div> 
+                    <div>Cargando...</div>
                 ) : (
                     <ConductoresTable
-                        data={conductores}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
+                        data={filteredConductores}
+                        onEdit={(conductor) => {
+                            setSelectedConductor(conductor); // Establece el conductor a editar
+                            setShowPopup(true); // Abre el popup
+                        }}
+                        onDelete={handleDelete} // Pasa la función para eliminar conductores
                     />
                 )}
             </div>
@@ -75,6 +76,7 @@ const Conductores = () => {
                 setShow={setShowPopup} 
                 data={selectedConductor} 
                 action={selectedConductor ? handleUpdate : handleCreate}
+                loading={editLoading || createLoading} // Muestra el estado de carga del popup
             />
         </div>
     );

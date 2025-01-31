@@ -26,10 +26,6 @@ const ConductorSchema = new EntitySchema({
       type: "varchar",
       length: 20,
       default: "disponible", 
-    },
-    fecha_liberacion: {
-      type: "timestamp",
-      nullable: true,
     }
   },
   relations: {

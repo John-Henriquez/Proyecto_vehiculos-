@@ -1,16 +1,19 @@
+import React from 'react';
 import Form from './Form';
-import '@styles/popup.css'; 
-import CloseIcon from '@assets/XIcon.svg'; 
+import '@styles/popup.css';
+import CloseIcon from '@assets/XIcon.svg';
 
-export default function PopupConductor({ show, setShow, data, action }) {
+export default function PopupConductor({ show, setShow, data, action, loading }) {
     const isEditing = !!data;
     const conductorData = data || {};
 
-    const handleSubmit = (formData) => {
-        action({
-            ...formData,
-            rut_conductor: isEditing ? conductorData.rut_conductor : formData.rut_conductor,
-        });
+    const handleSubmit = async (formData) => {
+        try {
+            await action(formData);
+            setShow(false); // Cierra el popup después de completar la acción
+        } catch (error) {
+            console.error("Error al procesar el formulario:", error);
+        }
     };
 
     return (
@@ -64,19 +67,11 @@ export default function PopupConductor({ show, setShow, data, action }) {
                                     required: true,
                                     defaultValue: conductorData.estado || "disponible",
                                 },
-                                {
-                                    label: "Fecha de Liberación",
-                                    name: "fecha_liberacion",
-                                    defaultValue: conductorData.fecha_liberacion || "",
-                                    placeholder: 'YYYY-MM-DD HH:mm:ss',
-                                    fieldType: 'input',
-                                    type: "datetime-local",
-                                    required: false,
-                                },
                             ]}
                             onSubmit={handleSubmit}
                             buttonText={isEditing ? "Editar Conductor" : "Agregar Conductor"}
                             backgroundColor={'#fff'}
+                            loading={loading} // Muestra el estado de carga en el botón
                         />
                     </div>
                 </div>
