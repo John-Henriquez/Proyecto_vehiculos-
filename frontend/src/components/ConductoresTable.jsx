@@ -13,25 +13,14 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
-export default function VehiculosTable({ data, onEdit, onDelete }) {
-  const { tiposVehiculos, loading, error } = useGetTiposVehiculos();
+export default function ConductoresTable({ data, onEdit, onDelete }) {
   const [currentPage, setCurrentPage] = useState(1);
-
   const itemsPerPage = 10;
-  
-  const getTipoVehiculoNombre = (id) => {
-    const tipo = tiposVehiculos?.find((t) => t.id_tipo_vehiculo === id);
-    return tipo ? tipo.nombre : "Desconocido";
-  };
 
   useEffect(() => {
     setCurrentPage(1);
-    if (error) {
-      console.error("Error al cargar los tipos de vehículos:", error);
-    }
-  }, [data, error]);
+  }, [data]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -43,12 +32,9 @@ export default function VehiculosTable({ data, onEdit, onDelete }) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Placa</TableCell>
-              <TableCell>Marca</TableCell>
-              <TableCell>Modelo</TableCell>
-              <TableCell>Año Fabricacion</TableCell>
-              <TableCell>Capacidad Máxima</TableCell>
-              <TableCell>Tipo Vehículo</TableCell>
+              <TableCell>RUT</TableCell>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Teléfono</TableCell>
               <TableCell>Estado</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
@@ -56,16 +42,13 @@ export default function VehiculosTable({ data, onEdit, onDelete }) {
           <TableBody>
             {currentData.length > 0 ? (
               currentData.map((row) => (
-                <TableRow key={row.placa}>
-                  <TableCell>{row.placa}</TableCell>
-                  <TableCell>{row.marca}</TableCell>
-                  <TableCell>{row.modelo}</TableCell>
-                  <TableCell>{row.año_fabricacion}</TableCell>
-                  <TableCell>{row.capacidad_maxima}</TableCell>
-                  <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
+                <TableRow key={row.rut_conductor}>
+                  <TableCell>{row.rut_conductor}</TableCell>
+                  <TableCell>{row.nombre}</TableCell>
+                  <TableCell>{row.telefono}</TableCell>
                   <TableCell>{row.estado}</TableCell>
                   <TableCell>
-                  <IconButton color="primary" onClick={() => onEdit(row)}>
+                    <IconButton color="primary" onClick={() => onEdit(row)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton color="error" onClick={() => onDelete(row)}>
@@ -76,8 +59,8 @@ export default function VehiculosTable({ data, onEdit, onDelete }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center">
-                  No hay vehículos disponibles
+                <TableCell colSpan={5} align="center">
+                  No hay conductores disponibles
                 </TableCell>
               </TableRow>
             )}

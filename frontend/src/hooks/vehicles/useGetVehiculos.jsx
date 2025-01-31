@@ -14,7 +14,7 @@ const useGetVehiculos = () => {
     id_tipo_vehiculo: vehiculo.id_tipo_vehiculo,
     año_fabricacion: vehiculo.año_fabricacion,
   });
-
+ 
   const fetchVehiculos = async () => {
     try {
       const response = await getAllVehiculos();

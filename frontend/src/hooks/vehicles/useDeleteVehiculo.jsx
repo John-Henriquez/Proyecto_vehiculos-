@@ -11,7 +11,7 @@ const useDeleteVehiculo = (fetchVehiculos, setVehiculos) => {
       showErrorAlert("Error", "No se seleccionó ningún vehículo para eliminar.");
       return;
     }
-
+ 
     try {
       const result = await deleteDataAlert();
       if (result.isConfirmed) {

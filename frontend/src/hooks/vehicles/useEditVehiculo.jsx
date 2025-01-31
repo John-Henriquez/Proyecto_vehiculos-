@@ -33,7 +33,7 @@ const useEditVehiculo = (setVehiculos) => {
           console.log(updatedVehiculoData.placa);
           throw new Error("Respuesta inválida de la API");
         }
-       
+        
         showSuccessAlert("¡Actualizado!", "El vehículo ha sido actualizado correctamente.");
         setIsPopupOpen(false);
 
