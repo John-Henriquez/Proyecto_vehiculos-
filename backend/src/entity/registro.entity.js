@@ -25,15 +25,15 @@ const RegistroSchema = new EntitySchema({
       nullable: false,
     },
     fecha_solicitud: {
-      type: "date",
+      type: "timestamp",
       nullable: false,
     },
     fecha_salida: {
-      type: "date",
+      type: "timestamp",
       nullable: false,
     },
     fecha_regreso: {
-      type: "date",
+      type: "timestamp",
       nullable: true,
     },
     destino: {

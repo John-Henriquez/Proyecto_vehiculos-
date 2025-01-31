@@ -20,16 +20,15 @@
     position: relative;
     border-radius: 12px;
 }
-.close{
+.close {
     position: absolute;
-    margin-top: 20px;
-    margin-right: 10px;
+    top: 10px; /* Ajusta esta propiedad */
     right: 10px;
     cursor: pointer;
     background-color: white;
     border: white;
-
 }
+
 .title{
     font-size: 17px;
     font-weight: 700;

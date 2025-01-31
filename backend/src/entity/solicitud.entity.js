@@ -31,12 +31,12 @@ const SolicitudSchema = new EntitySchema({
       nullable: false,
     },
     fecha_creacion: {
-      type: "date",
+      type: "timestamp",
       default: () => "CURRENT_DATE",
       nullable: false,
     },
     fecha_salida: {
-      type: "date",
+      type: "timestamp",
       nullable: true,
     },
     destino: {
@@ -69,7 +69,7 @@ const SolicitudSchema = new EntitySchema({
       nullable: false,
     },
     fecha_regreso: {
-      type: "date",
+      type: "timestamp",
       nullable: true,
     },
     cantidad_pasajeros: {

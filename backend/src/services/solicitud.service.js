@@ -5,6 +5,7 @@ import { sendEmail } from  "../services/email.service.js";
 import Registro from "../entity/registro.entity.js";
 import Solicitud from "../entity/solicitud.entity.js";
 import User from "../entity/user.entity.js";
+import AsignacionVehiculo from "../entity/asignacion.entity.js";
 
 async function scheduleEmail(emailTo, subject, text) {
   console.log(`Programando envío de correo a ${emailTo}`);
@@ -53,6 +54,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       const solicitudRepository = queryRunner.manager.getRepository(Solicitud);
       const registroRepository = queryRunner.manager.getRepository(Registro);
       const userRepository = queryRunner.manager.getRepository(User);
+      const asignacionRepository = queryRunner.manager.getRepository(AsignacionVehiculo);
 
       // Bloquear el registro para evitar race conditions
       const solicitud = await solicitudRepository.findOne({
@@ -88,6 +90,18 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
           });
 
           await registroRepository.save(registro);
+
+          if (solicitud.estado === "aceptada") {
+            const nuevaAsignacion = asignacionRepository.create({
+              rut_conductor: solicitud.rut_conductor,
+              placa: solicitud.placa_patente,
+              id_solicitud: solicitud.id_solicitud,
+              fecha_salida: solicitud.fecha_salida,
+              fecha_regreso: solicitud.fecha_regreso,
+              estado: "en espera", 
+            });
+            await asignacionRepository.save(nuevaAsignacion);
+          }
 
           const user = await userRepository.findOne({ where: { rut: solicitud.rut_creador } });
           if (!user) throw new Error("Usuario no encontrado");

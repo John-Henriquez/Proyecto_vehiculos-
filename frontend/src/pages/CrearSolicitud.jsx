@@ -178,7 +178,7 @@ export default function VehicleRequestForm() {
             <input
               id="fechaSalida"
               name="fechaSalida"
-              type="date"
+              type="datetime-local"
               value={formData.fechaSalida}
               onChange={handleChange}
               className={`input ${errors.fechaSalida ? 'error' : ''}`}
@@ -191,7 +191,7 @@ export default function VehicleRequestForm() {
             <input
               id="fechaRegreso"
               name="fechaRegreso"
-              type="date"
+              type="datetime-local"
               value={formData.fechaRegreso}
               onChange={handleChange}
               className="input"
