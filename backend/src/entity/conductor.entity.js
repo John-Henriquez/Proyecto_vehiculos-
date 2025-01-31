@@ -25,7 +25,7 @@ const ConductorSchema = new EntitySchema({
     estado: {
       type: "varchar",
       length: 20,
-      default: "disponible", // Estados: "disponible", "asignado"
+      default: "disponible", 
     },
     fecha_liberacion: {
       type: "timestamp",

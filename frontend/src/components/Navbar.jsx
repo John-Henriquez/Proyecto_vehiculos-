@@ -1,13 +1,28 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
 import '@styles/navbar.css';
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { IconMenu2, IconX, IconUser, IconLogout, IconHome, IconFile, IconPlus, IconUsers, IconDatabase, IconCar, IconSettings } from '@tabler/icons-react';
+
 
 const Navbar = () => {
     const navigate = useNavigate();
     const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
     const userRole = user?.rol;
     const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef(null);
+
+    // Cerrar menú al hacer clic fuera
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const logoutSubmit = () => {
         try {
@@ -18,91 +33,93 @@ const Navbar = () => {
         }
     };
 
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
+    const menuItems = [
+        { to: "/home", text: "Inicio", icon: <IconHome /> },
+        { to: "/applications", text: "Solicitudes", icon: <IconFile /> },
+        { to: "/add-application", text: "Crear solicitud", icon: <IconPlus /> },
+    ];
 
+    const adminItems = [
+        { to: "/users", text: "Usuarios", icon: <IconUsers /> },
+        { to: "/records", text: "Registros", icon: <IconDatabase /> },
+        { to: "/vehicles", text: "Vehículos", icon: <IconCar /> },
+    ];
+    
+    console.log(sessionStorage.getItem('usuario'));
     return (
         <nav className="navbar">
-            <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
+            <div className="user-info">
+                <IconUser size={24} />
+                <span>{user?.nombreCompleto || 'Usuario'}</span>
+            </div>
+
+            {/* Menú para desktop */}
+            <div className="desktop-menu">
                 <ul>
-                    <li>
-                        <NavLink
-                            to="/home"
-                            className={({ isActive }) => (isActive ? 'active' : '')}
-                            onClick={() => setMenuOpen(false)}
-                        >
-                            Inicio
-                        </NavLink>
-                    </li>
-                    {userRole === 'administrador' && (
-                        <>
-                            <li>
-                                <NavLink
-                                    to="/users"
-                                    className={({ isActive }) => (isActive ? 'active' : '')}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Usuarios
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/records"
-                                    className={({ isActive }) => (isActive ? 'active' : '')}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Registros
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/vehicles"
-                                    className={({ isActive }) => (isActive ? 'active' : '')}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Vehiculos
-                                </NavLink>
-                            </li>
-                        </>
-                    )}
-                            <li>
-                                <NavLink
-                                    to="/applications"
-                                    className={({ isActive }) => (isActive ? 'active' : '')}
-                                    onClick={() => setMenuOpen(false)}
-                                >
-                                    Solicitudes
-                                </NavLink>
-                            </li>
-                        <li>
+                    {menuItems.map((item) => (
+                        <li key={item.to}>
                             <NavLink
-                                to="/add-application"
-                                className={({ isActive }) => (isActive ? 'active' : '')}
-                                onClick={() => setMenuOpen(false)}
+                                to={item.to}
+                                className={({ isActive }) => isActive ? 'active' : ''}
                             >
-                                Crear solicitud
+                                {item.icon}
+                                {item.text}
                             </NavLink>
                         </li>
-                    <li>
-                        <NavLink
-                            to="/auth"
-                            className={({ isActive }) => (isActive ? 'active' : '')}
-                            onClick={() => {
-                                logoutSubmit();
-                                setMenuOpen(false);
-                            }}
-                        >
-                            Cerrar sesión
-                        </NavLink>
-                    </li>
+                    ))}
+                    
+                    {userRole === 'administrador' && (
+                        <li className="dropdown">
+                            <button className="dropdown-toggle">
+                                <IconSettings /> Administración
+                            </button>
+                            <div className="dropdown-menu">
+                                {adminItems.map((item) => (
+                                    <NavLink
+                                        key={item.to}
+                                        to={item.to}
+                                        className={({ isActive }) => isActive ? 'active' : ''}
+                                    >
+                                        {item.icon}
+                                        {item.text}
+                                    </NavLink>
+                                ))}
+                            </div>
+                        </li>
+                    )}
                 </ul>
             </div>
-            <div className="hamburger" onClick={toggleMenu}>
-                <span className="bar"></span>
-                <span className="bar"></span>
-                <span className="bar"></span>
+
+            {/* Menú móvil */}
+            <div className={`mobile-menu ${menuOpen ? 'active' : ''}`} ref={menuRef}>
+                <button className="close-menu" onClick={() => setMenuOpen(false)}>
+                    <IconX size={24} />
+                </button>
+                
+                <ul>
+                    {[...menuItems, ...(userRole === 'administrador' ? adminItems : [])].map((item) => (
+                        <li key={item.to}>
+                            <NavLink
+                                to={item.to}
+                                className={({ isActive }) => isActive ? 'active' : ''}
+                                onClick={() => setMenuOpen(false)}
+                            >
+                                {item.icon}
+                                {item.text}
+                            </NavLink>
+                        </li>
+                    ))}
+                </ul>
+                
+                <button className="logout-button" onClick={logoutSubmit}>
+                    <IconLogout />
+                    Cerrar sesión
+                </button>
             </div>
+
+            <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+                {menuOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
+            </button>
         </nav>
     );
 };
