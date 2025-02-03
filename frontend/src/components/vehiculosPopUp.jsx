@@ -1,10 +1,13 @@
 import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
+import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos';
 
 export default function PopupVehiculo({ show, setShow, data, action }) {
     const isEditing = !!data;
     const vehiculoData = data || {};
+
+    const { tiposVehiculos } = useGetTiposVehiculos();
 
     const handleSubmit = (formData) => {
         action({
@@ -86,12 +89,14 @@ export default function PopupVehiculo({ show, setShow, data, action }) {
                             {
                                 label: "Tipo de Vehículo",
                                 name: "id_tipo_vehiculo",
-                                defaultValue: vehiculoData.id_tipo_vehiculo || "",
-                                placeholder: 'ID del tipo de vehículo',
-                                fieldType: 'input',
-                                type: "number",
+                                fieldType: 'select',
+                                options: tiposVehiculos.map((tipo) => ({
+                                  value: tipo.id_tipo_vehiculo,
+                                  label: tipo.nombre,
+                                })),
                                 required: true,
-                            },
+                                defaultValue: vehiculoData.id_tipo_vehiculo || "",
+                              },
                         ]}
                         onSubmit={handleSubmit}
                         buttonText={isEditing ? "Editar vehículo" : "Agregar vehículo"}
