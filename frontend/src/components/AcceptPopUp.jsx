@@ -26,7 +26,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                 <div className="bg">
                     <div className="popup">
                         <button className="close" onClick={() => setShow(false)}>
-                            <img src={CloseIcon} />
+                            <img src={CloseIcon} alt="Cerrar" />
                         </button>
                         <Form
                             title="Aceptar Solicitud"
