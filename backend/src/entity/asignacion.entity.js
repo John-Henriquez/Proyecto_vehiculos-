@@ -24,11 +24,11 @@ const AsignacionVehiculoSchema = new EntitySchema({
       nullable: false,
     },
     fecha_salida: {
-      type: "timestamp",
+      type: "date",
       nullable: false,
     },
     fecha_regreso: {
-      type: "timestamp",
+      type: "date",
       nullable: false
     },
     estado: {
