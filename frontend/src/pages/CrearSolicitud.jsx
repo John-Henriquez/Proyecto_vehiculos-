@@ -36,6 +36,7 @@ export default function VehicleRequestForm() {
     numTelefono: '',
     destino: '',
     rutSolicitante: '',
+    fechaRegreso: '',
   });
 
   const [successMessage, setSuccessMessage] = useState('');
@@ -69,6 +70,21 @@ export default function VehicleRequestForm() {
 
     if (!formData.destino) {
       newErrors.destino = 'Destino es requerido';
+      valid = false;
+    }
+
+    if (formData.fechaSalida && formData.fechaRegreso) {
+      const fechaSalida = new Date(formData.fechaSalida);
+      const fechaRegreso = new Date(formData.fechaRegreso);
+
+      if (fechaRegreso < fechaSalida) {
+        newErrors.fechaRegreso = 'La fecha de regreso no puede ser menor que la fecha de salida';
+        valid = false;
+      } else {
+        newErrors.fechaRegreso = ''; // Limpiar el error si la validación pasa
+      }
+    } else if (!formData.fechaRegreso) {
+      newErrors.fechaRegreso = 'Fecha de regreso es requerida';
       valid = false;
     }
 
@@ -196,6 +212,7 @@ export default function VehicleRequestForm() {
               onChange={handleChange}
               className="input"
             />
+            {errors.fechaRegreso && <p className="error-message">{errors.fechaRegreso}</p>}
           </div>
 
           {/* Número de teléfono */}
