@@ -114,12 +114,18 @@ const RegistroSolicitudes = () => {
         ];
     
         // Crear las filas para la tabla usando los datos proporcionados
-        const rows = registrosFiltrados.map(registro => ({
-            ...registro,
-            fecha_solicitud: new Date(registro.fecha_solicitud).toLocaleDateString(),
-            fecha_salida: new Date(registro.fecha_salida).toLocaleDateString(),
-            fecha_regreso: new Date(registro.fecha_regreso).toLocaleDateString(),
-          }));
+        const rows = registrosFiltrados.map(registro => {
+            const formatDate = (date) => {
+                return date ? new Date(date).toLocaleDateString() : '-'; // Si la fecha no existe, devuelve '-'
+            };
+    
+            return {
+                ...registro,
+                fecha_solicitud: formatDate(registro.fecha_solicitud),
+                fecha_salida: formatDate(registro.fecha_salida),
+                fecha_regreso: registro.estado === 'Rechazada' ? '-' : formatDate(registro.fecha_regreso), // Manejo especial para solicitudes rechazadas
+            };
+        });
     
         // Agregar la tabla al PDF
         doc.autoTable({

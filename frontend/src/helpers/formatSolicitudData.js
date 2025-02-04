@@ -23,9 +23,17 @@ export function formatSolicitudData(solicitud) {
         fechaSalida: solicitud.fecha_salida 
             ? formatTempo(new Date(solicitud.fecha_salida), "DD-MM-YYYY") 
             : null,  
-        fechaSolicitud: solicitud.fecha_creacion 
-            ? formatTempo(new Date(solicitud.fecha_creacion), "DD-MM-YYYY") 
-            : null,  
+            fechaSolicitud: solicitud.fecha_creacion 
+            ? (() => {
+                const date = new Date(solicitud.fecha_creacion); // Convertir timestamp a Date
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${day}-${month}-${year} ${hours}:${minutes}`;
+              })()
+            : null, 
         fecha_regreso: solicitud.fecha_regreso 
             ? formatTempo(new Date(solicitud.fecha_regreso), "DD-MM-YYYY") 
             : null,  

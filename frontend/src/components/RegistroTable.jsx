@@ -8,15 +8,33 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
 
-const formatDate = (date) => {
+const formatDate = (date, format = "DD-MM-YYYY") => {
   if (!date) return "-";
-  return date;
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) return "-"; // Verificar si la fecha es válida
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Meses empiezan en 0
+  const year = parsedDate.getFullYear();
+  const hours = String(parsedDate.getHours()).padStart(2, "0");
+  const minutes = String(parsedDate.getMinutes()).padStart(2, "0");
+
+  if (format === "DD-MM-YYYY") {
+    return `${day}-${month}-${year}`;
+  } else if (format === "DD-MM-YYYY HH:mm") {
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
+  }
+  return "-";
 };
 
-export default function RegistrosTable({ data, conductores, vehiculos }) {
+// Función para formatear RUTs
+const formatRut = (rut) => {
+  if (!rut) return "-";
+  return rut.replace(/\./g, "").replace(/-/g, "").replace(/^(\d{1,2})(\d{3})(\d{3})([\dkK])$/, "$1.$2.$3-$4");
+};
 
+
+export default function RegistrosTable({ data, conductores, vehiculos }) {
 
   const conductoresMap = conductores.reduce((acc, conductor) => {
     acc[conductor.rut_conductor] = conductor.nombre;
@@ -34,9 +52,10 @@ export default function RegistrosTable({ data, conductores, vehiculos }) {
           <TableRow>
             <TableCell>ID Registro</TableCell>
             <TableCell>Nombre Agrupación</TableCell>
-            <TableCell>N° Teléfono</TableCell>
-            <TableCell>Fecha Ingreso</TableCell>
+            <TableCell>Número Teléfono</TableCell>
+            <TableCell>Fecha Creacion</TableCell>
             <TableCell>Fecha Salida</TableCell>
+            <TableCell>Fecha Regreso</TableCell>
             <TableCell>Destino</TableCell>
             <TableCell>Vehiculo Asigado</TableCell>
             <TableCell>Conductor</TableCell>
@@ -46,7 +65,7 @@ export default function RegistrosTable({ data, conductores, vehiculos }) {
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={9} align="center">
+              <TableCell colSpan={10} align="center">
                 No hay registros disponibles
               </TableCell>
             </TableRow>
@@ -58,6 +77,7 @@ export default function RegistrosTable({ data, conductores, vehiculos }) {
               <TableCell>{row.num_telefono}</TableCell>
               <TableCell>{formatDate(row.fecha_solicitud)}</TableCell>
               <TableCell>{formatDate(row.fecha_salida)}</TableCell>
+              <TableCell>{row.fecha_regreso ? formatDate(row.fecha_regreso) : "No disponible"}</TableCell>
               <TableCell>{row.destino}</TableCell>
               <TableCell>{row.placa_vehiculo}</TableCell> 
               <TableCell>{getConductorName(row.rut_conductor)}</TableCell> 

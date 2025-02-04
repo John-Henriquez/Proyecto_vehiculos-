@@ -87,7 +87,7 @@ export async function createSolicitud(req, res) {
       observaciones: observaciones || null,
       rut_conductor: rut_conductor || null, 
       prioridad,
-      fecha_regreso: fecha_regreso || null,
+      fecha_regreso: fecha_regreso,
       cantidad_pasajeros: cantidad_pasajeros || null,
       id_tipo_vehiculo,
     };
