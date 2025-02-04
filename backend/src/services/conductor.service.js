@@ -40,7 +40,7 @@ export async function isConductorAvailableService(rut_conductor) {
       throw new Error("isConductorAvailableService - Conductor no encontrado");
     }
 
-    if (conductor.estado !== "disponible") {
+    if (conductor.estado !== "Disponible") {
       throw new Error("isConductorAvailableService - Conductor no disponible");
     }
 
@@ -78,7 +78,7 @@ export async function releaseConductorService(rut_conductor) {
     const conductorRepository = AppDataSource.getRepository(Conductor);
 
     const conductor = await getConductoresService(rut_conductor);
-    conductor.estado = "disponible";
+    conductor.estado = "Disponible";
 
     await conductorRepository.save(conductor);
     return conductor

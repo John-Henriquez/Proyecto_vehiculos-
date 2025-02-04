@@ -60,12 +60,12 @@ export default function PopupConductor({ show, setShow, data, action, loading })
                                     name: "estado",
                                     fieldType: 'select',
                                     options: [
-                                        { value: 'disponible', label: 'Disponible' },
+                                        { value: 'Disponible', label: 'Disponible' },
                                         { value: 'ocupado', label: 'Ocupado' },
                                         { value: 'no disponible', label: 'No Disponible' },
                                     ],
                                     required: true,
-                                    defaultValue: conductorData.estado || "disponible",
+                                    defaultValue: conductorData.estado || "Disponible",
                                 },
                             ]}
                             onSubmit={handleSubmit}

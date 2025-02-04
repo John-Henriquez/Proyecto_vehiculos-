@@ -24,9 +24,13 @@ const Vehiculos = () => {
         dataVehiculo: selectedVehiculo,
         setDataVehiculo: setSelectedVehiculo,
         handleUpdate
-    } = useEditVehiculo(setVehiculos);
+    } = useEditVehiculo(() => {
+        fetchVehiculos(); // Refrescar después de actualizar
+    });
 
-    const { handleCreate } = useCreateVehiculo(setVehiculos);
+    const { handleCreate } = useCreateVehiculo(() => {
+        fetchVehiculos(); // Refrescar después de crear
+    });
 
     const handleEdit = (vehiculo) => {
         setSelectedVehiculo(vehiculo);
@@ -38,7 +42,9 @@ const Vehiculos = () => {
         setShowPopup(true);
     };
 
-    const { handleDelete } = useDeleteVehiculo(fetchVehiculos, setVehiculos);
+    const { handleDelete } = useDeleteVehiculo(() => {
+        fetchVehiculos(); // Refrescar después de eliminar
+    }, setVehiculos);
 
     const handleTipoVehiculoChange = (tipo) => {
         setFilterType(tipo ? Number(tipo) : null);

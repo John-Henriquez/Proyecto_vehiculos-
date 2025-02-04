@@ -9,11 +9,16 @@ export default function PopupVehiculo({ show, setShow, data, action }) {
 
     const { tiposVehiculos } = useGetTiposVehiculos();
 
-    const handleSubmit = (formData) => {
-        action({
-            ...formData,
-            placa: isEditing ? vehiculoData.placa : formData.placa, 
-        });
+    const handleSubmit = async (formData) => {
+        try {
+            await action({
+                ...formData,
+                placa: isEditing ? vehiculoData.placa : formData.placa, // Mantener la placa si se está editando
+            });
+            setShow(false); // Cierra el popup después de completar la acción
+        } catch (error) {
+            console.error("Error al procesar el formulario:", error);
+        }
     };
 
     return (
