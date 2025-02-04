@@ -7,6 +7,7 @@ import applicationRoutes from "./solicitud.routes.js";
 import vehicleRoutes from "./vehiculo.routes.js";
 import driversRoutes from "./conductor.routes.js";
 import vehicleTypeRoutes from "./tipo_vehiculo.routes.js";
+import assignmentRoutes from "./asignacion.routes.js";
 import sendMail from "./email.routes.js";
 
 const router = Router();
@@ -19,5 +20,6 @@ router
     .use("/vehicle", vehicleRoutes)
     .use("/driver", driversRoutes)
     .use("/tipos-vehiculos", vehicleTypeRoutes)
-    .use("/sendMail", sendMail);
+    .use("/sendMail", sendMail)
+    .use/("/asignacion", assignmentRoutes);
 export default router;

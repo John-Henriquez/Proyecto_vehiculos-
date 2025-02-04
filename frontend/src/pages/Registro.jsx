@@ -63,13 +63,18 @@ const RegistroSolicitudes = () => {
             tipo => tipo.id_tipo_vehiculo === vehiculo?.id_tipo_vehiculo
         )?.nombre || "No especificado";
    
-        return {
-            ...registro,
-            vehiculo: vehiculo || null,
-            id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo,
-            tipo_vehiculo_nombre: tipoNombre,
-        };
-    });
+        const vehiculoCompleto = vehiculo
+        ? `${tipoNombre} / ${vehiculo.placa} / ${vehiculo.marca} ${vehiculo.modelo}`
+        : "No especificado";
+
+    return {
+        ...registro,
+        vehiculo: vehiculo || null,
+        id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo,
+        tipo_vehiculo_nombre: tipoNombre,
+        vehiculo_completo: vehiculoCompleto, // Nuevo campo combinado
+    };
+});;
 
     const registrosFiltrados = registrosConVehiculos
         .filter((registro) => registro.id_registro.toString().includes(filterId))
@@ -116,7 +121,7 @@ const RegistroSolicitudes = () => {
             { title: 'Salida', dataKey: 'fecha_salida', width: 25 },
             { title: 'Regreso', dataKey: 'fecha_regreso', width: 25 },
             { title: 'Estado', dataKey: 'estado', width: 25 },
-            { title: 'Vehículo y Placa', dataKey: 'vehiculo_con_placa', width: 35 },  // Cambiado a 'Vehículo y Placa'
+            { title: 'Vehículo', dataKey: 'vehiculo_completo', width: 50 }, 
             { title: 'Conductor', dataKey: 'nombre_conductor', width: 40 },
         ];
     
@@ -129,9 +134,6 @@ const RegistroSolicitudes = () => {
             const rutConductor = registro.rut_conductor;
             const nombreConductor = conductoresMap[rutConductor] || 'Desconocido';
     
-            // Concatenar tipo de vehículo y placa con un guion
-            const vehiculoConPlaca = `${registro.tipo_vehiculo_nombre} - ${registro.placa_vehiculo}`;
-    
             return {
                 ...registro,
                 id_registro: registro.id_registro.toString().padStart(3, '0'),
@@ -140,7 +142,7 @@ const RegistroSolicitudes = () => {
                 fecha_solicitud: formatDate(registro.fecha_solicitud),
                 fecha_salida: formatDate(registro.fecha_salida),
                 fecha_regreso: registro.estado === 'Rechazada' ? '-' : formatDate(registro.fecha_regreso),
-                vehiculo_con_placa: vehiculoConPlaca,  // Nuevo campo combinado
+                vehiculo_completo: registro.vehiculo_completo,
             };
         });
     

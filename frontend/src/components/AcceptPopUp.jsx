@@ -5,15 +5,9 @@ import CloseIcon from '@assets/XIcon.svg';
 export default function AcceptPopup({ show, setShow, data, action, vehiculos, conductores }) {
     const solicitudData = data && data.length > 0 ? data[0] : {};
 
-    console.log("AcceptPopUp - solicitudData.id_tipo_vehiculo:", data);
-    console.log("AcceptPopUp - vehiculos:", vehiculos);
-    
-
     const vehiculosFiltrados = vehiculos.filter(
         vehiculo => vehiculo.id_tipo_vehiculo === data.id_tipo_vehiculo
     );
-
-    console.log("AcceptPopUp - vehiculosFiltrados", vehiculosFiltrados);
 
     const handleSubmit = (formData) => {
         console.log("AcceptPopUp - formData", formData);
