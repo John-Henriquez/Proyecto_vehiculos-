@@ -82,31 +82,31 @@ const RegistroSolicitudes = () => {
     const handleDownloadPDF = () => {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
-
+    
         const formatDate = (date) => {
             if (!date) return '-';
             const d = new Date(date);
             return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
         };
-
+    
         const formatPhone = (phone) => {
             return phone?.replace(/(\d{3})(\d{3})(\d{4})/, '+56 $1 $2 $3') || '-';
         };
-
+    
         doc.setFont('helvetica');
         doc.setFontSize(10);
-
+    
         if (logoBase64) {
             doc.addImage(logoBase64, 'PNG', 10, 5, 30, 15);
         }
-
+    
         doc.setFontSize(16);
         doc.setFont(undefined, 'bold');
         doc.text('Informe de Solicitudes de Transporte', pageWidth / 2, 25, { align: 'center' });
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
         doc.text(`Generado: ${new Date().toLocaleDateString('es-CL')}`, pageWidth - 15, 20, { align: 'right' });
-
+    
         const columns = [
             { title: 'ID', dataKey: 'id_registro', width: 20 },
             { title: 'Agrupación', dataKey: 'nombre_agrupacion', width: 40 },
@@ -116,32 +116,34 @@ const RegistroSolicitudes = () => {
             { title: 'Salida', dataKey: 'fecha_salida', width: 25 },
             { title: 'Regreso', dataKey: 'fecha_regreso', width: 25 },
             { title: 'Estado', dataKey: 'estado', width: 25 },
-            { title: 'Tipo Vehículo', dataKey: 'tipo_vehiculo_nombre', width: 35 },
-            { title: 'Vehículo', dataKey: 'placa_vehiculo', width: 30 },
+            { title: 'Vehículo y Placa', dataKey: 'vehiculo_con_placa', width: 35 },  // Cambiado a 'Vehículo y Placa'
             { title: 'Conductor', dataKey: 'nombre_conductor', width: 40 },
         ];
-
+    
         const conductoresMap = conductores.reduce((acc, conductor) => {
             acc[conductor.rut_conductor] = conductor.nombre;
             return acc;
-          }, {});
-        
-          const rows = registrosFiltrados.map(registro => {
+        }, {});
+    
+        const rows = registrosFiltrados.map(registro => {
             const rutConductor = registro.rut_conductor;
-            
             const nombreConductor = conductoresMap[rutConductor] || 'Desconocido';
-        
+    
+            // Concatenar tipo de vehículo y placa con un guion
+            const vehiculoConPlaca = `${registro.tipo_vehiculo_nombre} - ${registro.placa_vehiculo}`;
+    
             return {
-              ...registro,
-              id_registro: registro.id_registro.toString().padStart(3, '0'),
-              num_telefono: formatPhone(registro.num_telefono),
-              nombre_conductor: nombreConductor, // Usar el valor del mapa
-              fecha_solicitud: formatDate(registro.fecha_solicitud),
-              fecha_salida: formatDate(registro.fecha_salida),
-              fecha_regreso: registro.estado === 'Rechazada' ? '-' : formatDate(registro.fecha_regreso),
+                ...registro,
+                id_registro: registro.id_registro.toString().padStart(3, '0'),
+                num_telefono: formatPhone(registro.num_telefono),
+                nombre_conductor: nombreConductor,
+                fecha_solicitud: formatDate(registro.fecha_solicitud),
+                fecha_salida: formatDate(registro.fecha_salida),
+                fecha_regreso: registro.estado === 'Rechazada' ? '-' : formatDate(registro.fecha_regreso),
+                vehiculo_con_placa: vehiculoConPlaca,  // Nuevo campo combinado
             };
-          });
-
+        });
+    
         doc.autoTable({
             columns: columns.map(col => ({
                 header: col.title,
@@ -158,7 +160,7 @@ const RegistroSolicitudes = () => {
                 textColor: [50, 50, 50],
                 lineColor: [200, 200, 200],
                 lineWidth: 0.25,
-                overflow: 'linebreak',  
+                overflow: 'linebreak',
             },
             headStyles: {
                 fillColor: [51, 102, 153],
@@ -182,16 +184,17 @@ const RegistroSolicitudes = () => {
                 }
             }
         });
-
+    
         const totalPages = doc.internal.getNumberOfPages();
-        for(let i = 1; i <= totalPages; i++) {
+        for (let i = 1; i <= totalPages; i++) {
             doc.setPage(i);
             doc.setFontSize(8);
             doc.text(`Página ${i} de ${totalPages}`, pageWidth - 25, doc.internal.pageSize.getHeight() - 10);
         }
-
+    
         doc.save('informe_solicitudes.pdf');
     };
+    
 
     return (
         <div className='main-container'>
