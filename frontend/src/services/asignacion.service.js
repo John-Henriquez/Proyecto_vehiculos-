@@ -1,4 +1,3 @@
-// services/asignacion.service.js
 import axios from './root.service.js';
 
 // Obtener todas las asignaciones
@@ -49,5 +48,17 @@ export async function deleteAsignacion(id) {
         return data;
     } catch (error) {
         return error.response?.data || { message: `Error al eliminar la asignación con ID ${id}` };
+    }
+}
+
+// Obtener disponibilidad de vehículos y conductores
+export async function getDisponibilidad(fecha_salida, fecha_regreso) {
+    try {
+        const { data } = await axios.get('/asignacion/availability', {
+            params: { fecha_salida, fecha_regreso }
+        });
+        return data; // Los datos incluirán los vehículos y conductores disponibles y ocupados
+    } catch (error) {
+        return error.response?.data || { message: "Error al verificar la disponibilidad de vehículos y conductores" };
     }
 }

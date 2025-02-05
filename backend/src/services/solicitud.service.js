@@ -2,6 +2,7 @@
 
 import { AppDataSource } from "../config/configDb.js";
 import { sendEmail } from  "../services/email.service.js";
+import { checkAvailabilityService } from "./asignacion.service.js";
 import Registro from "../entity/registro.entity.js";
 import Solicitud from "../entity/solicitud.entity.js";
 import User from "../entity/user.entity.js";
@@ -67,6 +68,19 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       const estadoAnterior = solicitud.estado;
       const cambiosEstado = estadoAnterior !== solicitudData.estado;
       const nuevoEstadoValido = ["aceptada", "rechazada"].includes(solicitudData.estado);
+
+      if (cambiosEstado && solicitudData.estado === "aceptada") {
+        const isAvailable = await checkAvailabilityService({
+          rut_conductor: solicitudData.rut_conductor,
+          placa: solicitudData.placa_patente,
+          fecha_salida: solicitudData.fecha_salida,
+          fecha_regreso: solicitudData.fecha_regreso,
+        });
+  
+        if (!isAvailable) {
+          throw new Error("El conductor o vehículo no está disponible en este período");
+        }
+      }
 
       // Actualizar solo si hay cambios relevantes
       if (cambiosEstado && nuevoEstadoValido) {

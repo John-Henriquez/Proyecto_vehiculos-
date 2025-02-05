@@ -1,6 +1,9 @@
 "use strict";
 import { AppDataSource } from "../config/configDb.js";
 import AsignacionVehiculo from '../entity/asignacion.entity.js';
+import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import Vehiculo from '../entity/vehiculo.entity.js'; 
+import Conductor from '../entity/conductor.entity.js';
 
 export async function createAsignacionService(data) {
   try {
@@ -60,5 +63,46 @@ export async function deleteAsignacionService(id) {
     return true;
   } catch (error) {
     throw new Error(error.message || "Error al eliminar la asignación");
+  }
+}
+
+export async function checkAvailabilityService({ fecha_salida, fecha_regreso }) {
+  try {
+    // Repositorios de Asignaciones, Vehículos y Conductores
+    const asignacionRepository = AppDataSource.getRepository(AsignacionVehiculo);
+    const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
+    const conductorRepository = AppDataSource.getRepository(Conductor);
+
+    // Buscar asignaciones de vehículos y conductores que ya están ocupados
+    const conflicts = await asignacionRepository.find({
+      where: [
+        {
+          fecha_salida: LessThanOrEqual(fecha_regreso),
+          fecha_regreso: MoreThanOrEqual(fecha_salida),   
+        },
+      ],
+    });
+
+    // Obtener todos los vehículos y conductores
+    const allVehicles = await vehiculoRepository.find();
+    const allDrivers = await conductorRepository.find();
+
+    // Filtrar los vehículos disponibles (sin conflictos de fechas)
+    const vehiculosDisponibles = allVehicles.filter(vehicle => {
+      return !conflicts.some(conflict => conflict.placa === vehicle.placa);
+    });
+
+    // Filtrar los conductores disponibles (sin conflictos de fechas)
+    const conductoresDisponibles = allDrivers.filter(driver => {
+      return !conflicts.some(conflict => conflict.rut_conductor === driver.rut_conductor);
+    });
+
+    return {
+      vehiculosDisponibles,
+      conductoresDisponibles
+    };
+
+  } catch (error) {
+    throw new Error(error.message || "Error al verificar la disponibilidad");
   }
 }

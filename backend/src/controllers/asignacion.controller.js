@@ -5,6 +5,7 @@ import {
   getAsignacionByIdService,
   updateAsignacionService,
   deleteAsignacionService,
+  checkAvailabilityService,
 } from '../services/asignacion.service.js';
 import {
   handleErrorClient,
@@ -12,12 +13,27 @@ import {
   handleSuccess,
 } from "../handlers/responseHandlers.js";
 
+
+
 export async function createAsignacion(req, res) {
   try {
+    const { rut_conductor, placa, fecha_salida, fecha_regreso } = req.body;
+
+    const isAvailable = await checkAvailabilityService({
+      rut_conductor,
+      placa,
+      fecha_salida,
+      fecha_regreso,
+    });
+
+    if (!isAvailable) {
+      return handleErrorClient(res, 400, "El conductor o vehículo no está disponible en este período");
+    }
+
     const nuevaAsignacion = await createAsignacionService(req.body);
     return handleSuccess(res, 201, "Asignación creada exitosamente", nuevaAsignacion);
   } catch (error) {
-    return handleErrorClient(res, 400, error.message);
+    return handleErrorServer(res, 500, error.message);
   }
 }
 
@@ -57,5 +73,27 @@ export async function deleteAsignacion(req, res) {
     return handleSuccess(res, 200, "Asignación eliminada exitosamente");
   } catch (error) {
     return handleErrorClient(res, 400, error.message);
+  }
+}
+
+export async function checkAvailabilityController(req, res) {
+  try {
+    const { fecha_salida, fecha_regreso } = req.query;
+
+    const disponibilidad = await checkAvailabilityService({
+      fecha_salida,
+      fecha_regreso
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Disponibilidad de vehículos y conductores",
+      data: disponibilidad
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message
+    });
   }
 }

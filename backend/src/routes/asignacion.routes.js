@@ -8,6 +8,7 @@ import {
   getAsignacionById,
   updateAsignacion,
   deleteAsignacion,
+  checkAvailabilityController,
 } from '../controllers/asignacion.controller.js';
 
 const router = Router();
@@ -18,6 +19,9 @@ router.post("/add", authenticateJwt, isAdmin, createAsignacion);
 // Obtener todas las asignaciones
 router.get("/", authenticateJwt, getAllAsignaciones);
 
+// Consultar disponibilidad
+router.get("/availability", authenticateJwt, checkAvailabilityController);
+
 // Obtener una asignación por ID
 router.get("/:id", authenticateJwt, getAsignacionById);
 
@@ -26,5 +30,6 @@ router.put("/edit/:id", authenticateJwt, isAdmin, updateAsignacion);
 
 // Eliminar una asignación
 router.delete("/delete/:id", authenticateJwt, isAdmin, deleteAsignacion);
+
 
 export default router;

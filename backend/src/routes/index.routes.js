@@ -21,5 +21,5 @@ router
     .use("/driver", driversRoutes)
     .use("/tipos-vehiculos", vehicleTypeRoutes)
     .use("/sendMail", sendMail)
-    .use/("/asignacion", assignmentRoutes);
+    .use("/asignacion", assignmentRoutes);
 export default router;
