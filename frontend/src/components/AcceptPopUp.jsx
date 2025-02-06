@@ -58,7 +58,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
     
     const isVehiculoAvailable = (vehiculoPlaca) => {
         return Array.isArray(availability.availableVehiculos) &&
-            availability.availableVehiculos.some(vehiculo => vehiculo.placa === vehiculoPlaca); // Asegúrate de que 'placa' sea el campo correcto
+            availability.availableVehiculos.some(vehiculo => vehiculo.placa === vehiculoPlaca); 
     };
     
 

@@ -20,11 +20,13 @@ const formatDate = (date) => {
 
 export default function SolicitudesTable({ data, onAccept, onReject, esAdmin }) {
   const { tiposVehiculos } = useGetTiposVehiculos();
+  console.log("Solicitudes:", data);
 
   const getTipoVehiculoNombre = (id) => {
     const tipo = tiposVehiculos?.find((t) => t.id_tipo_vehiculo === id);
     return tipo ? tipo.nombre : "Desconocido";
   };
+
 
   return (
     <TableContainer component={Paper}>

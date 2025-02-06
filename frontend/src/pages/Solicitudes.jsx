@@ -30,8 +30,7 @@ const Solicitudes = () => {
             try {
                 const fetchedSolicitudes = await getAllSolicitudes();
                 
-                console.log("Solicitudes - Solicitudes cargadas:", fetchedSolicitudes);
-                console.log("solicitudes - usuarioRut", usuarioRut); 
+                console.log("Solicitudes - Solicitudes cargadas:", fetchedSolicitudes); 
 
                 if (Array.isArray(fetchedSolicitudes)) {
                     const filteredSolicitudes = esAdmin
@@ -51,7 +50,6 @@ const Solicitudes = () => {
         const fetchVehiculos = async () => {
             try {
                 const fetchedVehiculos = await getAllVehiculos();
-                console.log("Solicitudes - Vehículos cargados:", fetchedVehiculos);
                 setVehiculos(fetchedVehiculos);
             } catch (error) {
                 console.error('Error al obtener los vehículos:', error);

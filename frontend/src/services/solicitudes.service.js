@@ -4,11 +4,11 @@ import { formatSolicitudData } from '@helpers/formatSolicitudData.js';
 export async function getAllSolicitudes() {
     try {
         const { data } = await axios.get('/application/');
-        //console.log('Respuesta completa del backend:', data);
+        console.log('Respuesta completa del backend:', data);
         
         if (data && Array.isArray(data.data)) {
             const formattedData = data.data.map(formatSolicitudData);
-            //console.log('Solicitudes formateadas:', formattedData);
+            console.log('Solicitudes formateadas:', formattedData);
             return formattedData;
         } else {
             console.error('La respuesta no contiene el formato esperado:', data);

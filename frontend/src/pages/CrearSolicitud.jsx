@@ -19,7 +19,7 @@ export default function VehicleRequestForm() {
     fechaSalida: '',
     nombreAgrupacion: '',
     numTelefono: '',
-    fechaSolicitud: new Date().toISOString().split('T')[0], // Fecha actual
+    fechaSolicitud: new Date().toISOString().split('T')[0], 
     destino: '',
     placaPatente: '',
     observaciones: '',
@@ -113,6 +113,9 @@ export default function VehicleRequestForm() {
           cantidad_pasajeros: formData.cantidadPasajeros || 0,
           estado: 'pendiente',
         };
+
+        console.log("Fecha de salida enviada:", finalFormData.fecha_salida);
+        console.log("Fecha de regreso enviada:", finalFormData.fecha_regreso);
         
         const response = await createSolicitud(finalFormData);
         console.log("Respuesta del servidor:", response);
