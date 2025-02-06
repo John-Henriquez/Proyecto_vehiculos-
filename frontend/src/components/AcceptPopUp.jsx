@@ -6,14 +6,9 @@ import { getDisponibilidad } from '../services/asignacion.service';
 
 export default function AcceptPopup({ show, setShow, data, action, vehiculos, conductores }) {
     const solicitudData = data && data.length > 0 ? data[0] : {};
-
-    const [conductoresDisponibles, setConductoresDisponibles] = useState([]);
-
     const [availability, setAvailability] = useState({
         availableVehiculos: [],
         availableConductores: [],
-        unavailableVehiculos: [],
-        unavailableConductores: [],
     });
 
     const vehiculosFiltrados = vehiculos.filter(
@@ -28,19 +23,22 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
     const validateAvailability = async () => {
         const { fechaSalida, fecha_regreso } = data;
         
-        const formattedFechaSalida = formatDate(fechaSalida);
-        const formattedFechaRegreso = formatDate(fecha_regreso);
-
         if (!fechaSalida || !fecha_regreso) {
             console.error("Fecha de salida o fecha de regreso no definidas:", solicitudData);
             return;
         }
 
+        const formattedFechaSalida = formatDate(fechaSalida);
+        const formattedFechaRegreso = formatDate(fecha_regreso);
 
         try {
             const result = await getDisponibilidad(formattedFechaSalida, formattedFechaRegreso);
-
-            setAvailability(result);
+            console.log("Disponibilidad obtenida:", result);
+            setAvailability({
+                availableVehiculos: result.data.vehiculosDisponibles,
+                availableConductores: result.data.conductoresDisponibles,
+            });
+            
         } catch (error) {
             console.log("Error al obtener la disponibilidad:", error);
         }
@@ -49,20 +47,41 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
     useEffect(() => {
         if (show) {
             validateAvailability();
-            console.log("data", data);
+            console.log("Datos de la solicitud:", data);
         }
     }, [show]);
 
+    const isConductorAvailable = (conductorRut) => {
+        return Array.isArray(availability.availableConductores) &&
+            availability.availableConductores.some(conductor => conductor.rut === conductorRut); // Asegúrate de que 'rut' sea el campo correcto
+    };
+    
+    const isVehiculoAvailable = (vehiculoPlaca) => {
+        return Array.isArray(availability.availableVehiculos) &&
+            availability.availableVehiculos.some(vehiculo => vehiculo.placa === vehiculoPlaca); // Asegúrate de que 'placa' sea el campo correcto
+    };
+    
+
+    const filteredConductores = Array.isArray(availability.availableConductores)
+    ? availability.availableConductores.map(conductor => ({
+        value: conductor.rut_conductor,
+        label: `${conductor.nombre} - ${conductor.rut_conductor}`,
+    }))
+    : [];
+
+    console.log("Conductores disponibles para dropdown:", filteredConductores);
+
+    const filteredVehiculos = vehiculosFiltrados
+    .filter(vehiculo => vehiculo && isVehiculoAvailable(vehiculo.placa))
+    .map(vehiculo => ({
+        value: vehiculo.placa,
+        label: `${vehiculo.marca} - ${vehiculo.modelo} - ${vehiculo.placa}`,
+    }));
+
+    console.log("Vehículos disponibles para dropdown:", filteredVehiculos);
+
     const handleSubmit = (formData) => {
         action(formData);
-    };
-
-    const isConductorAvailable = (conductorRut) => {
-        return availability.availableConductores && availability.availableConductores.includes(conductorRut);
-    };
-
-    const isVehiculoAvailable = (vehiculoPlaca) => {
-        return availability.availableVehiculos && availability.availableVehiculos.includes(vehiculoPlaca);
     };
 
     return (
@@ -97,14 +116,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                     label: 'Conductor',
                                     name: 'rut_conductor',
                                     fieldType: 'select',
-                                    options: conductores.map(conductor => ({
-                                        value: conductor.rut_conductor,
-                                        label: `${conductor.nombre} - ${conductor.rut_conductor}`,
-                                        disabled: !isConductorAvailable(conductor.rut_conductor),
-                                        style: {
-                                            color: isConductorAvailable(conductor.rut_conductor) ? 'black' : 'red',
-                                        }
-                                    })),
+                                    options: filteredConductores,
                                     required: true,
                                     defaultValue: '',
                                 },
@@ -112,14 +124,7 @@ export default function AcceptPopup({ show, setShow, data, action, vehiculos, co
                                     label: 'Vehículo',
                                     name: 'placa_vehiculo',
                                     fieldType: 'select',
-                                    options: vehiculosFiltrados.map(vehiculo => ({
-                                        value: vehiculo.placa,
-                                        label: `${vehiculo.marca} - ${vehiculo.modelo} - ${vehiculo.placa}`,
-                                        disabled: !isVehiculoAvailable(vehiculo.placa),
-                                        style: {
-                                            color: isVehiculoAvailable(vehiculo.placa) ? 'black' : 'red',
-                                        }
-                                    })),
+                                    options: filteredVehiculos,
                                     required: true,
                                     defaultValue: '',
                                 }
