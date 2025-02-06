@@ -9,9 +9,15 @@ import {
   Paper,
 } from "@mui/material";
 
+const adjustToLocalTimezone = (dateString) => {
+  const date = new Date(dateString);
+  const offset = date.getTimezoneOffset() * 60000; // Convertir minutos a milisegundos
+  return new Date(date.getTime() + offset);
+};
+
 const formatDate = (date, format = "DD-MM-YYYY") => {
   if (!date) return "-";
-  const parsedDate = new Date(date);
+  const parsedDate = adjustToLocalTimezone(date);
   if (isNaN(parsedDate.getTime())) return "-"; // Verificar si la fecha es válida
   const day = String(parsedDate.getDate()).padStart(2, "0");
   const month = String(parsedDate.getMonth() + 1).padStart(2, "0"); // Meses empiezan en 0
