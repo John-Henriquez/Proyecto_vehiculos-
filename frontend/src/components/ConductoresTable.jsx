@@ -30,7 +30,7 @@ export default function ConductoresTable({ data, onEdit, onDelete }) {
               <TableCell>RUT</TableCell>
               <TableCell>Nombre</TableCell>
               <TableCell>Teléfono</TableCell>
-              <TableCell>Estado</TableCell>
+              <TableCell>Fechas Asignadas</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>

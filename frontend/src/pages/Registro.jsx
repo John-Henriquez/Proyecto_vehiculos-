@@ -14,7 +14,10 @@ const RegistroSolicitudes = () => {
     const { conductores } = useGetConductores();
     const [registros, setRegistros] = useState([]);
     const [vehiculos, setVehiculos] = useState([]);
+
     const [filterId, setFilterId] = useState('');
+    const [filterName, setFilterName] = useState('');
+
     const [filterType, setFilterType] = useState('');
     const { tiposVehiculos } = useGetTiposVehiculos();
     const [logoBase64, setLogoBase64] = useState('');
@@ -72,13 +75,14 @@ const RegistroSolicitudes = () => {
         vehiculo: vehiculo || null,
         id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo,
         tipo_vehiculo_nombre: tipoNombre,
-        vehiculo_completo: vehiculoCompleto, // Nuevo campo combinado
+        vehiculo_completo: vehiculoCompleto, 
     };
 });;
 
     const registrosFiltrados = registrosConVehiculos
         .filter((registro) => registro.id_registro.toString().includes(filterId))
-        .filter(registro => filterType ? registro.id_tipo_vehiculo=== filterType : true);
+        .filter(registro => filterType ? registro.id_tipo_vehiculo=== filterType : true)
+        .filter(registro => filterName ? registro.nombre_agrupacion.toLowerCase().includes(filterName.toLowerCase()) : true);
        
     const handleTipoVehiculoChange = (tipo) => {
         setFilterType(tipo);
@@ -205,6 +209,7 @@ const RegistroSolicitudes = () => {
                     <h1 className='title-table'>Registro de Solicitudes</h1>
                     <div className='filter-actions'>
                         <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID de registro'/>
+                        <Search value={filterName} onChange={(e) => setFilterName(e.target.value)} placeholder='Filtrar por Nombre'/>
                         <FiltroVehiculo
                         options={tiposVehiculos.map(t => ({
                             value: t.id_tipo_vehiculo,

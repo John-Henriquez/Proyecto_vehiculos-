@@ -2,8 +2,8 @@ import { deleteSolicitud } from '@services/solicitudes.service.js';
 import { deleteDataAlert, showErrorAlert, showSuccessAlert } from '@helpers/sweetAlert.js';
 
 const useDeleteSolicitud = (fetchSolicitudes, setSelectedSolicitudes) => {
-    const handleDelete = async (solicitudes) => {
-        if (!solicitudes || solicitudes.length === 0) {
+    const handleDelete = async (id_solicitud) => {
+        if (!id_solicitud) {
             showErrorAlert('Error', 'No se seleccionó ninguna solicitud para eliminar.');
             return;
         }
@@ -11,7 +11,7 @@ const useDeleteSolicitud = (fetchSolicitudes, setSelectedSolicitudes) => {
         try {
             const result = await deleteDataAlert();
             if (result.isConfirmed) {
-                const response = await deleteSolicitud(solicitudes[0].id_solicitud);
+                const response = await deleteSolicitud(id_solicitud);
 
                 if (response.status === 'Client error') {
                     return showErrorAlert('Error', response.details);

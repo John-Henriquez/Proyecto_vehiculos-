@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useUsers from '../hooks/users/useGetUsers.jsx';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import { getAllSolicitudes, updateSolicitud } from '../services/solicitudes.service.js';
+import { getAllSolicitudes } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
+import useDeleteSolicitud from '../hooks/applications/useDeleteSolicitud.jsx';
 import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
 import { acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
@@ -14,48 +15,51 @@ const Solicitudes = () => {
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
     const [vehiculos, setVehiculos] = useState([]);
+
     const [filterId, setFilterId] = useState('');
+    const [filterName, setFilterName] = useState('');
+
     const [showAcceptPopup, setShowAcceptPopup] = useState(false);
     const [showRejectPopup, setShowRejectPopup] = useState(false);
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
 
+    const [selectedSolicitudes, setSelectedSolicitudes] = useState([]);
+    
     const usuarioLogueado = JSON.parse(sessionStorage.getItem('usuario'));
     const esAdmin = usuarioLogueado?.rol === 'administrador';
     const usuarioRut = usuarioLogueado?.rut;
     
-    useEffect(() => {
-        const fetchSolicitudes = async () => {
-            try {
-                const fetchedSolicitudes = await getAllSolicitudes();
-                console.log("Solicitudes - Solicitudes cargadas:", fetchedSolicitudes); 
-
-                if (Array.isArray(fetchedSolicitudes)) {
-                    const filteredSolicitudes = esAdmin
-                        ? fetchedSolicitudes.filter(solicitud => solicitud.estado === "pendiente")
-                        : fetchedSolicitudes.filter(solicitud => solicitud.rut_creador === usuarioRut);
-    
-                    setSolicitudes(filteredSolicitudes);
-                } else {
-                    console.error('La respuesta de solicitudes no contiene un arreglo válido');
-                }
-            } catch (error) {
-                console.error('Error al obtener las solicitudes:', error);
-                setSolicitudes([]);
+    const fetchSolicitudes = useCallback(async () => {
+        try {
+            const fetchedSolicitudes = await getAllSolicitudes();
+            if (Array.isArray(fetchedSolicitudes)) {
+                const filteredSolicitudes = esAdmin
+                    ? fetchedSolicitudes.filter(sol => sol.estado === "pendiente")
+                    : fetchedSolicitudes.filter(sol => sol.rut_creador === usuarioRut);
+                setSolicitudes(filteredSolicitudes);
+            } else {
+                console.error('La respuesta no es un arreglo válido');
             }
-        };
-        
+        } catch (error) {
+            console.error('Error al obtener solicitudes:', error);
+            setSolicitudes([]);
+        }
+    }, [esAdmin, usuarioRut]);
+
+    const { handleDelete } = useDeleteSolicitud(fetchSolicitudes, setSelectedSolicitudes);
+
+    useEffect(() => {
+        fetchSolicitudes();
         const fetchVehiculos = async () => {
             try {
                 const fetchedVehiculos = await getAllVehiculos();
                 setVehiculos(fetchedVehiculos);
             } catch (error) {
-                console.error('Error al obtener los vehículos:', error);
+                console.error('Error al obtener vehículos:', error);
             }
         };
-    
-        fetchSolicitudes();
         fetchVehiculos();
-    }, [esAdmin, usuarioRut]);
+    }, [fetchSolicitudes]);
     
     const handleAccept = (solicitud) => {
         console.log("handleAccept - Solicitud seleccionada para aceptar:", solicitud);
@@ -136,10 +140,15 @@ const Solicitudes = () => {
             console.error("Error en el proceso de rechazo:", error);
         }
     };
+
     const filteredSolicitudes = (esAdmin 
         ? solicitudes.filter(sol => sol.estado === 'pendiente') 
         : solicitudes.filter(sol => sol.rut_creador === usuarioRut)
-    ).filter(sol => filterId ? sol.id_solicitud.toString().includes(filterId) : true);
+    ).filter(sol => 
+        (filterId ? sol.id_solicitud.toString().includes(filterId) : true) &&
+        (filterName ? sol.nombre_agrupacion.toLowerCase().includes(filterName.toLowerCase()) : true) 
+    );
+
     
     return (
         <div className='main-container'>
@@ -147,13 +156,16 @@ const Solicitudes = () => {
                 <div className='top-table'>
                     <h1 className='title-table'>Solicitudes</h1>
                     <div className='filter-actions'>
-                        <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID de solicitud'/>
+                        <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID'/>
+                        <Search value={filterName} onChange={(e) => setFilterName(e.target.value)} placeholder='Filtrar por Nombre'/>
                     </div>
+
                 </div>
                 <SolicitudesTable
                     data={filteredSolicitudes}
                     onAccept={handleAccept}
                     onReject={handleReject}
+                    onDelete={handleDelete}
                     esAdmin={esAdmin}
                 />
 
