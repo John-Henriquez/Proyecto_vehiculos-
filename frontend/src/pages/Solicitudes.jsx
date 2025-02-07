@@ -20,8 +20,6 @@ const Solicitudes = () => {
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
 
     const usuarioLogueado = JSON.parse(sessionStorage.getItem('usuario'));
-    
-    
     const esAdmin = usuarioLogueado?.rol === 'administrador';
     const usuarioRut = usuarioLogueado?.rut;
     
@@ -29,7 +27,6 @@ const Solicitudes = () => {
         const fetchSolicitudes = async () => {
             try {
                 const fetchedSolicitudes = await getAllSolicitudes();
-                
                 console.log("Solicitudes - Solicitudes cargadas:", fetchedSolicitudes); 
 
                 if (Array.isArray(fetchedSolicitudes)) {
@@ -139,6 +136,10 @@ const Solicitudes = () => {
             console.error("Error en el proceso de rechazo:", error);
         }
     };
+    const filteredSolicitudes = (esAdmin 
+        ? solicitudes.filter(sol => sol.estado === 'pendiente') 
+        : solicitudes.filter(sol => sol.rut_creador === usuarioRut)
+    ).filter(sol => filterId ? sol.id_solicitud.toString().includes(filterId) : true);
     
     return (
         <div className='main-container'>
@@ -150,10 +151,7 @@ const Solicitudes = () => {
                     </div>
                 </div>
                 <SolicitudesTable
-                    data={esAdmin 
-                        ? solicitudes.filter(sol => sol.estado === 'pendiente') 
-                        : solicitudes.filter(sol => sol.rut_creador === usuarioRut)
-                    }
+                    data={filteredSolicitudes}
                     onAccept={handleAccept}
                     onReject={handleReject}
                     esAdmin={esAdmin}
