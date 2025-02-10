@@ -61,7 +61,6 @@ export default function SolicitudesTable({ data, onAccept, onReject, onEdit, onD
                 <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
                 <TableCell>{row.cantidad_pasajeros || "-"}</TableCell>
                 <TableCell>
-                  {/* Contenedor con grid para organizar los iconos en 2 columnas */}
                   <div
                     style={{
                       display: "grid",

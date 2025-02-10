@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import useUsers from '../hooks/users/useGetUsers.jsx';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import { getAllSolicitudes } from '../services/solicitudes.service.js';
+import { getAllSolicitudes, updateSolicitud } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import useDeleteSolicitud from '../hooks/applications/useDeleteSolicitud.jsx';
 import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
 import { acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
+import EditPopup from '../components/EditPopUp.jsx';
 
 const Solicitudes = () => {
     const { users } = useUsers();
@@ -24,6 +25,8 @@ const Solicitudes = () => {
     const [currentSolicitud, setCurrentSolicitud] = useState(null);
 
     const [selectedSolicitudes, setSelectedSolicitudes] = useState([]);
+
+    const [showEditPopup, setShowEditPopup] = useState(false);
     
     const usuarioLogueado = JSON.parse(sessionStorage.getItem('usuario'));
     const esAdmin = usuarioLogueado?.rol === 'administrador';
@@ -149,7 +152,21 @@ const Solicitudes = () => {
         (filterName ? sol.nombre_agrupacion.toLowerCase().includes(filterName.toLowerCase()) : true) 
     );
 
-    
+    const handleEdit = (solicitud) => {
+        setCurrentSolicitud(solicitud);
+        setShowEditPopup(true);
+      };
+      
+      const handleConfirmEdit = async (formData) => {
+        try {
+          await updateSolicitud(currentSolicitud.id_solicitud, formData);
+          await fetchSolicitudes(); // Refresca los datos
+          setShowEditPopup(false);
+        } catch (error) {
+          console.error("Error al actualizar la solicitud:", error);
+        }
+      };
+
     return (
         <div className='main-container'>
             <div className='table-container'>
@@ -165,6 +182,7 @@ const Solicitudes = () => {
                     data={filteredSolicitudes}
                     onAccept={handleAccept}
                     onReject={handleReject}
+                    onEdit={handleEdit}
                     onDelete={handleDelete}
                     esAdmin={esAdmin}
                 />
@@ -187,6 +205,14 @@ const Solicitudes = () => {
                     setShow={setShowRejectPopup}
                     data={currentSolicitud}
                     action={handleConfirmReject}
+                />
+            )}
+            {showEditPopup && (
+                <EditPopup
+                    show={showEditPopup}
+                    setShow={setShowEditPopup}
+                    data={currentSolicitud}
+                    action={handleConfirmEdit}
                 />
             )}
         </div>

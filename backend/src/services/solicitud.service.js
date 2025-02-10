@@ -65,6 +65,27 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
 
       if (!solicitud) throw new Error("Solicitud no encontrada");
 
+      console.log("Datos de la solicitud antes de la actualización:", solicitud);
+      console.log("Datos recibidos para actualizar:", solicitudData);
+
+          // Formatear los datos recibidos
+    const formattedData = {
+      nombre_agrupacion: solicitudData.nombre_agrupacion,
+      numero_telefono: solicitudData.numero_telefono,
+      fecha_salida: solicitudData.fechaSalida, // Mapeo de nombres
+      fecha_regreso: solicitudData.fecha_regreso,
+      destino: solicitudData.destino.trim(),
+      id_tipo_vehiculo: parseInt(solicitudData.id_tipo_vehiculo), // Convierte a número
+      cantidad_pasajeros: parseInt(solicitudData.cantidad_pasajeros), // Convierte a número
+    };
+
+    console.log("Datos formateados para actualizar:", formattedData);
+
+        // Validar fechas
+        if (new Date(formattedData.fecha_salida) > new Date(formattedData.fecha_regreso)) {
+          throw new Error("La fecha de salida no puede ser posterior a la fecha de regreso");
+        }
+
       const estadoAnterior = solicitud.estado;
       const cambiosEstado = estadoAnterior !== solicitudData.estado;
       const nuevoEstadoValido = ["aceptada", "rechazada"].includes(solicitudData.estado);
@@ -83,9 +104,10 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       }
 
       // Actualizar solo si hay cambios relevantes
-      if (cambiosEstado && nuevoEstadoValido) {
-          Object.assign(solicitud, solicitudData);
+      if (cambiosEstado || solicitudData.estado === "pendiente") {
+          Object.assign(solicitud, formattedData);
           await solicitudRepository.save(solicitud);
+          console.log("Solicitud actualizada correctamente:", solicitud);
 
           const registro = registroRepository.create({
               id_solicitud: solicitud.id_solicitud,
@@ -134,6 +156,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
           // Separar completamente el envío del correo
           scheduleEmail(emailContent.emailTo, emailContent.subject, emailContent.text);
           
+          console.log("Solicitud actualizada correctamente:", solicitud);
           return solicitud;
       }
 
