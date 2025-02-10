@@ -10,3 +10,14 @@ export async function getTiposVehiculos () {
         throw error;  
     }
 };
+
+export async function createTipoVehiculo(tipoVehiculoData) {
+    try {
+        const { data } = await axios.post('/tipos-vehiculos/', tipoVehiculoData);
+        return data;
+    } catch (error) {
+        console.error('Error al crear un tipo de vehículo:', error);
+        throw error;
+    }
+}
+
