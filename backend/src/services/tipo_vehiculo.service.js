@@ -13,17 +13,18 @@ export const getTipoVehiculosService = async () => {
     }
   };
 
-export const createTipoVehiculoService = async (tipoVehiculoData) => {
-  try {
-    const tipoVehiculoRepository = AppDataSource.getRepository(TipoVehiculo);
-    const tipoVehiculo = tipoVehiculoRepository.create(tipoVehiculoData);
-    await tipoVehiculoRepository.save(tipoVehiculo);
-    return tipoVehiculo;
-  } catch (error) {
-    console.error("Error al crear tipo de vehículo:", error);
-    throw new Error("Error al crear el tipo de vehículo");
-  }
-};
+  export const createTipoVehiculoService = async (tipoVehiculoData) => {
+    try {
+      const tipoVehiculoRepository = AppDataSource.getRepository(TipoVehiculo);
+      const tipoVehiculo = tipoVehiculoRepository.create(tipoVehiculoData); // nombre y categoria
+      await tipoVehiculoRepository.save(tipoVehiculo);
+      return tipoVehiculo;
+    } catch (error) {
+      console.error("Error al crear tipo de vehículo:", error);
+      throw new Error("Error al crear el tipo de vehículo");
+    }
+  };
+  
 
 export const updateTipoVehiculoService = async (id_tipo_vehiculo, tipoVehiculoData) => {
   try {

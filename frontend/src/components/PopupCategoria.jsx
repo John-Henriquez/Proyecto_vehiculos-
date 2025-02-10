@@ -3,6 +3,7 @@ import Form from './Form';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 import useCreateTipoVehiculo from '../hooks/vehicleType/useCreateTipoVehiculo';
+import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos';
 
 export default function PopupCategoria({ show, setShow, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function PopupCategoria({ show, setShow, onSuccess }) {
     });
 
     const { handleCreateTipoVehiculo, isLoading } = useCreateTipoVehiculo(onSuccess);
+    const { fetchTipoVehiculo } = useGetTiposVehiculos();
 
     const handleSubmit = async (data) => {
         if (!data.nombre.trim() || !data.categoria.trim()) {
@@ -21,6 +23,10 @@ export default function PopupCategoria({ show, setShow, onSuccess }) {
         try {
             await handleCreateTipoVehiculo(data);
             setShow(false);
+            fetchTipoVehiculo(); 
+            if (onSuccess) {
+                onSuccess(); 
+            }
         } catch (error) {
             console.error("Error al crear categoría:", error);
         }
@@ -49,11 +55,13 @@ export default function PopupCategoria({ show, setShow, onSuccess }) {
                                 {
                                     label: "Categoría",
                                     name: "categoria",
-                                    defaultValue: formData.categoria,
-                                    placeholder: 'Ingrese la categoría del vehículo',
-                                    fieldType: 'input',
-                                    type: "text",
+                                    fieldType: 'select',
+                                    options: [
+                                        { value: 'movilización', label: 'Movilización' },
+                                        { value: 'maquinaria', label: 'Maquinaria' }
+                                    ],
                                     required: true,
+                                    defaultValue: formData.categoria,
                                 },
                             ]}
                             onSubmit={handleSubmit}

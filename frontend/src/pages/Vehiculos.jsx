@@ -9,15 +9,21 @@ import PopupCategoria from '../components/PopupCategoria';
 import useEditVehiculo from '../hooks/vehicles/useEditVehiculo';
 import useDeleteVehiculo from '../hooks/vehicles/useDeleteVehiculo';
 import useCreateVehiculo from '../hooks/vehicles/useCreateVehiculo';
+import PopupTipoVehiculo from '../components/PopupTipoVehiculo';
 
 const Vehiculos = () => {
     const { vehiculos = [], loading, error, setVehiculos, fetchVehiculos } = useVehiculos();
     const [filterPlaca, setFilterPlaca] = useState('');
     const [filterType, setFilterType] = useState('');
     const [showPopupCategoria, setShowPopupCategoria] = useState(false);
+    const [showPopupTipoVehiculo, setShowPopupTipoVehiculo] = useState(false);
 
     const handleSearch = (e) => {
         setFilterPlaca(e.target.value);
+    };
+
+    const handleTipoVehiculoManagement = () => {
+        setShowPopupTipoVehiculo(true);
     };
     
     const {
@@ -82,6 +88,7 @@ const Vehiculos = () => {
                         />
                         <button onClick={handleCreateNew} className='btn-add'>Agregar Vehículo</button>
                         <button onClick={handleCreateCategoria} className='btn-category'>Agregar Categoría</button>
+                        <button onClick={handleTipoVehiculoManagement} className='btn-manage'>Gestionar Tipos</button>
                     </div>
                 </div>
                 
@@ -105,6 +112,10 @@ const Vehiculos = () => {
                 show={showPopupCategoria} 
                 setShow={setShowPopupCategoria} 
                 onSuccess={fetchVehiculos}
+            />
+            <PopupTipoVehiculo 
+                show={showPopupTipoVehiculo} 
+                setShow={setShowPopupTipoVehiculo}
             />
         </div>
     );

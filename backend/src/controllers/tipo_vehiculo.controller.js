@@ -17,19 +17,20 @@ import {
   
   export const createTipoVehiculoController = async (req, res) => {
     try {
-      const { nombre } = req.body;
+      const { nombre, categoria } = req.body;
   
-      if (!nombre) {
-        return res.status(400).json({ message: "El campo 'nombre' es obligatorio" });
+      if (!nombre || !categoria) {
+        return res.status(400).json({ message: "Los campos 'nombre' y 'categoria' son obligatorios" });
       }
   
-      const tipoVehiculo = await createTipoVehiculoService({ nombre });
+      const tipoVehiculo = await createTipoVehiculoService({ nombre, categoria });
       return res.status(201).json({ message: "Tipo de vehículo creado exitosamente", tipoVehiculo });
     } catch (error) {
       console.error("Error al crear tipo de vehículo:", error);
       return res.status(500).json({ message: "Error al crear el tipo de vehículo" });
     }
   };
+  
 
   export const updateTipoVehiculoController = async (req, res) => {
     try {
