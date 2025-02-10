@@ -52,12 +52,14 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
   await queryRunner.startTransaction();
 
   try {
+      console.log("Iniciando actualización de solicitud...");
+
       const solicitudRepository = queryRunner.manager.getRepository(Solicitud);
       const registroRepository = queryRunner.manager.getRepository(Registro);
       const userRepository = queryRunner.manager.getRepository(User);
       const asignacionRepository = queryRunner.manager.getRepository(AsignacionVehiculo);
 
-      // Bloquear el registro para evitar race conditions
+      console.log(`Buscando solicitud con ID: ${id_solicitud}`);
       const solicitud = await solicitudRepository.findOne({
           where: { id_solicitud },
           lock: { mode: "pessimistic_write" }
@@ -65,10 +67,6 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
 
       if (!solicitud) throw new Error("Solicitud no encontrada");
 
-      console.log("Datos de la solicitud antes de la actualización:", solicitud);
-      console.log("Datos recibidos para actualizar:", solicitudData);
-
-          // Formatear los datos recibidos
     const formattedData = {
       nombre_agrupacion: solicitudData.nombre_agrupacion,
       numero_telefono: solicitudData.numero_telefono,
@@ -78,36 +76,50 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
       id_tipo_vehiculo: parseInt(solicitudData.id_tipo_vehiculo), // Convierte a número
       cantidad_pasajeros: parseInt(solicitudData.cantidad_pasajeros), // Convierte a número
     };
-
-    console.log("Datos formateados para actualizar:", formattedData);
+    console.log("Datos formateados para actualización:", formattedData);
 
         // Validar fechas
         if (new Date(formattedData.fecha_salida) > new Date(formattedData.fecha_regreso)) {
           throw new Error("La fecha de salida no puede ser posterior a la fecha de regreso");
         }
 
-      const estadoAnterior = solicitud.estado;
-      const cambiosEstado = estadoAnterior !== solicitudData.estado;
-      const nuevoEstadoValido = ["aceptada", "rechazada"].includes(solicitudData.estado);
+        const estadoAnterior = solicitud.estado;
+        const nuevoEstado = solicitudData.estado !== undefined ? solicitudData.estado : estadoAnterior;
+        const cambiosEstado = estadoAnterior !== nuevoEstado;
+        const nuevoEstadoValido = ["aceptada", "rechazada"].includes(nuevoEstado);
+        
+        console.log(`Estado anterior: ${estadoAnterior}, Estado nuevo: ${nuevoEstado}`);
+        console.log("¿Cambio de estado?", cambiosEstado);
+        
 
-      if (cambiosEstado && solicitudData.estado === "aceptada") {
+        if (!cambiosEstado || nuevoEstado === "pendiente") {
+          console.log("No hay cambio de estado. Actualizando solo campos individuales...");
+          Object.assign(solicitud, formattedData);
+          await solicitudRepository.save(solicitud);
+          console.log("Campos individuales actualizados correctamente:", solicitud);
+          await queryRunner.commitTransaction();
+          return solicitud;
+        }
+        
+
+    if (cambiosEstado && nuevoEstadoValido) {
+      console.log(`Cambio de estado detectado: ${estadoAnterior} -> ${solicitudData.estado}`);
+      if (solicitudData.estado === "aceptada") {
         const isAvailable = await checkAvailabilityService({
           rut_conductor: solicitudData.rut_conductor,
           placa: solicitudData.placa_patente,
           fecha_salida: solicitudData.fecha_salida,
           fecha_regreso: solicitudData.fecha_regreso,
         });
-  
+ 
         if (!isAvailable) {
           throw new Error("El conductor o vehículo no está disponible en este período");
         }
       }
 
-      // Actualizar solo si hay cambios relevantes
-      if (cambiosEstado || solicitudData.estado === "pendiente") {
-          Object.assign(solicitud, formattedData);
+          Object.assign(solicitud, solicitudData);
           await solicitudRepository.save(solicitud);
-          console.log("Solicitud actualizada correctamente:", solicitud);
+          console.log("Solicitud actualizada con cambio de estado:", solicitud);
 
           const registro = registroRepository.create({
               id_solicitud: solicitud.id_solicitud,
@@ -134,7 +146,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
               id_solicitud: solicitud.id_solicitud,
               fecha_salida: solicitud.fecha_salida,
               fecha_regreso: solicitud.fecha_regreso,
-              estado: "en espera", 
+              estado: "en espera",
             });
             await asignacionRepository.save(nuevaAsignacion);
           }
@@ -145,28 +157,30 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
           const emailContent = {
               emailTo: user.email,
               subject: solicitud.estado === "aceptada" ? "Solicitud Aceptada" : "Solicitud Rechazada",
-              text: solicitud.estado === "aceptada" 
+              text: solicitud.estado === "aceptada"
                   ? `¡Tu solicitud ha sido aceptada!\n\nDetalles del vehículo: ${solicitud.placa_patente}\nDetalles del conductor: ${solicitud.rut_conductor}\nFecha de regreso: ${solicitud.fecha_regreso}`
                   : `Tu solicitud ha sido rechazada.\n\nObservaciones: ${solicitud.observaciones}`
           };
 
           // Envío fuera de la transacción
           await queryRunner.commitTransaction();
-          
+         
           // Separar completamente el envío del correo
           scheduleEmail(emailContent.emailTo, emailContent.subject, emailContent.text);
-          
+         
           console.log("Solicitud actualizada correctamente:", solicitud);
           return solicitud;
       }
 
       await queryRunner.commitTransaction();
+      console.log("Solicitud actualizada sin cambio de estado ni registro.");
       return solicitud;
   } catch (error) {
       await queryRunner.rollbackTransaction();
       throw new Error(error.message || "Error al actualizar la solicitud");
   } finally {
       await queryRunner.release();
+      console.log("Query runner liberado.");
   }
 }
 
