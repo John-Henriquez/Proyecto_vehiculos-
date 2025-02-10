@@ -10,6 +10,8 @@ import AcceptPopup from '../components/AcceptPopUp.jsx';
 import RejectPopup from '../components/RejectPopUp.jsx';
 import { acceptSolicitud, rejectSolicitud } from '../services/solicitudes.service.js';
 import EditPopup from '../components/EditPopUp.jsx';
+import '../styles/Solicitudes.css'; 
+
 
 const Solicitudes = () => {
     const { users } = useUsers();
@@ -177,9 +179,21 @@ const Solicitudes = () => {
                         <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID'/>
                         <Search value={filterName} onChange={(e) => setFilterName(e.target.value)} placeholder='Filtrar por Nombre'/>
                     </div>
-                    <div className='category-buttons'>
-                        <button onClick={() => setCategoria('movilizacion')} disabled={categoria === 'movilizacion'}>Movilización</button>
-                        <button onClick={() => setCategoria('maquinaria')} disabled={categoria === 'maquinaria'}>Maquinaria</button>
+                    <div className="category-buttons">
+                        <button 
+                            className={`category-btn ${categoria === 'movilizacion' ? 'active' : ''}`} 
+                            onClick={() => setCategoria('movilizacion')} 
+                            disabled={categoria === 'movilizacion'}
+                        >
+                            Movilización
+                        </button>
+                        <button 
+                            className={`category-btn ${categoria === 'maquinaria' ? 'active' : ''}`} 
+                            onClick={() => setCategoria('maquinaria')} 
+                            disabled={categoria === 'maquinaria'}
+                        >
+                            Maquinaria
+                        </button>
                     </div>
                 </div>
                 <SolicitudesTable
