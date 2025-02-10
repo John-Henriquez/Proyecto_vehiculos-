@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import useUsers from '../hooks/users/useGetUsers.jsx';
 import SolicitudesTable from '../components/SolicitudesTable.jsx';
 import Search from '../components/Search.jsx';
-import { getAllSolicitudes, updateSolicitud } from '../services/solicitudes.service.js';
+import { getSolicitudesByCategoria, updateSolicitud } from '../services/solicitudes.service.js';
 import { getAllVehiculos } from '../services/vehiculos.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import useDeleteSolicitud from '../hooks/applications/useDeleteSolicitud.jsx';
@@ -16,6 +16,7 @@ const Solicitudes = () => {
     const { conductores } = useGetConductores();
     const [solicitudes, setSolicitudes] = useState([]);
     const [vehiculos, setVehiculos] = useState([]);
+    const [categoria, setCategoria] = useState('movilizacion');
 
     const [filterId, setFilterId] = useState('');
     const [filterName, setFilterName] = useState('');
@@ -34,7 +35,7 @@ const Solicitudes = () => {
     
     const fetchSolicitudes = useCallback(async () => {
         try {
-            const fetchedSolicitudes = await getAllSolicitudes();
+            const fetchedSolicitudes = await getSolicitudesByCategoria(categoria);
             if (Array.isArray(fetchedSolicitudes)) {
                 const filteredSolicitudes = esAdmin
                     ? fetchedSolicitudes.filter(sol => sol.estado === "pendiente")
@@ -44,10 +45,10 @@ const Solicitudes = () => {
                 console.error('La respuesta no es un arreglo válido');
             }
         } catch (error) {
-            console.error('Error al obtener solicitudes:', error);
+            console.error(`Error al obtener solicitudes de la categoría ${categoria}:`, error);
             setSolicitudes([]);
         }
-    }, [esAdmin, usuarioRut]);
+    }, [categoria, esAdmin, usuarioRut]);
 
     const { handleDelete } = useDeleteSolicitud(fetchSolicitudes, setSelectedSolicitudes);
 
@@ -171,12 +172,15 @@ const Solicitudes = () => {
         <div className='main-container'>
             <div className='table-container'>
                 <div className='top-table'>
-                    <h1 className='title-table'>Solicitudes</h1>
+                <h1 className='title-table'>Solicitudes de {categoria === 'movilizacion' ? 'Movilización' : 'Maquinaria'}</h1>
                     <div className='filter-actions'>
                         <Search value={filterId} onChange={(e) => setFilterId(e.target.value)} placeholder='Filtrar por ID'/>
                         <Search value={filterName} onChange={(e) => setFilterName(e.target.value)} placeholder='Filtrar por Nombre'/>
                     </div>
-
+                    <div className='category-buttons'>
+                        <button onClick={() => setCategoria('movilizacion')} disabled={categoria === 'movilizacion'}>Movilización</button>
+                        <button onClick={() => setCategoria('maquinaria')} disabled={categoria === 'maquinaria'}>Maquinaria</button>
+                    </div>
                 </div>
                 <SolicitudesTable
                     data={filteredSolicitudes}
@@ -218,5 +222,4 @@ const Solicitudes = () => {
         </div>
     );
 };
-
 export default Solicitudes;

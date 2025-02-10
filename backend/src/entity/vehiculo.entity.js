@@ -24,17 +24,17 @@ const VehiculoSchema = new EntitySchema({
     },
     marca: {
       type: "varchar",
-      length: 100,  // Puedes ajustar el tamaño dependiendo del tipo de marca
-      nullable: false, // Si es obligatorio
+      length: 100,  
+      nullable: false,
     },
     modelo: {
       type: "varchar",
-      length: 100,  // Ajusta el tamaño dependiendo del modelo
-      nullable: false, // Si es obligatorio
+      length: 100,  
+      nullable: false, 
     },
     año_fabricacion: {
       type: "int",
-      nullable: false,  // Si es obligatorio, si no puedes ponerlo como nullable: true
+      nullable: false,  
     },
   },
   relations: {

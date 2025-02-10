@@ -6,14 +6,32 @@ import {
   getAllSolicitudesService,
   getSolicitudService,
   updateSolicitudService,
+  getSolicitudesByCategoriaService
 } from "../services/solicitud.service.js";
-import { sendEmail } from "../services/email.service.js";
-import { getUserService } from "../services/user.service.js";
 import {
   handleErrorClient,
   handleErrorServer,
   handleSuccess,
 } from "../handlers/responseHandlers.js";
+
+export async function getSolicitudesByCategoria(req, res) {
+  try {
+    const { categoria } = req.params;
+    console.log(`Obteniendo solicitudes para la categoría: ${categoria}`);
+
+    const solicitudes = await getSolicitudesByCategoriaService(categoria);
+
+    if (!Array.isArray(solicitudes) || solicitudes.length === 0) {
+      return handleErrorClient(res, 404, `No hay solicitudes registradas para la categoría ${categoria}`);
+    }
+
+    return handleSuccess(res, 200, `Solicitudes encontradas para la categoría ${categoria}`, solicitudes);
+  } catch (error) {
+    console.error("solicitudController - Error al obtener solicitudes por categoría:", error);
+    return handleErrorServer(res, 500, "Error interno del servidor");
+  }
+}
+
 
 export async function getSolicitud(req, res) {
   try {

@@ -13,6 +13,10 @@ const TipoVehiculoSchema = new EntitySchema({
       type: "varchar",
       length: 50,
     },
+    categoria: {
+      type: "varchar",
+      length: 20,
+    },
   },
 relations: {
   vehiculos: {

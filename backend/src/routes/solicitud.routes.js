@@ -9,6 +9,7 @@ import {
   getAllSolicitudes,
   getSolicitud,
   updateSolicitud,
+  getSolicitudesByCategoria,
 } from "../controllers/solicitud.controller.js";
 
 const router = Router();
@@ -22,5 +23,7 @@ router.get("/:id_solicitud", authenticateJwt, getSolicitud);
 router.delete("/delete/:id_solicitud", authenticateJwt, deleteSolicitud);
 
 router.patch("/edit/:id_solicitud", authenticateJwt, updateSolicitud);
+
+router.get("/categoria/:categoria", authenticateJwt, getSolicitudesByCategoria);
 
 export default router;

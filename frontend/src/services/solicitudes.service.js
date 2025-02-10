@@ -98,3 +98,26 @@ export async function rejectSolicitud(id_solicitud, solicitudData) {
     }
 }
 
+export async function getSolicitudesByCategoria(categoria) {
+    try {
+        const categoriaLimpia = categoria.toLowerCase().trim();
+        console.log(`Obteniendo solicitudes de la categoría: ${categoriaLimpia}`);
+        
+        const { data } = await axios.get(`/application/categoria/${categoriaLimpia}`);
+        
+        if (data && Array.isArray(data.data)) {
+            const formattedData = data.data.map(formatSolicitudData);
+            console.log(`${formattedData.length} solicitudes obtenidas para ${categoriaLimpia}`);
+            return formattedData;
+        } else {
+            console.warn(`La respuesta no tiene el formato esperado:`, data);
+            return [];
+        }
+    } catch (error) {
+        console.error(`Error al obtener solicitudes de la categoría ${categoria}:`, error);
+        return { success: false, message: `Error al obtener solicitudes de la categoría ${categoria}`, error: error.response?.data };
+    }
+}
+
+
+

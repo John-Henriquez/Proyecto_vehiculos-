@@ -187,7 +187,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
 export async function getAllSolicitudesService(user = null) {
   try {
     const solicitudRepository = AppDataSource.getRepository(Solicitud);
-    
+
     if (!user || user.rol === "administrador") {
       return await solicitudRepository.find();
     }
@@ -233,3 +233,20 @@ export async function deleteSolicitudService(id_solicitud, user) {
     throw new Error(error.message || "Error al eliminar la solicitud");
   }
 }
+
+export async function getSolicitudesByCategoriaService(categoria) {
+  try {
+    const solicitudes = await AppDataSource
+      .getRepository("Solicitud")
+      .createQueryBuilder("solicitud")
+      .leftJoinAndSelect("solicitud.tipoVehiculo", "tipoVehiculo")
+      .where("LOWER(tipoVehiculo.categoria) = LOWER(:categoria)", { categoria: categoria.trim() }) 
+      .getMany();
+      console.log(` ${solicitudes.length} solicitudes encontradas para ${categoria}`);
+    return solicitudes;
+  } catch (error) {
+    console.error("Error en getSolicitudesByCategoriaService:", error);
+    throw new Error("Error al obtener solicitudes por categoría");
+  }
+}
+
