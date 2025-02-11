@@ -5,6 +5,7 @@ import useGetTiposVehiculos from '../hooks/vehicleType/useGetTiposVehiculos.jsx'
 import FiltroVehiculo from '../components/FiltroVehiculo.jsx';  
 import { getAllRegistros } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
+import useDeleteRegistro from '../hooks/records/useDeleteRegistro.jsx';
 import axios from '../services/root.service.js';
 import logo from '../assets/logo_muni.png';
 import { jsPDF } from 'jspdf';
@@ -14,25 +15,25 @@ const RegistroSolicitudes = () => {
     const { conductores } = useGetConductores();
     const [registros, setRegistros] = useState([]);
     const [vehiculos, setVehiculos] = useState([]);
-
     const [filterId, setFilterId] = useState('');
     const [filterName, setFilterName] = useState('');
-
     const [filterType, setFilterType] = useState('');
     const { tiposVehiculos } = useGetTiposVehiculos();
+    const { deleteRegistroById } = useDeleteRegistro(); 
     const [logoBase64, setLogoBase64] = useState('');
 
-    useEffect(() => {
-        const fetchRegistros = async () => {
-            const fetchedRegistros = await getAllRegistros();
+    const fetchRegistros = async () => {
+        const fetchedRegistros = await getAllRegistros();
 
-            if (Array.isArray(fetchedRegistros)) {
-                setRegistros(fetchedRegistros);
-            } else {
-                console.error('La respuesta de registros no es un arreglo:', fetchedRegistros);
-                setRegistros([]);
-            }
-        };
+        if (Array.isArray(fetchedRegistros)) {
+            setRegistros(fetchedRegistros);
+        } else {
+            console.error('La respuesta de registros no es un arreglo:', fetchedRegistros);
+            setRegistros([]);
+        }
+    };
+
+    useEffect(() => {
        
         const fetchVehiculos = async () => {
             try {
@@ -54,9 +55,9 @@ const RegistroSolicitudes = () => {
             reader.readAsDataURL(blob);
         }
 
-        convertToBase64();
         fetchRegistros();
         fetchVehiculos();
+        convertToBase64();
     }, []);
 
     const registrosConVehiculos = registros.map(registro => {
@@ -200,7 +201,16 @@ const RegistroSolicitudes = () => {
     
         doc.save('informe_solicitudes.pdf');
     };
-    
+
+    const handleDelete = async (id_registro) => {
+        try {
+          await deleteRegistroById(id_registro); // Ejecuta la eliminación
+          await fetchRegistros(); // Actualiza la lista de registros
+        } catch (error) {
+          console.error("Error al eliminar el registro:", error);
+        }
+      };
+      
 
     return (
         <div className='main-container'>
@@ -225,6 +235,7 @@ const RegistroSolicitudes = () => {
                 data={registrosFiltrados}
                 conductores={conductores}
                 vehiculos={vehiculos}
+                onDelete={handleDelete}
                 />
             </div>
         </div>

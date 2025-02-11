@@ -87,19 +87,21 @@ export async function createRegistro(req, res) {
 
 export async function deleteRegistro(req, res) {
   try {
-    const { id_registro } = req.params;  
-    const [registro, error] = await deleteRegistroService(id_registro);
+    const { id_registro } = req.params;
+    console.log("ID recibido:", id_registro);
+    const [success, message] = await deleteRegistroService(id_registro);
 
-    if (error || !registro) {
-      return res.status(404).json({ error: "Registro no encontrado" });
+    if (!success) {
+      return res.status(404).json({ error: message });
     }
 
-    return res.status(200).json({ message: "Registro eliminado correctamente", registro });
+    return res.status(200).json({ message });
   } catch (error) {
     console.error("Error al eliminar el registro:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
 
 export async function updateRegistro(req, res) {
   try {

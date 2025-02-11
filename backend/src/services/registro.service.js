@@ -2,6 +2,8 @@
 
 import { AppDataSource } from "../config/configDb.js";
 import Registro from "../entity/registro.entity.js";
+import Solicitud from "../entity/solicitud.entity.js";
+import AsignacionVehiculo from "../entity/asignacion.entity.js";
 
 export async function createRegistroService(solicitud) {
   try {
@@ -88,21 +90,47 @@ export async function updateRegistroService(id_registro, registroData) {
 }
 
 export async function deleteRegistroService(id_registro) {
-  try {
-    const registroRepository = AppDataSource.getRepository(Registro);
-    const registro = await registroRepository.findOne({
-      where: { id_registro }
-    });
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
+  try {
+    const registroRepository = queryRunner.manager.getRepository(Registro);
+    const asignacionRepository = queryRunner.manager.getRepository(AsignacionVehiculo);
+    const solicitudRepository = queryRunner.manager.getRepository(Solicitud);
+
+    const registro = await registroRepository.findOne({ where: { id_registro } });
     if (!registro) {
-      return [null, "Registro no encontrado"];
+      throw new Error("Registro no encontrado");
     }
 
+    // Obtener la solicitud asociada
+    const solicitud = await solicitudRepository.findOne({ where: { id_solicitud: registro.id_solicitud } });
+    if (!solicitud) {
+      throw new Error("Solicitud asociada no encontrada");
+    }
+
+    // Verificar el estado de la solicitud
+    if (solicitud.estado === "pendiente") {
+      throw new Error("No se puede eliminar un registro relacionado con una solicitud pendiente");
+    }
+
+    // Eliminar asignaciones relacionadas con la solicitud
+    await asignacionRepository.delete({ id_solicitud: solicitud.id_solicitud });
+
+    // Eliminar el registro
     await registroRepository.remove(registro);
 
-    return [registro, null];
+    // Eliminar la solicitud después de eliminar asignaciones y registro
+    await solicitudRepository.remove(solicitud);
+
+    await queryRunner.commitTransaction();
+    return [true, "Registro, asignación y solicitud eliminados correctamente"];
   } catch (error) {
-    console.error("Error al eliminar el registro:", error);
-    return [null, "Error interno del servidor"];
+    await queryRunner.rollbackTransaction();
+    console.error("Error al eliminar el registro completo:", error);
+    return [false, error.message || "Error interno del servidor"];
+  } finally {
+    await queryRunner.release();
   }
 }
