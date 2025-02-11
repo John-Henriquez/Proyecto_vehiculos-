@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/", getTipoVehiculosController);
 
-router.post("/", createTipoVehiculoController);
+router.post("/add", createTipoVehiculoController);
 
 router.patch("/:id_tipo_vehiculo", updateTipoVehiculoController);
 

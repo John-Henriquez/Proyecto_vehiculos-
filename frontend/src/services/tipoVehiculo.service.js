@@ -13,7 +13,7 @@ export async function getTiposVehiculos () {
 
 export async function createTipoVehiculo(tipoVehiculoData) {
     try {
-        const { data } = await axios.post('/tipos-vehiculos/', tipoVehiculoData);
+        const { data } = await axios.post('/tipos-vehiculos/add', tipoVehiculoData);
         return data;
     } catch (error) {
         console.error('Error al crear un tipo de vehículo:', error);
