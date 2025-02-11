@@ -105,8 +105,9 @@ export async function deleteRegistro(req, res) {
 
 export async function updateRegistro(req, res) {
   try {
-    const { id_registro } = req.params; 
-    const registroData = req.body;  
+    const { id_registro } = req.params;
+    const registroData = req.body;
+
     const [registro, error] = await updateRegistroService(id_registro, registroData);
 
     if (error || !registro) {
@@ -119,3 +120,4 @@ export async function updateRegistro(req, res) {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+

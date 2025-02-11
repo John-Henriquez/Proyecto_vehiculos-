@@ -6,6 +6,8 @@ import FiltroVehiculo from '../components/FiltroVehiculo.jsx';
 import { getAllRegistros } from '../services/registro.service.js';
 import useGetConductores from '../hooks/drivers/useGetConductores.jsx';
 import useDeleteRegistro from '../hooks/records/useDeleteRegistro.jsx';
+import useEditRegistro from '../hooks/records/useEditRegistro.jsx';
+import RegistroEditPopup from '../components/RegistroEditPopup.jsx';
 import axios from '../services/root.service.js';
 import logo from '../assets/logo_muni.png';
 import { jsPDF } from 'jspdf';
@@ -21,7 +23,7 @@ const RegistroSolicitudes = () => {
     const { tiposVehiculos } = useGetTiposVehiculos();
     const { deleteRegistroById } = useDeleteRegistro(); 
     const [logoBase64, setLogoBase64] = useState('');
-
+    
     const fetchRegistros = async () => {
         const fetchedRegistros = await getAllRegistros();
 
@@ -32,6 +34,14 @@ const RegistroSolicitudes = () => {
             setRegistros([]);
         }
     };
+
+    const {
+        handleClickUpdate,
+        handleUpdate,
+        isPopupOpen,
+        setIsPopupOpen,
+        dataRegistro,
+      } = useEditRegistro(fetchRegistros, setRegistros);
 
     useEffect(() => {
        
@@ -231,14 +241,22 @@ const RegistroSolicitudes = () => {
                         <button onClick={handleDownloadPDF} className='btn-download'>Descargar PDF</button>
                     </div>
                 </div>
-                <RegistrosTable
-                data={registrosFiltrados}
-                conductores={conductores}
-                vehiculos={vehiculos}
-                onDelete={handleDelete}
+                    <RegistrosTable
+                        data={registros}
+                        onEdit={handleClickUpdate} // Llama al hook para abrir el popup con datos
+                        onDelete={async (id) => {
+                            await deleteRegistroById(id);
+                            fetchRegistros();
+                }}
                 />
             </div>
-        </div>
+                <RegistroEditPopup
+                    show={isPopupOpen}
+                    setShow={setIsPopupOpen}
+                    data={dataRegistro}
+                    onUpdate={handleUpdate}
+                />
+            </div>
     );
 };
 

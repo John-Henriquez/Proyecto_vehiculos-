@@ -69,25 +69,71 @@ export async function getRegistroService(id_registro) {
 }
 
 export async function updateRegistroService(id_registro, registroData) {
+  const queryRunner = AppDataSource.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
   try {
-    const registroRepository = AppDataSource.getRepository(Registro);
-    const registro = await registroRepository.findOne({ 
-      where: { id_registro },
-    });
+    const registroRepository = queryRunner.manager.getRepository(Registro);
+    const asignacionRepository = queryRunner.manager.getRepository(AsignacionVehiculo);
+    
+    // Obtener el registro actual
+    const registro = await registroRepository.findOne({ where: { id_registro } });
 
     if (!registro) {
-      return [null, "Registro no encontrado"];
+      throw new Error("Registro no encontrado");
     }
 
-    registroRepository.merge(registro, registroData);
+    // Detectar cambio de estado
+    const estadoActual = registro.estado;
+    const nuevoEstado = registroData.estado;
+
+    if (estadoActual === "aceptada" && nuevoEstado === "rechazada") {
+      // Cambia de aceptada a rechazada: eliminar asignación y datos relacionados
+      await asignacionRepository.delete({ id_solicitud: registro.id_solicitud });
+      registro.placa_vehiculo = null;
+      registro.rut_conductor = null;
+      registro.estado = nuevoEstado;
+    } else if (estadoActual === "rechazada" && nuevoEstado === "aceptada") {
+      // Cambia de rechazada a aceptada: validar datos necesarios y crear/actualizar asignación
+      if (!registroData.placa_vehiculo || !registroData.rut_conductor || !registroData.fecha_salida) {
+        throw new Error("Datos insuficientes para aceptar la solicitud");
+      }
+
+      registro.fecha_salida = registroData.fecha_salida;
+      registro.fecha_regreso = registroData.fecha_regreso;
+      registro.placa_vehiculo = registroData.placa_vehiculo;
+      registro.rut_conductor = registroData.rut_conductor;
+
+      await asignacionRepository.upsert(
+        {
+          id_solicitud: registro.id_solicitud,
+          fecha_salida: registroData.fecha_salida,
+          fecha_regreso: registroData.fecha_regreso,
+          placa: registroData.placa_vehiculo,
+          rut_conductor: registroData.rut_conductor,
+          estado: "activo",
+        },
+        ["id_solicitud"]
+      );
+    } else {
+      // Edición normal sin cambio de estado
+      registroRepository.merge(registro, registroData);
+    }
+
     await registroRepository.save(registro);
+    await queryRunner.commitTransaction();
 
     return [registro, null];
   } catch (error) {
+    await queryRunner.rollbackTransaction();
     console.error("Error al actualizar el registro:", error);
-    return [null, "Error interno del servidor"];
+    return [null, error.message || "Error interno del servidor"];
+  } finally {
+    await queryRunner.release();
   }
 }
+
 
 export async function deleteRegistroService(id_registro) {
   const queryRunner = AppDataSource.createQueryRunner();
