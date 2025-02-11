@@ -9,9 +9,43 @@ import {
   IconButton,
   Paper,
   Pagination,
+  CircularProgress,
+  Typography,
+  List, 
+  ListItem, 
+  ListItemText
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import useAssignedDates from "../hooks/assignments/useAssignedDates";
+
+const FechasAsignadas = ({ rut_conductor }) => {
+  const { assignedDates, loading, error } = useAssignedDates({ rut_conductor });
+
+  if (loading) {
+    return <CircularProgress size={16} />;
+  }
+
+  if (error) {
+    return <Typography color="error" variant="caption">Error</Typography>;
+  }
+
+  if (assignedDates.length === 0) {
+    return <Typography variant="caption">Disponible</Typography>;
+  }
+
+  return (
+    <List dense>
+      {assignedDates.map((date, index) => (
+        <ListItem key={index} disableGutters>
+          <ListItemText
+            primary={`Del ${new Date(date.fecha_salida).toLocaleDateString()} al ${new Date(date.fecha_regreso).toLocaleDateString()}`}
+          />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
 
 export default function ConductoresTable({ data, onEdit, onDelete }) {
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -41,7 +75,9 @@ export default function ConductoresTable({ data, onEdit, onDelete }) {
                   <TableCell>{row.rut_conductor}</TableCell>
                   <TableCell>{row.nombre}</TableCell>
                   <TableCell>{row.telefono}</TableCell>
-                  <TableCell>{row.estado}</TableCell>
+                  <TableCell>
+                    <FechasAsignadas rut_conductor={row.rut_conductor} />
+                  </TableCell>
                   <TableCell>
                     <IconButton color="primary" onClick={() => onEdit(row)}>
                       <EditIcon />

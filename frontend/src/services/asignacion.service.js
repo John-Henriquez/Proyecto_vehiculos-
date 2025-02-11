@@ -62,3 +62,15 @@ export async function getDisponibilidad(fecha_salida, fecha_regreso) {
         return error.response?.data || { message: "Error al verificar la disponibilidad de vehículos y conductores" };
     }
 }
+
+// Obtener fechas asignadas para un conductor o un vehículo
+export async function getAssignedDates(rut_conductor, placa) {
+    try {
+        const { data } = await axios.get('/asignacion/assigned-dates', {
+            params: { rut_conductor, placa }
+        });
+        return data.data; // Retorna solo el array de fechas
+    } catch (error) {
+        return error.response?.data || { message: "Error al obtener las fechas asignadas" };
+    }
+}

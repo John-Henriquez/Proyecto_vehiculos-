@@ -9,6 +9,7 @@ import {
   updateAsignacion,
   deleteAsignacion,
   checkAvailabilityController,
+  getAssignedDates,
 } from '../controllers/asignacion.controller.js';
 
 const router = Router();
@@ -22,6 +23,9 @@ router.get("/", authenticateJwt, getAllAsignaciones);
 // Consultar disponibilidad
 router.get("/availability", authenticateJwt, checkAvailabilityController);
 
+// Obtener fechas de asignación para un conductor o vehículo específico
+router.get("/assigned-dates", authenticateJwt, getAssignedDates);
+
 // Obtener una asignación por ID
 router.get("/:id", authenticateJwt, getAsignacionById);
 
@@ -30,6 +34,9 @@ router.put("/edit/:id", authenticateJwt, isAdmin, updateAsignacion);
 
 // Eliminar una asignación
 router.delete("/delete/:id", authenticateJwt, isAdmin, deleteAsignacion);
+
+
+
 
 
 export default router;

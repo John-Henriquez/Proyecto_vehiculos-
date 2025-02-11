@@ -87,8 +87,8 @@ const Vehiculos = () => {
                             onChange={handleTipoVehiculoChange}  
                         />
                         <button onClick={handleCreateNew} className='btn-add'>Agregar Vehículo</button>
-                        <button onClick={handleCreateCategoria} className='btn-category'>Agregar Categoría</button>
-                        <button onClick={handleTipoVehiculoManagement} className='btn-manage'>Gestionar Tipos</button>
+                        <button onClick={handleCreateCategoria} className='btn-category'>Agregar Tipo de Vehiculo</button>
+                        <button onClick={handleTipoVehiculoManagement} className='btn-manage'>Ver Tipos de Vehiculos</button>
                     </div>
                 </div>
                 

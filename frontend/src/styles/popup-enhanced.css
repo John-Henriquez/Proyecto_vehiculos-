@@ -115,3 +115,76 @@ h2 {
         padding: 8px;
     }
 }
+
+/* Estilo para la fila en edición */
+.table tbody tr.editing {
+    background: #fff3cd;
+    transition: background 0.3s ease;
+}
+
+/* Inputs de edición dentro de la tabla */
+.table tbody tr.editing input {
+    width: 100%;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+.table tbody tr.editing input:focus {
+    border-color: #007bff;
+    background: #e9f5ff;
+}
+
+/* Botón Guardar */
+.btn-save {
+    background: #007bff;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.btn-save:hover {
+    background: #0056b3;
+}
+
+/* Botón Cancelar */
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+}
+.edit-select {
+    width: 100%;
+    padding: 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.2s ease;
+    background: white;
+}
+
+.edit-select:focus {
+    border-color: #007bff;
+    background: #e9f5ff;
+}
+

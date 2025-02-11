@@ -6,6 +6,7 @@ import {
   updateAsignacionService,
   deleteAsignacionService,
   checkAvailabilityService,
+  getAssignedDatesService,
 } from '../services/asignacion.service.js';
 import {
   handleErrorClient,
@@ -95,5 +96,25 @@ export async function checkAvailabilityController(req, res) {
       status: "error",
       message: error.message
     });
+  }
+}
+
+export async function getAssignedDates(req, res) {
+  try {
+    const { rut_conductor, placa } = req.query;
+
+    if (!rut_conductor && !placa) {
+      return handleErrorClient(res, 400, "Debe proporcionar rut_conductor o placa");
+    }
+
+    const asignaciones = await getAssignedDatesService({ rut_conductor, placa });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Fechas de asignación encontradas",
+      data: asignaciones,
+    });
+  } catch (error) {
+    return handleErrorServer(res, 500, error.message);
   }
 }

@@ -106,3 +106,27 @@ export async function checkAvailabilityService({ fecha_salida, fecha_regreso }) 
     throw new Error(error.message || "Error al verificar la disponibilidad");
   }
 }
+
+export async function getAssignedDatesService({ rut_conductor, placa }) {
+  try {
+    const asignacionRepository = AppDataSource.getRepository(AsignacionVehiculo);
+
+    const whereConditions = {};
+    if (rut_conductor) whereConditions.rut_conductor = rut_conductor;
+    if (placa) whereConditions.placa = placa;
+
+    const asignaciones = await asignacionRepository.find({
+      where: [
+        rut_conductor ? { rut_conductor } : null,
+        placa ? { placa } : null
+      ].filter(Boolean), 
+      select: ["fecha_salida", "fecha_regreso"],
+      order: { fecha_salida: "ASC" }
+    });
+    
+
+    return asignaciones;
+  } catch (error) {
+    throw new Error(error.message || "Error al obtener las fechas de asignación");
+  }
+}

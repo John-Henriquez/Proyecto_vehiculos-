@@ -41,13 +41,13 @@ export default function PopupCategoria({ show, setShow, onSuccess }) {
                             <img src={CloseIcon} alt="Cerrar" />
                         </button>
                         <Form
-                            title="Agregar Nueva Categoría"
+                            title="Agregar Nuevo Tipo de Vehiculo"
                             fields={[
                                 {
                                     label: "Nombre",
                                     name: "nombre",
                                     defaultValue: formData.nombre,
-                                    placeholder: 'Ingrese el nombre de la categoría',
+                                    placeholder: 'Ingrese el nombre del tipo de vehículo',
                                     fieldType: 'input',
                                     type: "text",
                                     required: true,

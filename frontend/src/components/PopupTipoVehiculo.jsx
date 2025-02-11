@@ -12,15 +12,28 @@ export default function PopupTipoVehiculo({ show, setShow }) {
     const { handleDeleteTipoVehiculo } = useDeleteTipoVehiculo(fetchTipoVehiculo);
 
     const [editData, setEditData] = useState(null);
+    const [editedValues, setEditedValues] = useState({ nombre: '', categoria: '' });
 
     useEffect(() => {
         if (show) {
-            fetchTipoVehiculo(); // Refrescar la lista de tipos de vehículos al abrir el popup
+            fetchTipoVehiculo(); 
         }
     }, [show, fetchTipoVehiculo]);
 
     const handleEdit = (tipoVehiculo) => {
         setEditData(tipoVehiculo);
+        setEditedValues({ nombre: tipoVehiculo.nombre, categoria: tipoVehiculo.categoria });
+    };
+    
+    const handleSaveEdit = async () => {
+        await handleEditTipoVehiculo(editData.id_tipo_vehiculo, editedValues);
+        Swal.fire('Guardado', 'Los cambios han sido guardados correctamente.', 'success');
+        setEditData(null);
+        fetchTipoVehiculo();
+    };
+
+    const handleCancelEdit = () => {
+        setEditData(null);
     };
 
     const handleDelete = async (id) => {
@@ -70,13 +83,45 @@ export default function PopupTipoVehiculo({ show, setShow }) {
                         </thead>
                         <tbody>
                             {tiposVehiculos.map((tipo) => (
-                                <tr key={tipo.id_tipo_vehiculo}>
+                                <tr key={tipo.id_tipo_vehiculo} className={editData?.id_tipo_vehiculo === tipo.id_tipo_vehiculo ? 'editing' : ''}>
                                     <td>{tipo.id_tipo_vehiculo}</td>
-                                    <td>{tipo.nombre}</td>
-                                    <td>{tipo.categoria}</td>
                                     <td>
-                                        <button onClick={() => handleEdit(tipo)} className="btn-edit">Editar</button>
-                                        <button onClick={() => handleDelete(tipo.id_tipo_vehiculo)} className="btn-delete">Eliminar</button>
+                                        {editData?.id_tipo_vehiculo === tipo.id_tipo_vehiculo ? (
+                                            <input
+                                                type="text"
+                                                value={editedValues.nombre}
+                                                onChange={(e) => setEditedValues({ ...editedValues, nombre: e.target.value })}
+                                            />
+                                        ) : (
+                                            tipo.nombre
+                                        )}
+                                    </td>
+                                    <td>
+                                        {editData?.id_tipo_vehiculo === tipo.id_tipo_vehiculo ? (
+                                            <select
+                                                value={editedValues.categoria}
+                                                onChange={(e) => setEditedValues({ ...editedValues, categoria: e.target.value })}
+                                                className="edit-select"
+                                            >
+                                                <option value="Movilización">Movilización</option>
+                                                <option value="Maquinaria">Maquinaria</option>
+                                            </select>
+                                        ) : (
+                                            tipo.categoria
+                                        )}
+                                    </td>
+                                    <td>
+                                        {editData?.id_tipo_vehiculo === tipo.id_tipo_vehiculo ? (
+                                            <>
+                                                <button onClick={handleSaveEdit} className="btn-save">Guardar</button>
+                                                <button onClick={handleCancelEdit} className="btn-cancel">Cancelar</button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button onClick={() => handleEdit(tipo)} className="btn-edit">Editar</button>
+                                                <button onClick={() => handleDelete(tipo.id_tipo_vehiculo)} className="btn-delete">Eliminar</button>
+                                            </>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

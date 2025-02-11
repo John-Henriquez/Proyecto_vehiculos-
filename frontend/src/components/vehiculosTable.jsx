@@ -9,11 +9,45 @@ import {
   IconButton,
   Paper,
   Button,
-  Pagination
+  Pagination,
+  CircularProgress,
+  Typography,
+  List, 
+  ListItem, 
+  ListItemText
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import useGetTiposVehiculos from "../hooks/vehicleType/useGetTiposVehiculos";
+import useAssignedDates from "../hooks/assignments/useAssignedDates";
+
+const FechasAsignadas = ({ placa }) => {
+  const { assignedDates, loading, error } = useAssignedDates({ placa });
+
+  if (loading) {
+    return <CircularProgress size={16} />;
+  }
+
+  if (error) {
+    return <Typography color="error" variant="caption">Error</Typography>;
+  }
+
+  if (assignedDates.length === 0) {
+    return <Typography variant="caption">Disponible</Typography>;
+  }
+
+  return (
+    <List dense>
+      {assignedDates.map((date, index) => (
+        <ListItem key={index} disableGutters>
+          <ListItemText
+            primary={`Del ${new Date(date.fecha_salida).toLocaleDateString()} al ${new Date(date.fecha_regreso).toLocaleDateString()}`}
+          />
+        </ListItem>
+      ))}
+    </List>
+  );
+};
 
 export default function VehiculosTable({ data, onEdit, onDelete }) {
   const { tiposVehiculos, loading, error } = useGetTiposVehiculos();
@@ -63,7 +97,9 @@ export default function VehiculosTable({ data, onEdit, onDelete }) {
                   <TableCell>{row.año_fabricacion}</TableCell>
                   <TableCell>{row.capacidad_maxima}</TableCell>
                   <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
-                  <TableCell>{row.estado}</TableCell>
+                  <TableCell>
+                    <FechasAsignadas placa={row.placa} />
+                  </TableCell>
                   <TableCell>
                   <IconButton color="primary" onClick={() => onEdit(row)}>
                       <EditIcon />
