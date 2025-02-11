@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import '@styles/popup_registro.css';
+import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
+import { getDisponibilidad } from '../services/asignacion.service';
 
 export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -14,6 +15,10 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
     rut_conductor: '',
     estado: '',
     observaciones: '',
+  });
+  const [availability, setAvailability] = useState({
+    availableVehiculos: [],
+    availableConductores: [],
   });
 
   useEffect(() => {
@@ -33,6 +38,33 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (show && formData.fecha_salida && formData.fecha_regreso) {
+      console.log('useEffect ejecutando validateAvailability');
+      validateAvailability();
+    }
+  }, [show, formData.fecha_salida, formData.fecha_regreso]);
+  console.log('Fecha de salida:', formData.fecha_salida);
+  console.log('Fecha de regreso:', formData.fecha_regreso);
+
+  
+
+  const validateAvailability = async () => {
+    console.log('validateAvailability se está ejecutando');
+    const fechaRegreso = formData.fecha_regreso || formData.fecha_salida;
+    try {
+      const result = await getDisponibilidad(formData.fecha_salida, formData.fecha_regreso);
+      console.log('Resultado de disponibilidad:', result);
+      setAvailability({
+        availableVehiculos: result.data.vehiculosDisponibles || [],
+        availableConductores: result.data.conductoresDisponibles || [],
+      });
+    } catch (error) {
+      console.error('Error al obtener disponibilidad:', error);
+    }
+  };
+  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -40,12 +72,10 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.fecha_salida) {
-        alert("La fecha de salida es obligatoria.");
-        return;
-      }
-      
+      alert('La fecha de salida es obligatoria.');
+      return;
+    }
     try {
       await onUpdate(formData);
       setShow(false);
@@ -54,16 +84,27 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
     }
   };
 
+
+  const filteredConductores = availability.availableConductores.map(conductor => ({
+    value: conductor.rut_conductor,
+    label: `${conductor.nombre} - ${conductor.rut_conductor}`,
+  }));
+
+  const filteredVehiculos = availability.availableVehiculos.map(vehiculo => ({
+    value: vehiculo.placa,
+    label: `${vehiculo.marca} - ${vehiculo.modelo} - ${vehiculo.placa}`,
+  }));
+
   return show ? (
     <div className="bg">
       <div className="popup">
         <button className="close" onClick={() => setShow(false)}>
           <img src={CloseIcon} alt="Cerrar" />
         </button>
-        <form onSubmit={handleSubmit}>
-          <h2>Editar Registro</h2>
-
-          <div className="form-group">
+        <h2 className="title">Editar Registro</h2>
+        <form onSubmit={handleSubmit} className="form">
+          <div className="container_inputs">
+             {/* NOmbre agrupacion */}
             <label>Nombre Agrupación</label>
             <input
               type="text"
@@ -73,8 +114,8 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
               required
             />
           </div>
-
-          <div className="form-group">
+          {/* Numero telefono */}
+          <div className="container_inputs">
             <label>Número Teléfono</label>
             <input
               type="tel"
@@ -84,8 +125,8 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
               required
             />
           </div>
-
-          <div className="form-group">
+          {/* Fecha salida */}
+          <div className="container_inputs">
             <label>Fecha Salida</label>
             <input
               type="date"
@@ -95,8 +136,8 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
               required
             />
           </div>
-
-          <div className="form-group">
+          {/* Fecha regreso */}
+          <div className="container_inputs">
             <label>Fecha Regreso</label>
             <input
               type="date"
@@ -105,8 +146,8 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
               onChange={handleChange}
             />
           </div>
-
-          <div className="form-group">
+          {/* Destino */}
+          <div className="container_inputs">
             <label>Destino</label>
             <input
               type="text"
@@ -116,41 +157,52 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
               required
             />
           </div>
-
-          <div className="form-group">
+          {/* Estado */}
+          <div className="container_inputs">
             <label>Estado</label>
             <select name="estado" value={formData.estado} onChange={handleChange} required>
               <option value="aceptada">Aceptada</option>
               <option value="rechazada">Rechazada</option>
             </select>
           </div>
-
           {formData.estado === 'aceptada' && (
             <>
-              <div className="form-group">
+              <div className="container_inputs">
                 <label>Placa Vehículo</label>
-                <input
-                  type="text"
+                <select
                   name="placa_vehiculo"
                   value={formData.placa_vehiculo}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Seleccione un vehículo</option>
+                  {filteredVehiculos.map(vehiculo => (
+                    <option key={vehiculo.value} value={vehiculo.value}>
+                      {vehiculo.label}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="form-group">
+
+              <div className="container_inputs">
                 <label>RUT Conductor</label>
-                <input
-                  type="text"
+                <select
                   name="rut_conductor"
                   value={formData.rut_conductor}
                   onChange={handleChange}
                   required
-                />
+                >
+                  <option value="">Seleccione un conductor</option>
+                  {filteredConductores.map(conductor => (
+                    <option key={conductor.value} value={conductor.value}>
+                      {conductor.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </>
           )}
-
-          <div className="form-group">
+          <div className="container_inputs">
             <label>Observaciones</label>
             <textarea
               name="observaciones"
@@ -158,7 +210,6 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
               onChange={handleChange}
             />
           </div>
-
           <button type="submit" className="btn-save">
             Guardar Cambios
           </button>

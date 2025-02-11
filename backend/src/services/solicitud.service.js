@@ -127,7 +127,7 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
               num_telefono: solicitud.numero_telefono,
               fecha_solicitud: solicitud.fecha_creacion,
               fecha_salida: solicitud.fecha_salida,
-              fecha_regreso: solicitud.estado === "aceptada" ? solicitud.fecha_regreso : null,
+              fecha_regreso: solicitud.fecha_regreso,
               destino: solicitud.destino,
               prioridad: solicitud.prioridad,
               estado: solicitud.estado,
