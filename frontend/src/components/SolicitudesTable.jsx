@@ -20,7 +20,7 @@ const formatDate = (date) => {
   return date;
 };
 
-export default function SolicitudesTable({ data, onAccept, onReject, onEdit, onDelete, esAdmin }) {
+export default function SolicitudesTable({ data, onAccept, onReject, onEdit, onDelete, esAdmin, categoria }) {
   const { tiposVehiculos } = useGetTiposVehiculos();
   console.log("Solicitudes:", data);
 
@@ -33,20 +33,25 @@ export default function SolicitudesTable({ data, onAccept, onReject, onEdit, onD
   return (
     <TableContainer component={Paper}>
       <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID Solicitud</TableCell>
-            <TableCell>Nombre Agrupación</TableCell>
-            <TableCell>Número Teléfono</TableCell>
-            <TableCell>Fecha Creacion</TableCell>
-            <TableCell>Fecha Salida</TableCell>
-            <TableCell>Fecha Llegada</TableCell>            
-            <TableCell>Destino</TableCell>
-            <TableCell>Tipo Vehículo</TableCell>
-            <TableCell>Cantidad Pasajeros</TableCell>
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID Solicitud</TableCell>
+              <TableCell>Nombre Agrupación</TableCell>
+              <TableCell>Número Teléfono</TableCell>
+              <TableCell>Fecha Creación</TableCell>
+              <TableCell>
+                {categoria === 'movilizacion' ? 'Fecha Salida' : 'Inicio Trabajo'}
+              </TableCell>
+              <TableCell>
+                {categoria === 'movilizacion' ? 'Fecha Llegada' : 'Fin Trabajo'}
+              </TableCell>
+              <TableCell>Destino</TableCell>
+              <TableCell>Tipo Vehículo</TableCell>
+              <TableCell>Cantidad Pasajeros</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+
         <TableBody>
           {data?.length > 0 ? (
             data.map((row) => (

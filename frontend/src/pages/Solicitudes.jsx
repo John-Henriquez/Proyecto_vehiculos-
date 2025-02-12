@@ -203,6 +203,7 @@ const Solicitudes = () => {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     esAdmin={esAdmin}
+                    categoria={categoria}
                 />
 
             </div>

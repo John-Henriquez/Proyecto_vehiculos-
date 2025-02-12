@@ -1,5 +1,5 @@
 "use strict";
-
+import { validateRut, formatRut } from "../helpers/rutHelper.js";
 import {
   createSolicitudService,
   deleteSolicitudService,
@@ -22,7 +22,8 @@ export async function getSolicitudesByCategoria(req, res) {
     const solicitudes = await getSolicitudesByCategoriaService(categoria);
 
     if (!Array.isArray(solicitudes) || solicitudes.length === 0) {
-      return handleErrorClient(res, 404, `No hay solicitudes registradas para la categoría ${categoria}`);
+      console.log(`No hay solicitudes registradas para la categoría ${categoria}`);
+      return handleSuccess(res, 200, `No hay solicitudes registradas para la categoría ${categoria}`, []);
     }
 
     return handleSuccess(res, 200, `Solicitudes encontradas para la categoría ${categoria}`, solicitudes);
@@ -94,10 +95,20 @@ export async function createSolicitud(req, res) {
       return handleErrorClient(res, 400, "Faltan campos obligatorios en la solicitud");
     }
 
+    if (!validateRut(rut_solicitante)) {
+      return handleErrorClient(res, 400, "RUT no es válido");
+    }
+    const rutFormateado = formatRut(rut_solicitante);
+
+    if (!/^\d{8}$/.test(numero_telefono)) {
+      return handleErrorClient(res, 400, "El número de teléfono debe tener exactamente 8 dígitos");
+    }
+    const telefonoFormateado = `9${numero_telefono}`;
+
     const solicitudData = {
-      rut_solicitante,
+      rut_solicitante: rutFormateado,
       nombre_agrupacion,
-      numero_telefono,
+      numero_telefono: telefonoFormateado,
       fecha_salida,
       destino,
       placa_patente: placa_patente || null,

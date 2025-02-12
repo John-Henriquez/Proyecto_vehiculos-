@@ -240,13 +240,20 @@ export async function getSolicitudesByCategoriaService(categoria) {
       .getRepository("Solicitud")
       .createQueryBuilder("solicitud")
       .leftJoinAndSelect("solicitud.tipoVehiculo", "tipoVehiculo")
-      .where("LOWER(tipoVehiculo.categoria) = LOWER(:categoria)", { categoria: categoria.trim() }) 
+      .where("LOWER(tipoVehiculo.categoria) = LOWER(:categoria)", { categoria: categoria.trim() })
       .getMany();
-      console.log(` ${solicitudes.length} solicitudes encontradas para ${categoria}`);
-    return solicitudes;
+    
+    console.log(`${solicitudes.length} solicitudes encontradas para la categoría ${categoria}`);
+    
+    if (solicitudes.length === 0) {
+      console.log(`No se encontraron solicitudes para la categoría ${categoria}`);
+    }
+
+    return solicitudes;  // Retorna siempre el resultado, aunque esté vacío.
   } catch (error) {
     console.error("Error en getSolicitudesByCategoriaService:", error);
     throw new Error("Error al obtener solicitudes por categoría");
   }
 }
+
 
