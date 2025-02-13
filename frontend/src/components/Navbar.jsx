@@ -87,6 +87,12 @@ const Navbar = () => {
                             </div>
                         </li>
                     )}
+                    <li>
+                        <button className="navbar-button logout" onClick={logoutSubmit}>
+                            <IconLogout />
+                            Cerrar sesión
+                        </button>
+                    </li>                    
                 </ul>
             </div>
 
@@ -111,11 +117,11 @@ const Navbar = () => {
                     ))}
                 </ul>
                 
-                <button className="logout-button" onClick={logoutSubmit}>
-                    <IconLogout />
-                    Cerrar sesión
-                </button>
-            </div>
+                    <button className="logout-button" onClick={logoutSubmit}>
+                        <IconLogout />
+                        Cerrar sesión
+                    </button>
+                </div>
 
             <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
                 {menuOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
