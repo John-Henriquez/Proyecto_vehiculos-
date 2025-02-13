@@ -220,6 +220,12 @@ const RegistroSolicitudes = () => {
           console.error("Error al eliminar el registro:", error);
         }
       };
+
+      const conductoresMap = conductores.reduce((acc, conductor) => {
+        acc[conductor.rut_conductor] = conductor.nombre;
+        return acc;
+    }, {});
+    
       
 
     return (
@@ -243,6 +249,7 @@ const RegistroSolicitudes = () => {
                 </div>
                     <RegistrosTable
                         data={registros}
+                        conductoresMap={conductoresMap}
                         onEdit={handleClickUpdate} // Llama al hook para abrir el popup con datos
                         onDelete={async (id) => {
                             await deleteRegistroById(id);
@@ -255,6 +262,8 @@ const RegistroSolicitudes = () => {
                     setShow={setIsPopupOpen}
                     data={dataRegistro}
                     onUpdate={handleUpdate}
+                    vehiculos={vehiculos}
+                    conductores={conductores}
                 />
             </div>
     );

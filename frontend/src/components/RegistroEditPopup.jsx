@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import '@styles/popup.css';
 import CloseIcon from '@assets/XIcon.svg';
 import { getDisponibilidad } from '../services/asignacion.service';
+import useGetSolicitudes from '../hooks/applications/useGetSolicitudes';
 
-export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
+export default function RegistroEditPopup({ show, setShow, data, onUpdate, vehiculos, conductores }) {
   const [formData, setFormData] = useState({
     id_registro: '',
     nombre_agrupacion: '',
@@ -21,8 +22,11 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
     availableConductores: [],
   });
 
+  const [idTipoVehiculo, setIdTipoVehiculo] = useState(null);
+  const { solicitudes } = useGetSolicitudes();
+
   useEffect(() => {
-    if (data) {
+    if (data?.id_solicitud && solicitudes.length > 0) {
       setFormData({
         id_registro: data.id_registro || '',
         nombre_agrupacion: data.nombre_agrupacion || '',
@@ -35,26 +39,33 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
         estado: data.estado || '',
         observaciones: data.observaciones || '',
       });
+      findTipoVehiculo(data.id_solicitud);
     }
-  }, [data]);
+  }, [data, solicitudes]);
+
+  const findTipoVehiculo = (idSolicitud) => {
+    const solicitud = solicitudes.find((s) => s.id_solicitud === idSolicitud);
+    console.log('Solicitud encontrada:', solicitud); // Verifica la solicitud completa
+    
+    if (solicitud?.id_tipo_vehiculo) {  // Busca directamente el id_tipo_vehiculo
+      setIdTipoVehiculo(solicitud.id_tipo_vehiculo);
+      console.log('idTipoVehiculo encontrado:', solicitud.id_tipo_vehiculo);
+    } else {
+      console.warn('id_tipo_vehiculo no encontrado para la solicitud:', idSolicitud);
+    }
+  };
+  
+  
 
   useEffect(() => {
     if (show && formData.fecha_salida && formData.fecha_regreso) {
-      console.log('useEffect ejecutando validateAvailability');
       validateAvailability();
     }
   }, [show, formData.fecha_salida, formData.fecha_regreso]);
-  console.log('Fecha de salida:', formData.fecha_salida);
-  console.log('Fecha de regreso:', formData.fecha_regreso);
-
-  
 
   const validateAvailability = async () => {
-    console.log('validateAvailability se está ejecutando');
-    const fechaRegreso = formData.fecha_regreso || formData.fecha_salida;
     try {
       const result = await getDisponibilidad(formData.fecha_salida, formData.fecha_regreso);
-      console.log('Resultado de disponibilidad:', result);
       setAvailability({
         availableVehiculos: result.data.vehiculosDisponibles || [],
         availableConductores: result.data.conductoresDisponibles || [],
@@ -64,13 +75,14 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
     }
   };
   
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
     if (!formData.fecha_salida) {
       alert('La fecha de salida es obligatoria.');
@@ -84,17 +96,35 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
     }
   };
 
+  const isVehiculoAvailable = (vehiculoPlaca) => {
+    if (!Array.isArray(availability.availableVehiculos) || availability.availableVehiculos.length === 0) {
+      console.log('No hay datos de disponibilidad, mostrando todos.');
+      return true;
+    }
+    const available = availability.availableVehiculos.some((vehiculo) => vehiculo.placa === vehiculoPlaca);
+    return available;
+  };
 
-  const filteredConductores = availability.availableConductores.map(conductor => ({
-    value: conductor.rut_conductor,
-    label: `${conductor.nombre} - ${conductor.rut_conductor}`,
-  }));
+  const vehiculosFiltrados = vehiculos
+  .filter((vehiculo) => (idTipoVehiculo ? vehiculo.id_tipo_vehiculo === idTipoVehiculo : true))
+  .filter((vehiculo) => (availability.availableVehiculos.length > 0 ? isVehiculoAvailable(vehiculo.placa) : true))
+  .map((vehiculo) => {
+    return {
+      value: vehiculo.placa,
+      label: `${vehiculo.marca} - ${vehiculo.modelo} - ${vehiculo.placa}`,
+    };
+  });
 
-  const filteredVehiculos = availability.availableVehiculos.map(vehiculo => ({
-    value: vehiculo.placa,
-    label: `${vehiculo.marca} - ${vehiculo.modelo} - ${vehiculo.placa}`,
-  }));
+  const conductoresFiltrados = conductores
+    .filter((conductor) =>
+      availability.availableConductores.some((av) => av.rut_conductor === conductor.rut_conductor)
+    )
+    .map((conductor) => ({
+      value: conductor.rut_conductor,
+      label: `${conductor.nombre} - ${conductor.rut_conductor}`,
+    }));
 
+    
   return show ? (
     <div className="bg">
       <div className="popup">
@@ -176,7 +206,7 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
                   required
                 >
                   <option value="">Seleccione un vehículo</option>
-                  {filteredVehiculos.map(vehiculo => (
+                  {vehiculosFiltrados.map(vehiculo => (
                     <option key={vehiculo.value} value={vehiculo.value}>
                       {vehiculo.label}
                     </option>
@@ -193,7 +223,7 @@ export default function RegistroEditPopup({ show, setShow, data, onUpdate }) {
                   required
                 >
                   <option value="">Seleccione un conductor</option>
-                  {filteredConductores.map(conductor => (
+                  {conductoresFiltrados.map(conductor => (
                     <option key={conductor.value} value={conductor.value}>
                       {conductor.label}
                     </option>

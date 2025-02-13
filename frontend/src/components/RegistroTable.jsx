@@ -18,7 +18,7 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString();
 };
 
-export default function RegistrosTable({ data, onEdit, onDelete }) {
+export default function RegistrosTable({ data, conductoresMap, onEdit, onDelete }) {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -49,7 +49,7 @@ export default function RegistrosTable({ data, onEdit, onDelete }) {
                 <TableCell>{row.fecha_regreso ? formatDate(row.fecha_regreso) : "No disponible"}</TableCell>
                 <TableCell>{row.destino || "Sin destino"}</TableCell>
                 <TableCell>{row.placa_vehiculo || "No asignado"}</TableCell>
-                <TableCell>{row.conductor || "Desconocido"}</TableCell>
+                <TableCell>{conductoresMap[row.rut_conductor] || "Desconocido"}</TableCell>
                 <TableCell>{row.estado}</TableCell>
                 <TableCell>
                   <div style={{ display: "flex", gap: "5px" }}>
