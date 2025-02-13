@@ -63,9 +63,11 @@ const Vehiculos = () => {
     };
 
     const filteredData = vehiculos
-        .filter(vehiculo => 
-            vehiculo.placa.toString().includes(filterPlaca.toLowerCase())) 
-        .filter(vehiculo => filterType ? vehiculo.id_tipo_vehiculo === filterType : true); 
+    .filter(vehiculo => 
+        vehiculo.placa.toLowerCase().includes(filterPlaca.toLowerCase())
+    )
+    .filter(vehiculo => filterType ? vehiculo.id_tipo_vehiculo === filterType : true);
+
 
     if (error) {
         showWarningAlert("Error", error);
