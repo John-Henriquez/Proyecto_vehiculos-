@@ -154,13 +154,29 @@ export async function updateSolicitudService(id_solicitud, solicitudData) {
           const user = await userRepository.findOne({ where: { rut: solicitud.rut_creador } });
           if (!user) throw new Error("Usuario no encontrado");
 
-          const emailContent = {
-              emailTo: user.email,
-              subject: solicitud.estado === "aceptada" ? "Solicitud Aceptada" : "Solicitud Rechazada",
-              text: solicitud.estado === "aceptada"
-                  ? `¡Tu solicitud ha sido aceptada!\n\nDetalles del vehículo: ${solicitud.placa_patente}\nDetalles del conductor: ${solicitud.rut_conductor}\nFecha de regreso: ${solicitud.fecha_regreso}`
-                  : `Tu solicitud ha sido rechazada.\n\nObservaciones: ${solicitud.observaciones}`
-          };
+          console.log('Solicitud:', solicitud);
+
+const emailContent = {
+  emailTo: user.email,
+  subject: solicitud.estado === "aceptada" ? "Notificación: Solicitud Aceptada" : "Notificación: Solicitud Rechazada",
+  text: solicitud.estado === "aceptada"
+    ? `Estimado/a ${user.nombre || 'Usuario'},\n\nNos complace informarle que su solicitud ha sido aceptada.\n\nDetalles de la solicitud:\n
+      Destino: ${solicitud.destino}
+      Fecha de salida: ${solicitud.fechaSalida}
+      Fecha de regreso: ${solicitud.fecha_regreso}
+      Vehículo asignado: ${solicitud.placa_patente || 'Vehículo en proceso de asignación'}
+      Conductor asignado: ${solicitud.nombre_conductor !== 'Desconocido' ? solicitud.nombre_conductor : ''} ${solicitud.rut_conductor || ''}
+      Cantidad de pasajeros: ${solicitud.cantidad_pasajeros || 'No especificado'}\n\n
+    Por favor, no dude en contactarnos si requiere más información.\n\n
+    Saludos cordiales,\nDepartamento de Movilización`
+    : `Estimado/a ${user.nombre || 'Usuario'},\n\nLamentamos informarle que su solicitud ha sido rechazada.\n\nDetalles de la solicitud:\n
+      Destino: ${solicitud.destino}
+      Fecha de solicitud: ${solicitud.fechaSolicitud}
+      Motivo del rechazo: ${solicitud.observaciones || 'No especificado'}\n\n
+    Si tiene alguna consulta, no dude en comunicarse con nosotros.\n\n
+    Saludos cordiales,\nDepartamento de Movilización`
+};
+
 
           // Envío fuera de la transacción
           await queryRunner.commitTransaction();

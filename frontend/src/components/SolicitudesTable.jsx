@@ -33,80 +33,72 @@ export default function SolicitudesTable({ data, onAccept, onReject, onEdit, onD
   return (
     <TableContainer component={Paper}>
       <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID Solicitud</TableCell>
-              <TableCell>Nombre Agrupación</TableCell>
-              <TableCell>Número Teléfono</TableCell>
-              <TableCell>Fecha Creación</TableCell>
-              <TableCell>
-                {categoria === 'movilizacion' ? 'Fecha Salida' : 'Inicio Trabajo'}
-              </TableCell>
-              <TableCell>
-                {categoria === 'movilizacion' ? 'Fecha Llegada' : 'Fin Trabajo'}
-              </TableCell>
-              <TableCell>Destino</TableCell>
-              <TableCell>Tipo Vehículo</TableCell>
-              <TableCell>Cantidad Pasajeros</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
+      <TableHead>
+  <TableRow>
+    <TableCell>ID Solicitud</TableCell>
+    <TableCell>Nombre Agrupación</TableCell>
+    <TableCell>Número Teléfono</TableCell>
+    <TableCell>Fecha Creación</TableCell>
+    <TableCell>{categoria === "movilizacion" ? "Fecha Salida" : "Inicio Trabajo"}</TableCell>
+    <TableCell>{categoria === "movilizacion" ? "Fecha Llegada" : "Fin Trabajo"}</TableCell>
+    <TableCell>Destino</TableCell>
+    <TableCell>Tipo Vehículo</TableCell>
+    <TableCell>Cantidad Pasajeros</TableCell>
+    {!esAdmin && <TableCell>Estado</TableCell>} {/* Columna adicional para usuarios */}
+    <TableCell>Acciones</TableCell>
+  </TableRow>
+</TableHead>
 
-        <TableBody>
-          {data?.length > 0 ? (
-            data.map((row) => (
-              <TableRow key={row.id_solicitud}>
-                <TableCell>{row.id_solicitud}</TableCell>
-                <TableCell>{row.nombre_agrupacion || "-"}</TableCell>
-                <TableCell>{row.numero_telefono || "-"}</TableCell>
-                <TableCell>{formatDate(row.fechaSolicitud)}</TableCell>
-                <TableCell>{formatDate(row.fechaSalida)}</TableCell>
-                <TableCell>{formatDate(row.fecha_regreso)}</TableCell>
-                <TableCell>{row.destino || "Sin destino"}</TableCell>
-                <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
-                <TableCell>{row.cantidad_pasajeros || "-"}</TableCell>
-                <TableCell>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(2, auto)",
-                      gap: "7px",
-                    }}
-                  >
-                    {esAdmin && row.estado === "pendiente" && (
-                      <>
-                        <IconButton
-                          color="success"
-                          onClick={() => onAccept(row)}
-                        >
-                          <CheckIcon />
-                        </IconButton>
-                        <IconButton
-                          color="error"
-                          onClick={() => onReject(row)}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </>
-                    )}
-                    <IconButton color="primary" onClick={() => onEdit(row)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => onDelete(row.id_solicitud)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={10} align="center">
-                No hay solicitudes disponibles
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
+
+<TableBody>
+  {data?.length > 0 ? (
+    data.map((row) => (
+      <TableRow key={row.id_solicitud}>
+        <TableCell>{row.id_solicitud}</TableCell>
+        <TableCell>{row.nombre_agrupacion || "-"}</TableCell>
+        <TableCell>{row.numero_telefono || "-"}</TableCell>
+        <TableCell>{formatDate(row.fechaSolicitud)}</TableCell>
+        <TableCell>{formatDate(row.fechaSalida)}</TableCell>
+        <TableCell>{formatDate(row.fecha_regreso)}</TableCell>
+        <TableCell>{row.destino || "Sin destino"}</TableCell>
+        <TableCell>{getTipoVehiculoNombre(row.id_tipo_vehiculo)}</TableCell>
+        <TableCell>{row.cantidad_pasajeros || "-"}</TableCell>
+        {!esAdmin && <TableCell>{row.estado}</TableCell>} {/* Celda adicional para estado */}
+        <TableCell>
+  <div style={{ display: "grid", gridTemplateColumns: "repeat(2, auto)", gap: "7px" }}>
+    {esAdmin && row.estado === "pendiente" && (
+      <>
+        <IconButton color="success" onClick={() => onAccept(row)}>
+          <CheckIcon />
+        </IconButton>
+        <IconButton color="error" onClick={() => onReject(row)}>
+          <CloseIcon />
+        </IconButton>
+      </>
+    )}
+    {(esAdmin || row.estado === "pendiente") && (
+      <IconButton color="primary" onClick={() => onEdit(row)}>
+        <EditIcon />
+      </IconButton>
+    )}
+    {(esAdmin || row.estado === "pendiente") && (
+      <IconButton color="error" onClick={() => onDelete(row.id_solicitud)}>
+        <DeleteIcon />
+      </IconButton>
+    )}
+  </div>
+</TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={esAdmin ? 10 : 11} align="center">
+        No hay solicitudes disponibles
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
       </Table>
     </TableContainer>
   );

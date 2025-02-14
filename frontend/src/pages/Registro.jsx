@@ -74,7 +74,7 @@ const RegistroSolicitudes = () => {
         const vehiculo = vehiculos.find(v => v.placa === registro.placa_vehiculo);
    
         const tipoNombre = tiposVehiculos.find(
-            tipo => tipo.id_tipo_vehiculo === vehiculo?.id_tipo_vehiculo
+            tipo => tipo.id_tipo_vehiculo === (vehiculo?.id_tipo_vehiculo || registro.id_tipo_vehiculo)
         )?.nombre || "No especificado";
    
         const vehiculoCompleto = vehiculo
@@ -84,7 +84,7 @@ const RegistroSolicitudes = () => {
     return {
         ...registro,
         vehiculo: vehiculo || null,
-        id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo,
+        id_tipo_vehiculo: vehiculo?.id_tipo_vehiculo || registro.id_tipo_vehiculo,
         tipo_vehiculo_nombre: tipoNombre,
         vehiculo_completo: vehiculoCompleto, 
     };
