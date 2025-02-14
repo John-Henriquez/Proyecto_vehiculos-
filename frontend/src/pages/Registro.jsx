@@ -248,7 +248,7 @@ const RegistroSolicitudes = () => {
                     </div>
                 </div>
                     <RegistrosTable
-                        data={registros}
+                        data={registrosFiltrados}
                         conductoresMap={conductoresMap}
                         onEdit={handleClickUpdate} // Llama al hook para abrir el popup con datos
                         onDelete={async (id) => {
